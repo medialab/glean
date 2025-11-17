@@ -41,13 +41,22 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 	}
 );
 
-export function buildPictureSources(imagePath: string, widths: number[] = [400, 800, 1200]) {
-	const srcset = (format: string) =>
-		widths.map((w) => `${imagePath}?w=${w}&format=${format} ${w}w`).join(', ');
-
-	return {
-		avif: srcset('avif'),
-		webp: srcset('webp'),
-		fallback: srcset('jpg')
-	};
-}
+export const ditheredMediaFilesModules: Record<string, ImageMetadata> = import.meta.glob(
+	[
+		'$lib/ditheredMedia/**/*.png',
+		'$lib/ditheredMedia/**/*.jpg',
+		'$lib/ditheredMedia/**/*.jpeg',
+		'$lib/ditheredMedia/**/*.webp',
+		'$lib/ditheredMedia/**/*.gif'
+	],
+	{
+		eager: true,
+		query: {
+			w: '1200',
+			format: 'webp',
+			quality: '100',
+			metadata: '',
+			as: 'metadata'
+		}
+	}
+);

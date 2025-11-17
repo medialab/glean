@@ -186,15 +186,14 @@
 			</div>
 		</div>
 	{:else if props.type === 'project'}
-	<a class="hover_container" href={resolve('/')} id="backhome">
-		<p class="notes">Back to home</p>
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
-			><path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z" /></svg
-		>
-	</a>
-	
+		<a class="hover_container" href={resolve('/')} id="backhome">
+			<p class="notes">Back to home</p>
+			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
+				><path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z" /></svg
+			>
+		</a>
+
 		{@render colorswitch_container()}
-		
 	{/if}
 </header>
 
@@ -269,6 +268,7 @@
 	.logo_container > svg {
 		width: 30px;
 		height: 30px;
+		fill: var(--permanent-black);
 	}
 
 	.hover_container {
@@ -298,6 +298,10 @@
 
 	#desktop_header {
 		display: flex;
+	}
+
+	p {
+		color: var(--permanent-black) !important;
 	}
 
 	@media (max-width: 768px) {

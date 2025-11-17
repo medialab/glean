@@ -12,7 +12,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
-		"deploy": "npm run build"
+		"deploy": "tsx src/lib/buildDither.ts && npm run build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
@@ -33,11 +33,12 @@
 		"@types/js-yaml": "^4.0.9",
 		"html-to-image": "^1.11.13",
 		"js-yaml": "^4.1.0",
+		"sharp": "^0.34.5",
 		"svelte-inview": "^4.0.4",
 		"svelte-pdf": "github:TommasoPrinetti/svelte-pdf",
 		"sveltekit-device-detector": "^2.0.1"
 	},
-	"optionalDependencies":  {  
-		"@rollup/rollup-linux-arm64-gnu": "^4.0.0"  
+	"optionalDependencies": {
+		"@rollup/rollup-linux-arm64-gnu": "^4.0.0"
 	}
 }

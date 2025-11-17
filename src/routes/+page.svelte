@@ -10,19 +10,25 @@
 
 	let { data }: PageProps = $props();
 
-	const projectMediaFilesObtainer = (
+	const stackObtainer = (
 		mediaFilesModules: Record<string, ImageMetadata>,
 		projectTag: string
 	): Record<string, ImageMetadata> => {
 		return Object.keys(mediaFilesModules)
-			.filter((key) => key.includes(`.jpeg`) || key.includes(`.jpg`) || key.includes(`.png`) || key.includes(`.webp`))
+			.filter(
+				(key) =>
+					key.includes(`.jpeg`) ||
+					key.includes(`.jpg`) ||
+					key.includes(`.png`) ||
+					key.includes(`.webp`)
+			)
 			.filter((key) => key.includes(`/${projectTag}/`))
-			.slice(0, 5) // Limit to max 6 elements
+			.slice(0, 5)
 			.reduce((obj: Record<string, ImageMetadata>, key) => {
 				obj[key] = mediaFilesModules[key];
 				return obj;
 			}, {});
-	};
+	}; //search only images inside pr folder, with limits of 5 els
 
 	type MousePosition = {
 		x: number;
@@ -68,7 +74,6 @@
 	});
 
 	onDestroy(() => {
-		// Clean up the mouse tracking listener
 		if (cleanupMouseTracking) {
 			cleanupMouseTracking();
 		}
@@ -79,8 +84,9 @@
 
 <section class="cards_container">
 	{#each data.projects as project, index}
-		{@const thumb = extractThumbnailImage(data.mediaFilesModules, project.tag)}
+		{@const thumb = extractThumbnailImage(data.ditheredMediaFilesModules, project.tag)}
 		<Card
+			isMobile={data.deviceType.isMobile}
 			thumb={thumb?.src ?? ''}
 			tag={project.tag}
 			title={project.title}
@@ -90,7 +96,7 @@
 			team_people={project.team_people}
 			imageShape={thumb?.shape ??
 				['Horizontal', 'Square', 'Vertical'][Math.floor(Math.random() * 3)]}
-			imageStack={projectMediaFilesObtainer(data.mediaFilesModules, project.tag) ?? ''}
+			imageStack={stackObtainer(data.ditheredMediaFilesModules, project.tag) ?? ''}
 			mousePosition={$mousePosition}
 			{index}
 			translateMultiplier={100}

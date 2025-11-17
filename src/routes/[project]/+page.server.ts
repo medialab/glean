@@ -3,7 +3,6 @@ import { extractYamlData, projectMediaFilesObtainer } from '$lib/functions';
 import { mediaFilesModules } from '$lib/medias';
 import { error, type HttpError } from '@sveltejs/kit';
 
-
 export function entries() {
 	const data = extractYamlData();
 	if (!data) {
@@ -15,11 +14,10 @@ export function entries() {
 }
 
 export const load: PageServerLoad = async ({ params, parent }) => {
-	
 	try {
 		const data = extractYamlData();
 		const { deviceType } = await parent();
-		
+
 		if (!data) {
 			throw error(500, 'Failed to load data');
 		}
@@ -29,7 +27,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 		}
 
 		const project = data.projects.find((p) => p.tag === params.project);
-		
+
 		if (!project) {
 			throw error(404, 'Project not found');
 		}
@@ -40,19 +38,21 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			project,
 			projectMediaFiles,
 			mediaFilesModules,
-			deviceType,
+			deviceType
 		};
-
 	} catch (err) {
 		// Check if this is already an HttpError from SvelteKit
 		if (err && typeof err === 'object' && 'status' in err) {
 			const httpError = err as HttpError;
 			// Log the error with context for monitoring
-			console.error(`[${httpError.status}] Error loading project "${params.project}":`, httpError.body?.message || err);
+			console.error(
+				`[${httpError.status}] Error loading project "${params.project}":`,
+				httpError.body?.message || err
+			);
 			// Rethrow the original HttpError (preserves 404, 500, etc.)
 			throw err;
 		}
-		
+
 		// For unexpected errors (YAML parse failures, filesystem errors, etc.)
 		console.error(`[500] Unexpected error loading project "${params.project}":`, err);
 		// Throw a proper 500 error so operators notice real faults
