@@ -34,52 +34,60 @@ async function ditherImage(inputPath: string, outputPath: string): Promise<void>
 	}
 }
 
-if (!fs.existsSync(outputDir)) {
-	fs.mkdirSync(outputDir, { recursive: true });
-}
+(async () => {
+	if (!fs.existsSync(outputDir)) {
+		fs.mkdirSync(outputDir, { recursive: true });
+	}
 
-fs.readdir(inputDir, { withFileTypes: true }, (err, folders) => {
-	if (err) throw err;
+	try {
+		const folders = await fs.promises.readdir(inputDir, { withFileTypes: true });
 
-	for (const folder of folders) {
-		console.log(`Processing folder: ${folder.name}`);
+		for (const folder of folders) {
+			console.log(`Processing folder: ${folder.name}`);
 
-		if (!folder.isDirectory()) {
-			//we eliminate unique files
-			continue;
+			if (!folder.isDirectory()) {
+				continue;
+			}
+
+			try {
+				const entries = await fs.promises.readdir(path.join(inputDir, folder.name), {
+					withFileTypes: true
+				});
+
+				for (const entry of entries) {
+					if (entry.isDirectory()) {
+						console.log(`Processing directory: ${entry.name}`);
+						const subfolderPath = path.join(inputDir, folder.name, entry.name);
+
+						try {
+							const subentries = await fs.promises.readdir(subfolderPath, {
+								withFileTypes: true
+							});
+							for (const subentry of subentries) {
+								await processFolderFiles(path.join(folder.name, entry.name), subentry);
+							}
+						} catch (err) {
+							console.error(`Error reading ${subfolderPath}:`, err);
+						}
+						continue;
+					} else if (entry.isFile()) {
+						console.log(`Processing file: ${entry.name}`);
+						await processFolderFiles(folder.name, entry);
+					}
+				}
+			} catch (err) {
+				console.error(`Error reading ${folder.name}:`, err);
+			}
 		}
 
-		fs.readdir(path.join(inputDir, folder.name), { withFileTypes: true }, (err, entries) => {
-			if (err) {
-				console.error(`Error reading ${folder.name}:`, err);
-				return;
-			}
-
-			for (const entry of entries) {
-				if (entry.isDirectory()) {
-					console.log(`Processing directory: ${entry.name}`);
-					const subfolderPath = path.join(inputDir, folder.name, entry.name);
-
-					fs.readdir(subfolderPath, { withFileTypes: true }, (err, subentries) => {
-						if (err) {
-							console.error(`Error reading ${subfolderPath}:`, err);
-							return;
-						}
-						for (const subentry of subentries) {
-							processFolderFiles(path.join(folder.name, entry.name), subentry);
-						}
-					});
-					continue;
-				} else if (entry.isFile()) {
-					console.log(`Processing file: ${entry.name}`);
-					processFolderFiles(folder.name, entry);
-				}
-			}
-		});
+		console.log('✓ All images processed');
+	} catch (err) {
+		console.error('Fatal error:', err);
+		process.exit(1);
 	}
-});
+})();
 
-function processFolderFiles(folderPath: string, entry: fs.Dirent) {
+async function processFolderFiles(folderPath: string, entry: fs.Dirent) {
 	const ext = path.extname(entry.name).toLowerCase();
 
 	if (IMAGE_EXTENSIONS.includes(ext)) {
@@ -92,7 +100,7 @@ function processFolderFiles(folderPath: string, entry: fs.Dirent) {
 		}
 
 		try {
-			ditherImage(inputFilePath, outputFilePath);
+			await ditherImage(inputFilePath, outputFilePath);
 		} catch (error) {
 			console.error(`Error dithering ${inputFilePath}:`, error);
 		}
