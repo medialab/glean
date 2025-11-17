@@ -65,21 +65,23 @@
 	{#each data.projects as project, index}
 		{@const stack = stackObtainer(data.ditheredMediaFilesModules, project.tag)}
 		{@const thumb = findThumbnailImage(data.ditheredMediaFilesModules, project.tag)}
-		<Card
-			isMobile={data.deviceType.isMobile}
-			thumbnail={thumb}
-			tag={project.tag}
-			title={project.title}
-			project_type={project.project_type}
-			year_begin={project.year_begin}
-			year_end={project.year_end}
-			team_people={project.team_people}
-			imageStack={stack}
-			mousePosition={$mousePosition}
-			{index}
-			translateMultiplier={100}
-			scaleStrength={1}
-		/>
+		{#if project.tag && thumb}
+			<Card
+				isMobile={data.deviceType.isMobile}
+				thumbnail={thumb}
+				tag={project.tag}
+				title={project.title}
+				project_type={project.project_type}
+				year_begin={project.year_begin}
+				year_end={project.year_end}
+				team_people={project.team_people}
+				imageStack={stack}
+				mousePosition={$mousePosition}
+				{index}
+				translateMultiplier={100}
+				scaleStrength={1}
+			/>
+		{/if}
 	{/each}
 
 	<Footer />
