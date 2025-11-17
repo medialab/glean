@@ -31,11 +31,9 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 	{
 		eager: true,
 		query: {
-			w: '1200',
-			format: 'webp',
-			quality: '90',
 			metadata: '',
-			as: 'metadata'
+			as: 'metadata',
+			enhanced: true
 		}
 	}
 );
@@ -51,9 +49,6 @@ export const ditheredMediaFilesModules: Record<string, ImageMetadata> = import.m
 	{
 		eager: true,
 		query: {
-			w: '1200',
-			format: 'webp',
-			quality: '100',
 			metadata: '',
 			as: 'metadata'
 		}

@@ -28,8 +28,6 @@
 		}
 	}
 
-	console.log('Card 	Thumbnail', props.thumbnail);
-
 	let mockArray = $state([0, 1, 2, 3, 4]);
 
 	let cardEl: HTMLAnchorElement | null = null;
@@ -121,13 +119,14 @@
 >
 	<div class="image_container" style="aspect-ratio: {ra};">
 		{#if props.thumbnail?.src}
-			<img
+			<enhanced:img
 				src={props.thumbnail.src}
 				alt={props.title}
 				data-sveltekit-preload-data="eager"
 				loading="eager"
 				fetchpriority="high"
 				crossorigin="anonymous"
+				id="THUMBNAIL_IMAGE"
 			/>
 		{:else}
 			{#await getCatImage() then catImage}
@@ -145,7 +144,7 @@
 			<div class="image_stack">
 				{#if props.imageStack && Object.keys(props.imageStack).length > 0}
 					{#each Object.keys(props.imageStack) as imageKey, index}
-						<img
+						<enhanced:img
 							src={props.imageStack[imageKey].src}
 							loading="lazy"
 							fetchpriority="low"
@@ -167,7 +166,7 @@
 					{/each}
 				{:else if browser && isPageLoaded}
 					{#each mockArray as _, index}
-						<img
+						<enhanced:img
 							crossorigin="anonymous"
 							src={`https://cataas.com/cat?${Math.random()}`}
 							alt={props.title}
@@ -259,8 +258,8 @@
 		position: static;
 		z-index: 1;
 		mix-blend-mode: multiply;
-		filter: grayscale(1);
 		transition: mix-blend-mode 0.2s var(--curve);
+		filter: grayscale(1) contrast(2) brightness(1.1);
 	}
 
 	.image_container > img:hover {
@@ -334,7 +333,6 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
-
 	@media (max-width: 768px) {
 		.card_container {
 			flex-direction: column;

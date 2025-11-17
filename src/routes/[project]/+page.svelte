@@ -119,12 +119,20 @@
 				class:transitioned={isPageLoaded}
 			>
 				{#if thumbnail?.src}
-					<img src={thumbnail.src} alt={project.title} class:grayscaled={$colorMode === 'dark'} />
+					<enhanced:img
+						src={thumbnail.src}
+						alt={project.title}
+						class:grayscaled={$colorMode === 'dark'}
+					/>
 				{:else}
 					{#await getCatImage()}
 						<p>Loading cat image...</p>
 					{:then catImage}
-						<img src={catImage} alt={project.title} class:grayscaled={$colorMode === 'dark'} />
+						<enhanced:img
+							src={catImage}
+							alt={project.title}
+							class:grayscaled={$colorMode === 'dark'}
+						/>
 					{/await}
 				{/if}
 			</div>
@@ -218,13 +226,11 @@
 						class:hidden={!isPageLoaded}
 						class:transitioned={isPageLoaded}
 					>
-						<img
+						<enhanced:img
 							class:grayscaled={$colorMode === 'dark'}
 							style="transition-delay: 0.4s;"
 							src={mediaFile.src}
 							alt="Project media"
-							width={mediaFile.width}
-							height={mediaFile.height}
 						/>
 					</div>
 				{/if}

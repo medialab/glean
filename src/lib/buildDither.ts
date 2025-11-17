@@ -11,7 +11,7 @@ async function ditherImage(inputPath: string, outputPath: string): Promise<void>
 	try {
 		await sharp(inputPath)
 			.greyscale()
-			.resize(100, 100, {
+			.resize(20, 20, {
 				fit: 'inside',
 				withoutEnlargement: true
 			})
