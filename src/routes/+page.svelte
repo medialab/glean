@@ -3,32 +3,11 @@
 	import Footer from '$lib/components/footer.svelte';
 	import Card from '$lib/components/card.svelte';
 	import type { PageProps } from './$types';
-	import type { ImageMetadata } from '$lib/medias';
 	import { writable } from 'svelte/store';
 	import { onMount, onDestroy } from 'svelte';
-	import { extractThumbnailImage } from '$lib/utils';
+	import { stackObtainer, findThumbnailImage } from '$lib/utils';
 
 	let { data }: PageProps = $props();
-
-	const stackObtainer = (
-		mediaFilesModules: Record<string, ImageMetadata>,
-		projectTag: string
-	): Record<string, ImageMetadata> => {
-		return Object.keys(mediaFilesModules)
-			.filter(
-				(key) =>
-					key.includes(`.jpeg`) ||
-					key.includes(`.jpg`) ||
-					key.includes(`.png`) ||
-					key.includes(`.webp`)
-			)
-			.filter((key) => key.includes(`/${projectTag}/`))
-			.slice(0, 5)
-			.reduce((obj: Record<string, ImageMetadata>, key) => {
-				obj[key] = mediaFilesModules[key];
-				return obj;
-			}, {});
-	}; //search only images inside pr folder, with limits of 5 els
 
 	type MousePosition = {
 		x: number;
@@ -84,19 +63,18 @@
 
 <section class="cards_container">
 	{#each data.projects as project, index}
-		{@const thumb = extractThumbnailImage(data.ditheredMediaFilesModules, project.tag)}
+		{@const stack = stackObtainer(data.ditheredMediaFilesModules, project.tag)}
+		{@const thumb = findThumbnailImage(data.ditheredMediaFilesModules, project.tag)}
 		<Card
 			isMobile={data.deviceType.isMobile}
-			thumb={thumb?.src ?? ''}
+			thumbnail={thumb}
 			tag={project.tag}
 			title={project.title}
 			project_type={project.project_type}
 			year_begin={project.year_begin}
 			year_end={project.year_end}
 			team_people={project.team_people}
-			imageShape={thumb?.shape ??
-				['Horizontal', 'Square', 'Vertical'][Math.floor(Math.random() * 3)]}
-			imageStack={stackObtainer(data.ditheredMediaFilesModules, project.tag) ?? ''}
+			imageStack={stack}
 			mousePosition={$mousePosition}
 			{index}
 			translateMultiplier={100}

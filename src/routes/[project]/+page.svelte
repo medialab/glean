@@ -4,10 +4,11 @@
 	import Footer from '$lib/components/footer.svelte';
 	import PdfWrapper from '$lib/components/pdf_wrapper.svelte';
 
-	import { extractThumbnailImage, colorMode } from '$lib/utils';
+	import { findThumbnailImage, colorMode } from '$lib/utils';
 	import { onMount, onDestroy } from 'svelte';
 	import { toBlob } from 'html-to-image';
 	import { inview } from 'svelte-inview';
+	// `resolve` is only for route paths; not needed for media URLs here.
 
 	const options = {};
 
@@ -16,7 +17,8 @@
 
 	const projectMediaFiles = data.projectMediaFiles;
 
-	let thumb = extractThumbnailImage(data.mediaFilesModules, project.tag);
+	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
+	console.log('thumbnail', thumbnail);
 
 	let isPageLoaded: Boolean = $state(false);
 
@@ -82,7 +84,7 @@
 
 	const getCatImage = () => {
 		return Promise.resolve(`https://cataas.com/cat?${Math.random()}`);
-	}
+	};
 
 	onMount(() => {
 		isPageLoaded = true;
@@ -116,21 +118,13 @@
 				class:hidden={!isPageLoaded}
 				class:transitioned={isPageLoaded}
 			>
-				{#if thumb?.src}
-					<img
-						src={thumb?.src}
-						alt={project.title}
-						class:grayscaled={$colorMode === 'dark'}
-					/>
+				{#if thumbnail?.src}
+					<img src={thumbnail.src} alt={project.title} class:grayscaled={$colorMode === 'dark'} />
 				{:else}
 					{#await getCatImage()}
 						<p>Loading cat image...</p>
 					{:then catImage}
-					<img
-							src={catImage}
-							alt={project.title}
-							class:grayscaled={$colorMode === 'dark'}
-						/>
+						<img src={catImage} alt={project.title} class:grayscaled={$colorMode === 'dark'} />
 					{/await}
 				{/if}
 			</div>

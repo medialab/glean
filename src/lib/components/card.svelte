@@ -3,18 +3,32 @@
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
+	import type { ImageShape } from '$lib/utils';
 
 	let props = $props();
 
 	let ra: string = $state('4/3');
 
-	if (props.imageShape === 'Vertical') {
+	if (props.thumbnail?.shape === 'Vertical') {
 		ra = '3/4';
-	} else if (props.imageShape === 'Horizontal') {
+	} else if (props.thumbnail?.shape === 'Horizontal') {
 		ra = '4/3';
-	} else if (props.imageShape === 'Square') {
+	} else if (props.thumbnail?.shape === 'Square') {
 		ra = '1/1';
+	} else {
+		//fallback randomic
+		const shapes: ImageShape[] = ['Horizontal', 'Vertical', 'Square'];
+		const shape = shapes[Math.floor(Math.random() * shapes.length)];
+		if (shape === 'Vertical') {
+			ra = '3/4';
+		} else if (shape === 'Horizontal') {
+			ra = '4/3';
+		} else if (shape === 'Square') {
+			ra = '1/1';
+		}
 	}
+
+	console.log('Card 	Thumbnail', props.thumbnail);
 
 	let mockArray = $state([0, 1, 2, 3, 4]);
 
@@ -106,14 +120,14 @@
 		: 'transparent'};"
 >
 	<div class="image_container" style="aspect-ratio: {ra};">
-		{#if props.thumb}
+		{#if props.thumbnail?.src}
 			<img
-				src={props.thumb}
+				src={props.thumbnail.src}
 				alt={props.title}
 				data-sveltekit-preload-data="eager"
 				loading="eager"
 				fetchpriority="high"
-				{...props.thumb ? {} : { crossorigin: 'anonymous' }}
+				crossorigin="anonymous"
 			/>
 		{:else}
 			{#await getCatImage() then catImage}
@@ -130,9 +144,9 @@
 		{#if !props.isMobile}
 			<div class="image_stack">
 				{#if props.imageStack && Object.keys(props.imageStack).length > 0}
-					{#each Object.keys(props.imageStack) as imageSrc, index}
+					{#each Object.keys(props.imageStack) as imageKey, index}
 						<img
-							src={imageSrc}
+							src={props.imageStack[imageKey].src}
 							loading="lazy"
 							fetchpriority="low"
 							alt={props.title}

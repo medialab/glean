@@ -24,7 +24,6 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 		'$lib/media/**/*.webp',
 		'$lib/media/**/*.gif',
 		'$lib/media/**/*.pdf',
-		'$lib/media/**/THUMB/*',
 		'$lib/media/**/*.mp4',
 		'$lib/media/**/*.mov',
 		'$lib/media/**/*.MOV'

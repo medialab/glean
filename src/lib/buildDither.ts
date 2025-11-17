@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
 
-const inputDir = 'src/lib/media/';
-const outputDir = 'src/lib/ditheredMedia/';
+const inputDir = path.resolve(process.cwd(), 'src/lib/media/');
+const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia/');
 
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
 
