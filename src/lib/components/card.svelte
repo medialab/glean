@@ -9,23 +9,15 @@
 
 	let ra: string = $state('4/3');
 
-	if (props.thumbnail?.shape === 'Vertical') {
+	//fallback randomic
+	const shapes: ImageShape[] = ['Horizontal', 'Vertical', 'Square'];
+	const shape = shapes[Math.floor(Math.random() * shapes.length)];
+	if (shape === 'Vertical') {
 		ra = '3/4';
-	} else if (props.thumbnail?.shape === 'Horizontal') {
+	} else if (shape === 'Horizontal') {
 		ra = '4/3';
-	} else if (props.thumbnail?.shape === 'Square') {
+	} else if (shape === 'Square') {
 		ra = '1/1';
-	} else {
-		//fallback randomic
-		const shapes: ImageShape[] = ['Horizontal', 'Vertical', 'Square'];
-		const shape = shapes[Math.floor(Math.random() * shapes.length)];
-		if (shape === 'Vertical') {
-			ra = '3/4';
-		} else if (shape === 'Horizontal') {
-			ra = '4/3';
-		} else if (shape === 'Square') {
-			ra = '1/1';
-		}
 	}
 
 	let mockArray = $state([0, 1, 2, 3, 4]);
@@ -101,7 +93,7 @@
 	onMount(async () => {
 		setTimeout(() => {
 			isPageLoaded = true;
-		}, 100);
+		}, 10);
 	});
 </script>
 
@@ -149,10 +141,7 @@
 							loading="lazy"
 							fetchpriority="low"
 							alt={props.title}
-							style="z-index: {index + 1}; opacity: {Math.max(
-								0.15,
-								1 - index * 0.12
-							)}; transform: translate({(layerVectors[index]?.x ?? 0) *
+							style="z-index: {index + 1}; transform: translate({(layerVectors[index]?.x ?? 0) *
 								(props.translateMultiplier ?? 14) *
 								farness *
 								((index + 1) / Object.keys(props.imageStack).length)}px, {(layerVectors[index]?.y ??
@@ -180,17 +169,14 @@
 								((index + 1) / mockArray.length)}px, {(layerVectors[index]?.y ?? 0) *
 								(props.translateMultiplier ?? 14) *
 								farness *
-								((index + 1) / mockArray.length)}px); transition: opacity 0.3s var(--curve);"
+								((index + 1) / mockArray.length)}px);"
 						/>
 					{/each}
 				{/if}
 			</div>
 		{/if}
 	</div>
-	<div
-		class="info_container"
-		style="max-width: {props.cardSize === 'S' ? '20ch' : props.cardSize === 'M' ? '25ch' : '35ch'};"
-	>
+	<div class="info_container" style="max-width: {Math.floor(Math.random() * 16) + 20}ch;">
 		<p
 			class="notes"
 			id="tag_container"
@@ -277,6 +263,7 @@
 		bottom: 0;
 		z-index: -1;
 		pointer-events: none;
+		opacity: 1;
 		transition: opacity 0.2s var(--curve);
 	}
 
@@ -289,7 +276,9 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
+		opacity: 1;
 		transition: transform 0.12s var(--curve);
+		filter: grayscale(1) contrast(2) brightness(1.1);
 		mix-blend-mode: multiply;
 	}
 

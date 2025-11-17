@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { colorMode } from '$lib/utils';
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
@@ -9,7 +9,7 @@
 	onMount(() => {
 		setTimeout(() => {
 			isPageLoaded = true;
-		}, 100);
+		}, 10);
 	});
 </script>
 
@@ -41,12 +41,7 @@
 {/snippet}
 
 {#snippet colorswitch_container()}
-	<div
-		class="hover_container"
-		class:hidden={!isPageLoaded}
-		class:transitioned={isPageLoaded}
-		style="transition-delay: 0.2s;"
-	>
+	<div class="hover_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 		<p class="notes">Switch reading mode</p>
 
 		<div class="navigator_links">
@@ -92,11 +87,43 @@
 	</div>
 {/snippet}
 
+{#snippet navigator_container(isAbout: Boolean)}
+	<div class="navigator_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
+		<p class="notes">Go to about</p>
+		<div class="navigator_links">
+			<a
+				href={resolve('/')}
+				style="opacity:{isAbout ? '0.5' : '1'}; pointer-events:{isAbout ? 'auto' : 'none'}"
+			>
+				<p>mosaic</p>
+			</a>
+			<p>/</p>
+			<a
+				href={resolve('/about')}
+				style="opacity:{isAbout ? '1' : '0.5'}; pointer-events:{isAbout ? 'none' : 'auto'}"
+			>
+				<p>about</p>
+			</a>
+		</div>
+
+		<div class="mobile_navigator">
+			<a href={resolve('/about')} aria-label="Navigate to about page">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
+					><path
+						d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"
+					/></svg
+				>
+			</a>
+		</div>
+	</div>
+{/snippet}
+
 <!--It's strange but in case of mobile we have the header only in the landing page, the others have another mechanism-->
 {#if props.type === 'home'}
 	<header id="mobile_home_header">
 		<!--{@render colorswitch_container()}-->
 		{@render colorswitch_container()}
+		{@render navigator_container(false)}
 		<div class="logo_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
 				<path
@@ -143,7 +170,7 @@
 			id="backhome"
 			data-sveltekit-preload-data
 			aria-label="Back to home"
-			style="left: unset; right: var(--spacing-m); align-items: flex-end; transition-delay: 0.2s;"
+			style="left: unset; right: var(--spacing-m); align-items: flex-end;"
 			class:hidden={!isPageLoaded}
 			class:transitioned={isPageLoaded}
 		>
@@ -163,28 +190,7 @@
 
 		{@render logo_container()}
 
-		<div class="navigator_container">
-			<p class="notes">Navigator</p>
-			<div class="navigator_links">
-				<a
-					href={resolve('/')}
-					style="opacity:{props.isAbout ? '0.5' : '1'}; pointer-events:{props.isAbout
-						? 'auto'
-						: 'none'}"
-				>
-					<p>mosaic</p>
-				</a>
-				<p>/</p>
-				<a
-					href={resolve('/about')}
-					style="opacity:{props.isAbout ? '1' : '0.5'}; pointer-events:{props.isAbout
-						? 'none'
-						: 'auto'}"
-				>
-					<p>about</p>
-				</a>
-			</div>
-		</div>
+		{@render navigator_container(props.isAbout)}
 	{:else if props.type === 'project'}
 		<a class="hover_container" href={resolve('/')} id="backhome">
 			<p class="notes">Back to home</p>
@@ -236,7 +242,8 @@
 		align-items: center;
 	}
 
-	.mobile_color_switch {
+	.mobile_color_switch,
+	.mobile_navigator {
 		display: none;
 	}
 
@@ -324,7 +331,9 @@
 			display: none;
 		}
 		.mobile_color_switch,
-		.mobile_color_switch > button > svg {
+		.mobile_color_switch > button > svg,
+		.mobile_navigator,
+		.mobile_navigator > button > svg {
 			display: block;
 			width: 25px;
 			height: 25px;
@@ -392,6 +401,15 @@
 
 		p {
 			color: var(--primary-black);
+		}
+
+		.navigator_container {
+			height: fit-content;
+			background-color: transparent;
+			padding: 0px;
+			position: absolute;
+			top: var(--spacing-m);
+			right: var(--spacing-m);
 		}
 	}
 </style>

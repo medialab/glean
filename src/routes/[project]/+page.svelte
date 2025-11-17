@@ -5,6 +5,7 @@
 	import PdfWrapper from '$lib/components/pdf_wrapper.svelte';
 
 	import { findThumbnailImage, colorMode } from '$lib/utils';
+	import { ditheredMediaFilesModules } from '$lib/medias';
 	import { onMount, onDestroy } from 'svelte';
 	import { toBlob } from 'html-to-image';
 	import { inview } from 'svelte-inview';
@@ -12,13 +13,82 @@
 
 	const options = {};
 
+	type TrailPoint = { x: number; y: number; t: number };
+	const trailMap = new WeakMap<HTMLElement, TrailPoint[]>();
+	const TRAIL_DURATION = 1000;
+
+	const applyTrailMask = (target: HTMLElement) => {
+		const now = performance.now();
+		const existing = trailMap.get(target) ?? [];
+		const points = existing.filter((p) => now - p.t <= TRAIL_DURATION);
+
+		if (!points.length) {
+			trailMap.delete(target);
+			target.style.removeProperty('-webkit-mask-image');
+			target.style.removeProperty('mask-image');
+			return;
+		}
+
+		trailMap.set(target, points);
+
+		const gradients = points
+			.map((p) => {
+				const age = (now - p.t) / TRAIL_DURATION;
+				const opacity = Math.max(0, 1 - age);
+				const inner = 7;
+				const outer = 14;
+
+				return `radial-gradient(
+				circle at ${p.x}% ${p.y}%,
+				rgba(0,0,0,${opacity}) 0%,
+				rgba(0,0,0,${opacity}) ${inner}%,
+				rgba(0,0,0,0) ${outer}%,
+				rgba(0,0,0,0) 100%
+			)`;
+			})
+			.join(', ');
+
+		target.style.webkitMaskImage = gradients;
+		target.style.maskImage = gradients;
+
+		// Keep animating fade-out until all points have expired
+		requestAnimationFrame(() => applyTrailMask(target));
+	};
+
+	const updateClipFromMouse = (event: MouseEvent | PointerEvent) => {
+		const target = event.currentTarget as HTMLElement;
+		const rect = target.getBoundingClientRect();
+
+		const x = ((event.clientX - rect.left) / rect.width) * 100;
+		const y = ((event.clientY - rect.top) / rect.height) * 100;
+
+		const now = performance.now();
+		const existing = trailMap.get(target) ?? [];
+		existing.push({ x, y, t: now });
+		trailMap.set(target, existing);
+
+		applyTrailMask(target);
+	};
+
+	const resetClip = (event: PointerEvent) => {
+		const target = event.currentTarget as HTMLElement;
+
+		// Let existing points fade naturally; just stop adding new ones.
+		// Optionally clear immediately if user leaves for a while.
+		setTimeout(() => {
+			if (!trailMap.has(target)) return;
+			trailMap.delete(target);
+			target.style.removeProperty('-webkit-mask-image');
+			target.style.removeProperty('mask-image');
+		}, TRAIL_DURATION);
+	};
+
 	let { data }: PageProps = $props();
 	const project = data.project;
 
 	const projectMediaFiles = data.projectMediaFiles;
 
 	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
-	console.log('thumbnail', thumbnail);
 
 	let isPageLoaded: Boolean = $state(false);
 
@@ -221,17 +291,34 @@
 						</div>
 					{/if}
 				{:else if !key.toLowerCase().includes('thumb')}
+					{@const ditherKey = key.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')}
+					{@const ditherFile = ditheredMediaFilesModules[ditherKey]}
 					<div
 						class={mediaFile.width > mediaFile.height ? 'horizontal-image' : 'vertical-image'}
 						class:hidden={!isPageLoaded}
 						class:transitioned={isPageLoaded}
+						role="img"
+						aria-label="Interactive project media reveal"
 					>
 						<enhanced:img
 							class:grayscaled={$colorMode === 'dark'}
-							style="transition-delay: 0.4s;"
+							style="transition-delay: 0.4s; z-index: 0;"
 							src={mediaFile.src}
 							alt="Project media"
+							class="absolute_front"
 						/>
+
+						{#if !data.deviceType.isMobile && ditherFile}
+							<img
+								src={ditherFile.src}
+								alt="Project media dither"
+								class="absolute_behind"
+								style="z-index: 1;"
+								onpointerleave={resetClip}
+								onpointerenter={updateClipFromMouse}
+								onpointermove={updateClipFromMouse}
+							/>
+						{/if}
 					</div>
 				{/if}
 			{/each}
@@ -244,6 +331,25 @@
 	h1 {
 		font-size: 32px;
 		line-height: 1.1;
+	}
+
+	.absolute_behind {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		/* Default: fully hidden; JS adds visible radial masks on hover */
+		-webkit-mask-image: radial-gradient(
+			circle at 50% 50%,
+			rgba(0, 0, 0, 0) 0%,
+			rgba(0, 0, 0, 0) 100%
+		);
+		mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
+	}
+
+	.absolute_front {
+		position: relative;
 	}
 
 	.main_container {
@@ -275,7 +381,7 @@
 	.context_container {
 		overflow: hidden;
 		transition: all 0.5s var(--curve);
-		transition-delay: 100ms;
+		transition-delay: 0.1s;
 		display: flex;
 		flex-direction: column;
 		row-gap: var(--spacing-xs);
@@ -357,7 +463,8 @@
 		place-content: center;
 	}
 
-	.thumb_cont > img {
+	:global(.thumb_cont > img),
+	:global(.thumb_cont > picture) {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
@@ -378,7 +485,10 @@
 		height: fit-content;
 		grid-template-columns: repeat(2, 1fr);
 		grid-column-gap: var(--spacing-m);
-		z-index: -1;
+		/* Keep the article content (including the PDF viewer) in the normal stacking order
+		   so it can receive pointer events correctly. */
+		position: relative;
+		z-index: 0;
 		background-color: var(--color-background);
 		padding-bottom: var(--spacing-xl);
 		padding-right: var(--spacing-l);
@@ -395,10 +505,14 @@
 
 	.horizontal-image {
 		grid-column: span 2 !important;
+		position: relative;
+		overflow: hidden;
 	}
 
 	.vertical-image {
 		grid-column: span 1 !important;
+		position: relative;
+		overflow: hidden;
 	}
 
 	.horizontal-image img,

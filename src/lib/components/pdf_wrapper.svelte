@@ -71,6 +71,9 @@
 		align-items: center;
 		position: relative;
 		justify-content: center;
+		/* Keep the viewer itself interactive */
+		z-index: 20;
+		pointer-events: auto;
 	}
 
 	:global(.null) {
@@ -100,6 +103,13 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		/* Let clicks pass through the transparent overlay except on the actual button */
+		pointer-events: none;
+	}
+
+	/* The visible arrow should still be clickable */
+	.navigator_button {
+		pointer-events: auto;
 	}
 
 	.dx {

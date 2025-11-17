@@ -11,9 +11,9 @@ async function ditherImage(inputPath: string, outputPath: string): Promise<void>
 	try {
 		await sharp(inputPath)
 			.greyscale()
-			.resize(20, 20, {
+			.resize(200, 200, {
 				fit: 'inside',
-				withoutEnlargement: true
+				withoutEnlargement: false
 			})
 			.modulate({ brightness: 2 })
 			.png({
@@ -22,7 +22,7 @@ async function ditherImage(inputPath: string, outputPath: string): Promise<void>
 				adaptiveFiltering: true,
 				palette: true,
 				dither: 1,
-				colors: 2,
+				colors: 16,
 				progressive: true
 			})
 			.toFile(outputPath);

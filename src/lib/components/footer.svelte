@@ -1,6 +1,17 @@
+<script>
+	import gitLogo from '$lib/assets/github-mark.svg';
+</script>
+
 <footer>
 	<p class="notes">Privacy policy</p>
-	<p class="notes">Cookie policy</p>
+	<a
+		href="https://github.com/medialab"
+		target="_blank"
+		rel="noopener noreferrer"
+		data-sveltekit-preload-data
+	>
+		<img src={gitLogo} alt="GitHub" style="width: 20px; height: 20px;" />
+	</a>
 </footer>
 
 <style>
