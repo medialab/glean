@@ -45,7 +45,7 @@
 		class="hover_container"
 		class:hidden={!isPageLoaded}
 		class:transitioned={isPageLoaded}
-		style="transition-delay: 1s;"
+		style="transition-delay: 0.2s;"
 	>
 		<p class="notes">Switch reading mode</p>
 
@@ -143,7 +143,7 @@
 			id="backhome"
 			data-sveltekit-preload-data
 			aria-label="Back to home"
-			style="left: unset; right: var(--spacing-m); align-items: flex-end; transition-delay: 1s;"
+			style="left: unset; right: var(--spacing-m); align-items: flex-end; transition-delay: 0.2s;"
 			class:hidden={!isPageLoaded}
 			class:transitioned={isPageLoaded}
 		>
@@ -301,7 +301,7 @@
 	}
 
 	p {
-		color: var(--permanent-black) !important;
+		color: var(--permanent-black);
 	}
 
 	@media (max-width: 768px) {
@@ -348,6 +348,7 @@
 		.logo_container > svg {
 			width: 35px;
 			height: 35px;
+			fill: var(--primary-black);
 		}
 
 		.logo_container > p {
@@ -387,6 +388,10 @@
 
 		.hover_container > svg {
 			fill: var(--primary-black);
+		}
+
+		p {
+			color: var(--primary-black);
 		}
 	}
 </style>

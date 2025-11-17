@@ -14,13 +14,7 @@
 		y: number;
 	};
 
-	let isMobile = $state(false);
-
-	$effect(() => {
-		isMobile = data.deviceType.isMobile;
-	});
-
-	console.log('isMobile', isMobile);
+	$inspect('isMobile', data.deviceType.isMobile);
 
 	const mousePosition = writable<MousePosition>({ x: 0, y: 0 });
 
@@ -75,7 +69,7 @@
 		{@const thumb = findThumbnailImage(data.ditheredMediaFilesModules, project.tag)}
 		{#if project.tag && thumb}
 			<Card
-				{isMobile}
+				isMobile={data.deviceType.isMobile}
 				thumbnail={thumb}
 				tag={project.tag}
 				title={project.title}
