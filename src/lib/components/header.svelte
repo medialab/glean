@@ -115,8 +115,9 @@
 {#if props.type === 'home'}
 	<header id="mobile_home_header">
 		<!--{@render colorswitch_container()}-->
-		{@render colorswitch_container()}
+
 		{@render navigator_container(false)}
+		{@render colorswitch_container()}
 		<div class="logo_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
 				<path
@@ -163,7 +164,7 @@
 			id="backhome"
 			data-sveltekit-preload-data
 			aria-label="Back to home"
-			style="left: unset; right: var(--spacing-m); align-items: flex-end;"
+			style="left: var(--spacing-m); right: unset; align-items: flex-start;"
 			class:hidden={!isPageLoaded}
 			class:transitioned={isPageLoaded}
 		>
@@ -179,11 +180,9 @@
 
 <header id="desktop_header">
 	{#if props.type === 'home' || props.type === 'about'}
-		{@render colorswitch_container()}
-
-		{@render logo_container()}
-
 		{@render navigator_container(props.isAbout)}
+		{@render logo_container()}
+		{@render colorswitch_container()}
 	{:else if props.type === 'project'}
 		<a class="hover_container" href={resolve('/')} id="backhome">
 			<p class="notes">Back to home</p>
@@ -218,7 +217,7 @@
 	.navigator_container {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-end;
+		align-items: flex-start;
 		justify-content: center;
 		row-gap: var(--spacing-xs);
 		width: fit-content;
@@ -274,7 +273,7 @@
 	.hover_container {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
+		align-items: flex-end;
 		justify-content: center;
 		width: fit-content;
 		height: 100%;
@@ -374,14 +373,14 @@
 		.hover_container {
 			display: flex;
 			flex-direction: column;
-			align-items: flex-start;
+			align-items: flex-end;
 			justify-content: center;
 			width: fit-content;
 			height: fit-content;
 
 			position: absolute;
 			top: var(--spacing-m);
-			left: var(--spacing-m);
+			right: var(--spacing-m);
 
 			row-gap: var(--spacing-xs);
 			background-color: transparent;
@@ -402,7 +401,7 @@
 			padding: 0px;
 			position: absolute;
 			top: var(--spacing-m);
-			right: var(--spacing-m);
+			left: var(--spacing-m);
 		}
 	}
 </style>

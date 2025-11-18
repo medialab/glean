@@ -12,7 +12,7 @@ const config = {
 			fallback: '404.html'
 		}),
 		paths: {
-			base: dev ? '' : '/Design_Team_Portfolio'
+			base: dev ? '' : '/Glean'
 		}
 	}
 };
