@@ -61,6 +61,35 @@
 	});
 </script>
 
+<svelte:head>
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
+	<meta property="og:title" content="Design Team Portfolio" />
+	<meta
+		property="og:description"
+		content="A curated collection of design projects showcasing innovative work across disciplines."
+	/>
+	<meta property="og:image" content="https://design-team-portfolio.com/og-image.jpg" />
+	<meta property="og:site_name" content="Design Team Portfolio" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:image:width" content="1200" />
+	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content="Design Team Portfolio preview" />
+
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
+	<meta name="twitter:title" content="Design Team Portfolio" />
+	<meta
+		name="twitter:description"
+		content="A curated collection of design projects showcasing innovative work across disciplines."
+	/>
+	<meta name="twitter:image" content="https://design-team-portfolio.com/og-image.jpg" />
+	<meta name="twitter:image:alt" content="Design Team Portfolio preview" />
+	<meta name="twitter:site" content="@designteam" />
+	<meta name="twitter:creator" content="@designteam" />
+</svelte:head>
+
 <Header type="home" isAbout={false} />
 
 <section class="cards_container">

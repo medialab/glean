@@ -148,9 +148,7 @@
 								0) *
 								(props.translateMultiplier ?? 14) *
 								farness *
-								((index + 1) /
-									Object.keys(props.imageStack)
-										.length)}px); transition: transform 0.12s var(--curve);"
+								((index + 1) / Object.keys(props.imageStack).length)}px);"
 						/>
 					{/each}
 				{:else if browser && isPageLoaded}
@@ -277,7 +275,6 @@
 		right: 0;
 		bottom: 0;
 		opacity: 1;
-		transition: transform 0.12s var(--curve);
 		filter: grayscale(1) contrast(2) brightness(1.1);
 		mix-blend-mode: multiply;
 	}

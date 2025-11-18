@@ -89,20 +89,13 @@
 
 {#snippet navigator_container(isAbout: Boolean)}
 	<div class="navigator_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-		<p class="notes">Go to about</p>
+		<p class="notes">Who is design team?</p>
 		<div class="navigator_links">
-			<a
-				href={resolve('/')}
-				style="opacity:{isAbout ? '0.5' : '1'}; pointer-events:{isAbout ? 'auto' : 'none'}"
-			>
-				<p>mosaic</p>
-			</a>
-			<p>/</p>
 			<a
 				href={resolve('/about')}
 				style="opacity:{isAbout ? '1' : '0.5'}; pointer-events:{isAbout ? 'none' : 'auto'}"
 			>
-				<p>about</p>
+				<p>About</p>
 			</a>
 		</div>
 

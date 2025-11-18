@@ -169,11 +169,43 @@
 	});
 </script>
 
+<svelte:head>
+	<title>{project.title}</title>
+	<meta name="description" content={project.description} />
+	<meta name="keywords" content={project.description.split(' ').join(', ')} />
+	<meta name="author" content={project.author} />
+	<meta name="robots" content="index, follow" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="theme-color" content="#000000" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+	<meta name="apple-mobile-web-app-title" content={project.title} />
+
+	<!-- Open Graph / Facebook -->
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
+	<meta property="og:title" content={project.title} />
+	<meta property="og:description" content={project.description} />
+	<meta property="og:image" content={thumbnail?.src || ''} />
+	<meta property="og:site_name" content="Design Team Portfolio" />
+	<meta property="og:locale" content="en_US" />
+
+	<!-- Twitter -->
+	<meta property="twitter:card" content="summary_large_image" />
+	<meta
+		property="twitter:url"
+		content={typeof window !== 'undefined' ? window.location.href : ''}
+	/>
+	<meta property="twitter:title" content={project.title} />
+	<meta property="twitter:description" content={project.description} />
+	<meta property="twitter:image" content={thumbnail?.src || ''} />
+</svelte:head>
+
 <Header type="project" tag={project.tag} isAbout={false} />
 {#key project}
 	<section class="main_container">
 		<div class="hero_card" bind:this={heroCardElement}>
-			<button
+			<!-- <button
 				class="hero_backhome sharing_button"
 				aria-label="Sharing button"
 				onclick={shareHeroCard}
@@ -181,7 +213,7 @@
 				class:transitioned={isPageLoaded}
 			>
 				<p class="notes">Share this project</p>
-			</button>
+			</button> -->
 			<div
 				class="thumb_cont"
 				style="transition-delay: 0.1s;"
