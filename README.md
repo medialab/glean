@@ -14,7 +14,7 @@ It is meant not to separate our work from the rest of the lab, but to provide a 
 For **design team members**:
 
 1. **Go to the media folder**  
-   Navigate to the [lib media folder](https://medialab.github.io/Glean//tree/main/src/lib/media).
+   Navigate to the [lib media folder](https://github.com/medialab/Glean/tree/975f89f22b57ff6f78b645d0b841ecc8f586f088/src/lib/media).
 
 2. **Create a project folder (if needed)**  
    If not yet present, create a folder named with the project’s **5-digit TAG**. (you're supposed to choose a 5 digit tag in that case)
