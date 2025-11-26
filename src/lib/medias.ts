@@ -47,7 +47,7 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 			as: 'metadata',
 			enhanced: true,
 			quality: 80,
-			format: 'webp',
+			//format: 'webp',
 			allowUpscale: true,
 			allowDownscale: true,
 			removeMetadata: false
