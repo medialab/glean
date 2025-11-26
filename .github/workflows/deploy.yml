@@ -49,8 +49,16 @@ jobs:
       - name: Install project dependencies
         run: npm install
 
+      - name: Create image twins
+        run: npm run imgYmlCreator
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
+
+      - name: Dither images
+        env:
+          NODE_OPTIONS: "--max-old-space-size=6144"
+        run: npm run dither
 
       - name: Build SvelteKit app
         env:
