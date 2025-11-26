@@ -7,9 +7,8 @@
 	import { findThumbnailImage, colorMode } from '$lib/utils';
 	import { ditheredMediaFilesModules } from '$lib/medias';
 	import { onMount, onDestroy } from 'svelte';
-	import { toBlob } from 'html-to-image';
 	import { inview } from 'svelte-inview';
-	// `resolve` is only for route paths; not needed for media URLs here.
+	import * as ExifReader from 'exifreader';
 
 	const options = {};
 
@@ -86,78 +85,33 @@
 	let { data }: PageProps = $props();
 	const project = data.project;
 
-	const projectMediaFiles = data.projectMediaFiles;
+	const OrderedProjectMediaFiles = Object.keys(data.projectMediaFiles).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+
+	const OrderedSubGalleryMediaFiles = Object.keys(data.subGalleryMediaFiles).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+
+	console.log("Modules", data.mediaFilesModules);
 
 	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
 
 	let isPageLoaded: Boolean = $state(false);
 
 	let videoRefs: HTMLVideoElement[] = $state([]);
-	let heroCardElement: HTMLDivElement = $state()!;
 
-	const shareHeroCard = async () => {
-		if (!heroCardElement) {
-			console.error('Hero card element not found');
-			return;
-		}
-
-		try {
-			// Convert the hero_card element to a blob
-			const blob = await toBlob(heroCardElement, {
-				cacheBust: true,
-				pixelRatio: 2 // Higher quality export
-			});
-
-			if (!blob) {
-				console.error('Failed to generate image from hero card');
-				return;
-			}
-
-			// Check if navigator.share is available
-			if (navigator.share && navigator.canShare) {
-				const file = new File([blob], `${project.tag}-project.png`, {
-					type: 'image/png'
-				});
-
-				const shareData = {
-					files: [file],
-					title: project.title,
-					text: `Check out this project: ${project.title}`
-				};
-
-				if (navigator.canShare(shareData)) {
-					await navigator.share(shareData);
-				} else {
-					// Fallback: download the image
-					downloadImage(blob);
-				}
-			} else {
-				// Fallback: download the image
-				downloadImage(blob);
-			}
-		} catch (error) {
-			console.error('Error sharing hero card:', error);
-			navigator.clipboard.writeText(window.location.href);
-		}
-	};
-
-	const downloadImage = (blob: Blob) => {
-		const url = URL.createObjectURL(blob);
-		const link = document.createElement('a');
-		link.href = url;
-		link.download = `${project.tag}-project.png`;
-		document.body.appendChild(link);
-		link.click();
-		document.body.removeChild(link);
-		URL.revokeObjectURL(url);
-	};
 
 	const getCatImage = () => {
 		return Promise.resolve(`https://cataas.com/cat?${Math.random()}`);
 	};
 
+	async function getExifDataOfSingleFile(src: string) {
+		const file = await fetch(src);
+		const tag = Object.values(ExifReader.load(await file.arrayBuffer()));
+		console.log(tag);
+		return tag;
+	}
+
 	onMount(() => {
 		isPageLoaded = true;
+		
 	});
 
 	onDestroy(() => {
@@ -204,7 +158,7 @@
 <Header type="project" tag={project.tag} isAbout={false} />
 {#key project}
 	<section class="main_container">
-		<div class="hero_card" bind:this={heroCardElement}>
+		<div class="hero_card">
 			<!-- <button
 				class="hero_backhome sharing_button"
 				aria-label="Sharing button"
@@ -221,11 +175,30 @@
 				class:transitioned={isPageLoaded}
 			>
 				{#if thumbnail?.src}
+					{@const thumbKey = Object.keys(data.mediaFilesModules).find(
+						(k) => k.includes(`/${project.tag}/`) && k.toLowerCase().includes('thumb')
+					)}
+					{@const ditherThumbKey = thumbKey
+						? thumbKey.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')
+						: null}
+					{@const ditherThumbFile = ditherThumbKey ? ditheredMediaFilesModules[ditherThumbKey] : null}
 					<enhanced:img
 						src={thumbnail.src}
 						alt={project.title}
 						class:grayscaled={$colorMode === 'dark'}
+						class="absolute_front"
 					/>
+					{#if !data.deviceType.isMobile && ditherThumbFile}
+						<img
+							src={ditherThumbFile.src}
+							alt="Project thumbnail dither"
+							class="absolute_behind"
+							style="z-index: 1;"
+							onpointerleave={resetClip}
+							onpointerenter={updateClipFromMouse}
+							onpointermove={updateClipFromMouse}
+						/>
+					{/if}
 				{:else}
 					{#await getCatImage()}
 						<p>Loading cat image...</p>
@@ -247,7 +220,7 @@
 						class:transitioned={isPageLoaded}
 						style="transition-delay: 0.2s;"
 					>
-						{project.project_type} | {project.year_begin} - {project.year_end}
+						Period: {project.year_begin} - {project.year_end}
 					</p>
 					<p
 						class="notes"
@@ -255,7 +228,7 @@
 						class:transitioned={isPageLoaded}
 						style="transition-delay: 0.2s;"
 					>
-						Inquiry lead: {project.team_people}
+						Team: {project.team_people}
 					</p>
 				</div>
 			</div>
@@ -266,14 +239,14 @@
 				style="transition-delay: 0.35s;"
 			/>
 			<div class="context_container">
-				<p
+				<!-- <p
 					class="medium"
 					class:hidden={!isPageLoaded}
 					class:transitioned={isPageLoaded}
 					style="transition-delay: 0.35s;"
 				>
 					Context
-				</p>
+				</p> -->
 				<p
 					id="description"
 					class:hidden={!isPageLoaded}
@@ -286,7 +259,8 @@
 		</div>
 
 		<article class="article_container">
-			{#each Object.entries(projectMediaFiles) as [key, mediaFile], index}
+			{#each OrderedProjectMediaFiles as key, index}
+				{@const mediaFile = data.projectMediaFiles[key]}
 				{#if key.toLowerCase().endsWith('.mp4') || key.toLowerCase().endsWith('.mov')}
 					{@const video = videoRefs[index]}
 					<div class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
@@ -323,37 +297,40 @@
 						</div>
 					{/if}
 				{:else if !key.toLowerCase().includes('thumb')}
-					{@const ditherKey = key.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')}
-					{@const ditherFile = ditheredMediaFilesModules[ditherKey]}
 					<div
 						class={mediaFile.width > mediaFile.height ? 'horizontal-image' : 'vertical-image'}
 						class:hidden={!isPageLoaded}
 						class:transitioned={isPageLoaded}
 						role="img"
-						aria-label="Interactive project media reveal"
+						aria-label="Project media"
 					>
 						<enhanced:img
 							class:grayscaled={$colorMode === 'dark'}
-							style="transition-delay: 0.4s; z-index: 0;"
+							style="transition-delay: 0.4s;"
 							src={mediaFile.src}
 							alt="Project media"
-							class="absolute_front"
 						/>
-
-						{#if !data.deviceType.isMobile && ditherFile}
-							<img
-								src={ditherFile.src}
-								alt="Project media dither"
-								class="absolute_behind"
-								style="z-index: 1;"
-								onpointerleave={resetClip}
-								onpointerenter={updateClipFromMouse}
-								onpointermove={updateClipFromMouse}
-							/>
-						{/if}
+						<div class="exif_data">
+							{#await getExifDataOfSingleFile(mediaFile.src)}
+								{:then exifData}
+									<p>{exifData}</p>
+								{:catch error}
+									<p>Error: {error}</p>
+								{/await}
+						</div>
 					</div>
 				{/if}
 			{/each}
+			{#if OrderedSubGalleryMediaFiles.length > 0}
+				<div class="mosaic">
+					{#each OrderedSubGalleryMediaFiles as m}
+						{@const mediaFile = data.subGalleryMediaFiles[m]}
+						
+							<enhanced:img src={mediaFile.src} alt="Sub gallery image" />
+							
+					{/each}
+				</div>
+			{/if}
 		</article>
 		<Footer />
 	</section>
@@ -390,15 +367,13 @@
 		position: relative;
 		width: 100%;
 		min-height: 100vh;
-		padding-top: 110px;
 		column-gap: var(--spacing-m);
 	}
 
 	.hero_card {
 		display: flex;
 		position: sticky;
-		top: 46%;
-		transform: translateY(-47%);
+		top: var(--spacing-xxl);
 		flex-direction: column;
 		row-gap: var(--spacing-m);
 		width: 40%;
@@ -408,6 +383,18 @@
 		background-color: var(--permanent-white);
 		transition: all 1.3s var(--curve);
 		overflow: visible;
+	}
+
+	.exif_data {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: fit-content;
+		height: 20px;
+		background-color: var(--permanent-white);
+		color: var(--permanent-black);
+		font-size: 12px;
+		z-index: 10;
 	}
 
 	.context_container {
@@ -454,12 +441,7 @@
 		transition: opacity 0.1s var(--curve);
 	}
 
-	.sharing_button {
-		background-color: var(--permanent-white);
-		padding: var(--spacing-xs);
-		margin: 0px;
-		width: fit-content;
-	}
+	
 
 	.hero_backhome:hover {
 		opacity: 0.9;
@@ -493,6 +475,7 @@
 		aspect-ratio: 21/9;
 		overflow: hidden;
 		place-content: center;
+		position: relative;
 	}
 
 	:global(.thumb_cont > img),
@@ -500,6 +483,25 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+	}
+
+	.thumb_cont .absolute_front {
+		position: relative;
+		z-index: 0;
+	}
+
+	.thumb_cont .absolute_behind {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		-webkit-mask-image: radial-gradient(
+			circle at 50% 50%,
+			rgba(0, 0, 0, 0) 0%,
+			rgba(0, 0, 0, 0) 100%
+		);
+		mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
 	}
 
 	.divider {
@@ -524,6 +526,7 @@
 		background-color: var(--color-background);
 		padding-bottom: var(--spacing-xl);
 		padding-right: var(--spacing-l);
+		padding-top: var(--spacing-xxl);
 	}
 
 	.article_container > div {
@@ -533,6 +536,24 @@
 		width: 100%;
 		height: fit-content;
 		grid-column: span 2;
+	}
+
+	.mosaic {
+		display: grid !important;
+		grid-template-columns: repeat(3, 1fr);
+		grid-column-gap: var(--spacing-s);
+		grid-row-gap: var(--spacing-s);
+		grid-auto-flow: dense;
+	}
+
+	:global(.mosaic > img), :global(.mosaic > picture) {
+		grid-column: span 1;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		overflow: hidden;
+		background-color: var(--primary-white);
+		transition: filter 0.3s var(--curve);
 	}
 
 	.horizontal-image {
@@ -635,6 +656,10 @@
 
 		p {
 			color: var(--primary-black);
+		}
+
+		.mosaic {
+			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 </style>

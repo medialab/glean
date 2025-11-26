@@ -15,7 +15,7 @@
 
 {#snippet logo_container()}
 	<a class="logo_container" href={resolve('/')}>
-		<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
+		<!--<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
 			<path
 				d="M12.999 0C19.7316 0 25.1894 5.45783 25.1895 12.1904C25.1895 18.9231 19.7317 24.3809 12.999 24.3809C6.26642 24.3808 0.808594 18.9231 0.808594 12.1904C0.808676 5.45788 6.26647 8.19504e-05 12.999 0ZM13.0557 1.00195C6.84562 1.00195 1.81055 6.03703 1.81055 12.2471C1.81077 18.4569 6.84576 23.4912 13.0557 23.4912C19.2654 23.491 24.2996 18.4568 24.2998 12.2471C24.2998 6.03716 19.2655 1.00218 13.0557 1.00195Z"
 			/>
@@ -34,7 +34,7 @@
 			<path
 				d="M22.1838 10.0752V11.5225L21.1819 10.0196H20.9592L20.1799 10.8546V11.1885L20.9592 12.8585V13.2481L20.6252 13.9161H20.5139L19.4562 10.8546V10.6876L21.4045 8.62796H21.5158L22.1838 10.0752Z"
 			/>
-		</svg>
+		</svg>-->
 		<p class="notes">What is this website</p>
 		<h1>Portfolio of Sciences Po medialab's Design team</h1>
 	</a>
@@ -119,7 +119,7 @@
 		{@render navigator_container(false)}
 		{@render colorswitch_container()}
 		<div class="logo_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
+			<!--<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
 				<path
 					d="M12.999 0C19.7316 0 25.1894 5.45783 25.1895 12.1904C25.1895 18.9231 19.7317 24.3809 12.999 24.3809C6.26642 24.3808 0.808594 18.9231 0.808594 12.1904C0.808676 5.45788 6.26647 8.19504e-05 12.999 0ZM13.0557 1.00195C6.84562 1.00195 1.81055 6.03703 1.81055 12.2471C1.81077 18.4569 6.84576 23.4912 13.0557 23.4912C19.2654 23.491 24.2996 18.4568 24.2998 12.2471C24.2998 6.03716 19.2655 1.00218 13.0557 1.00195Z"
 					fill="inherit"
@@ -144,7 +144,7 @@
 					d="M22.1838 10.0752V11.5225L21.1819 10.0196H20.9592L20.1799 10.8546V11.1885L20.9592 12.8585V13.2481L20.6252 13.9161H20.5139L19.4562 10.8546V10.6876L21.4045 8.62796H21.5158L22.1838 10.0752Z"
 					fill="inherit"
 				/>
-			</svg>
+			</svg>-->
 			<h1 class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 				This is the portfolio of the <u><a href={resolve('/about')}>Design team</a></u>, inside
 				mèdialab Sciences Po
@@ -250,12 +250,12 @@
 		flex-direction: column;
 		align-items: center;
 		width: fit-content;
-		height: 100%;
+		height: fit-content;
 		row-gap: var(--spacing-xs);
 		background-color: var(--permanent-white);
 		padding: var(--spacing-xs);
 		left: 50%;
-		top: 10px;
+		top: var(--spacing-m);
 		transform: translate(-50%);
 		z-index: 1;
 	}

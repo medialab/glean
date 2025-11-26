@@ -102,7 +102,6 @@
 				thumbnail={thumb}
 				tag={project.tag}
 				title={project.title}
-				project_type={project.project_type}
 				year_begin={project.year_begin}
 				year_end={project.year_end}
 				team_people={project.team_people}

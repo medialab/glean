@@ -40,7 +40,6 @@ For **design team members**:
      tag: '5DIGIT_TAG_HERE'
      year_begin: 'YYYY'
      year_end: 'YYYY'
-     project_type: ''
      team_people: 'Name Surname (1), Name Surname (2), ...'
    ```
 

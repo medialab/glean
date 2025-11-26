@@ -20,8 +20,6 @@
 		ra = '1/1';
 	}
 
-	let mockArray = $state([0, 1, 2, 3, 4]);
-
 	let cardEl: HTMLAnchorElement | null = null;
 
 	type Vec2 = { x: number; y: number };
@@ -74,7 +72,7 @@
 		const stacksCount =
 			props.imageStack && Object.keys(props.imageStack).length > 0
 				? Object.keys(props.imageStack).length
-				: mockArray.length;
+				: 5;
 		ensureLayerVectors(stacksCount);
 	});
 
@@ -151,38 +149,19 @@
 								((index + 1) / Object.keys(props.imageStack).length)}px);"
 						/>
 					{/each}
-				{:else if browser && isPageLoaded}
-					{#each mockArray as _, index}
-						<enhanced:img
-							crossorigin="anonymous"
-							src={`https://cataas.com/cat?${Math.random()}`}
-							alt={props.title}
-							style="z-index: {-1 * index}; opacity: {imagesStack[index]
-								? index === 0
-									? 1
-									: Math.max(0.15, 1 - index * 0.12)
-								: 0}; transform: translate({(layerVectors[index]?.x ?? 0) *
-								(props.translateMultiplier ?? 14) *
-								farness *
-								((index + 1) / mockArray.length)}px, {(layerVectors[index]?.y ?? 0) *
-								(props.translateMultiplier ?? 14) *
-								farness *
-								((index + 1) / mockArray.length)}px);"
-						/>
-					{/each}
 				{/if}
 			</div>
 		{/if}
 	</div>
 	<div class="info_container" style="max-width: {Math.floor(Math.random() * 16) + 20}ch;">
-		<p
+		<!--<p
 			class="notes"
 			id="tag_container"
 			class:hidden={!isPageLoaded}
 			class:transitioned={isPageLoaded}
 		>
 			#{props.tag}
-		</p>
+		</p>-->
 		<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 			{props.title}
 		</h2>
@@ -191,13 +170,13 @@
 			class:hidden={!isPageLoaded}
 			class:transitioned={isPageLoaded}
 		>
-			{#if props.project_type && props.year_end}
-				<p class="notes">{props.project_type} | {props.year_begin} - {props.year_end}</p>
+			{#if props.year_end}
+				<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
 			{:else}
 				<p class="notes">{props.year_begin}</p>
 			{/if}
 			{#if props.team_people}
-				<p class="notes" id="people">Research team: {props.team_people}</p>
+				<p class="notes" id="people">Team: {props.team_people}</p>
 			{/if}
 		</div>
 	</div>
@@ -222,10 +201,7 @@
 		transform: translateY(-2px);
 	}
 
-	.card_container:hover .image_stack {
-		opacity: 0;
-		transition: opacity 0.2s var(--curve);
-	}
+	
 
 	.image_container {
 		height: 100%;
@@ -241,14 +217,8 @@
 		object-fit: cover;
 		position: static;
 		z-index: 1;
-		mix-blend-mode: multiply;
-		transition: mix-blend-mode 0.2s var(--curve);
 		filter: grayscale(1) contrast(2) brightness(1.1);
-	}
-
-	.image_container > img:hover {
-		mix-blend-mode: default;
-		transition: mix-blend-mode 0.2s var(--curve);
+		opacity: 0;
 	}
 
 	.image_stack {
@@ -265,6 +235,15 @@
 		transition: opacity 0.2s var(--curve);
 	}
 
+	.card_container:hover .image_stack {
+		opacity: 0;
+		transition: opacity 0.2s var(--curve);
+	}
+
+	.card_container:hover .image_container > img {
+		opacity: 1;
+	}
+
 	.image_stack > * {
 		width: 100%;
 		height: 100%;
@@ -275,14 +254,14 @@
 		right: 0;
 		bottom: 0;
 		opacity: 1;
-		filter: grayscale(1) contrast(2) brightness(1.1);
-		mix-blend-mode: multiply;
+		filter: grayscale(1) contrast(2);
+		mix-blend-mode: darken;
 	}
 
 	.info_container {
 		display: flex;
 		flex-direction: column;
-		row-gap: var(--spacing-xs);
+		row-gap: var(--spacing-s);
 		align-items: flex-start;
 		justify-content: center;
 		width: fit-content;
@@ -297,8 +276,8 @@
 
 	.info_container > h2 {
 		display: -webkit-box;
-		-webkit-line-clamp: 2;
-		line-clamp: 2;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: visible;
 		text-overflow: ellipsis;
@@ -309,8 +288,8 @@
 	}
 
 	#people {
-		line-clamp: 1;
-		-webkit-line-clamp: 1;
+		line-clamp: 2;
+		-webkit-line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 		text-overflow: ellipsis;
