@@ -35,8 +35,8 @@
 				d="M22.1838 10.0752V11.5225L21.1819 10.0196H20.9592L20.1799 10.8546V11.1885L20.9592 12.8585V13.2481L20.6252 13.9161H20.5139L19.4562 10.8546V10.6876L21.4045 8.62796H21.5158L22.1838 10.0752Z"
 			/>
 		</svg>-->
-		<p class="notes">What is this website</p>
-		<h1>Portfolio of Sciences Po medialab's Design team</h1>
+		<p class="notes">medialab Sciences Po</p>
+		<h1>Collective Inquiries and Inventive Formats group</h1>
 	</a>
 {/snippet}
 
@@ -181,7 +181,7 @@
 <header id="desktop_header">
 	{#if props.type === 'home' || props.type === 'about'}
 		{@render navigator_container(props.isAbout)}
-		<!--{@render logo_container()}-->
+		{@render logo_container()}
 		{@render colorswitch_container()}
 	{:else if props.type === 'project'}
 		<a class="hover_container" href={resolve('/')} id="backhome">
