@@ -42,7 +42,7 @@
 
 {#snippet colorswitch_container()}
 	<div class="hover_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-		<p class="notes">Switch reading mode</p>
+		<!--<p class="notes">Switch reading mode</p>-->
 
 		<div class="navigator_links">
 			<button
@@ -89,13 +89,12 @@
 
 {#snippet navigator_container(isAbout: Boolean)}
 	<div class="navigator_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-		<p class="notes">Who is design team?</p>
 		<div class="navigator_links">
 			<a
 				href={resolve('/about')}
 				style="opacity:{isAbout ? '1' : '0.5'}; pointer-events:{isAbout ? 'none' : 'auto'}"
 			>
-				<p>About</p>
+				<p>Info</p>
 			</a>
 		</div>
 
@@ -146,8 +145,9 @@
 				/>
 			</svg>-->
 			<h1 class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-				This is the portfolio of the <u><a href={resolve('/about')}>Design team</a></u>, inside
-				mèdialab Sciences Po
+				This is the portfolio of the <u
+					><a href={resolve('/about')}>Collective Inquiries and Inventive Formats group </a></u
+				> @ médialab Sciences Po
 			</h1>
 			<p class="notes" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 				All the projects listed are part of the collective effort of conducting participatory
@@ -168,7 +168,7 @@
 			class:hidden={!isPageLoaded}
 			class:transitioned={isPageLoaded}
 		>
-			<p class="notes">Back to home</p>
+			<!--<p class="notes">Back to home</p>-->
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -720 700 800"
 				><path
 					d="M600-160v-360H272l64 64-56 56-160-160 160-160 56 56-64 64h328q33 0 56.5 23.5T680-520v360h-80Z"
@@ -181,11 +181,11 @@
 <header id="desktop_header">
 	{#if props.type === 'home' || props.type === 'about'}
 		{@render navigator_container(props.isAbout)}
-		{@render logo_container()}
+		<!--{@render logo_container()}-->
 		{@render colorswitch_container()}
 	{:else if props.type === 'project'}
 		<a class="hover_container" href={resolve('/')} id="backhome">
-			<p class="notes">Back to home</p>
+			<!--<p class="notes">Back to home</p>-->
 			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960"
 				><path d="M400-240 160-480l240-240 56 58-142 142h486v80H314l142 142-56 58Z" /></svg
 			>

@@ -201,8 +201,6 @@
 		transform: translateY(-2px);
 	}
 
-	
-
 	.image_container {
 		height: 100%;
 		max-height: 100%;
@@ -316,10 +314,8 @@
 			max-height: 25vh;
 		}
 
-		#tag_container {
-			position: absolute;
-			right: var(--spacing-s);
-			top: var(--spacing-s);
+		.card_container .image_container > img {
+			opacity: 1;
 		}
 
 		.info_container {
@@ -330,7 +326,7 @@
 		}
 
 		.info_container > h2 {
-			width: 80%;
+			width: 95%;
 			overflow: visible;
 		}
 

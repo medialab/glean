@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { extractYamlData, projectMediaFilesObtainer } from '$lib/functions';
+import { extractYamlData, genericProjectFileObtainer } from '$lib/functions';
 import { mediaFilesModules, subGalleryModules, didascaliaModules } from '$lib/medias';
 import { error, type HttpError } from '@sveltejs/kit';
 
@@ -32,11 +32,11 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			throw error(404, 'Project not found');
 		}
 
-		const projectMediaFiles = projectMediaFilesObtainer(mediaFilesModules, project.tag);
+		const projectMediaFiles = genericProjectFileObtainer(mediaFilesModules, project.tag);
 
-		const subGalleryMediaFiles = projectMediaFilesObtainer(subGalleryModules, project.tag);
+		const subGalleryMediaFiles = genericProjectFileObtainer(subGalleryModules, project.tag);
 
-		const didascaliaEntries = projectMediaFilesObtainer(didascaliaModules, project.tag);
+		const didascaliaEntries = genericProjectFileObtainer(didascaliaModules, project.tag);
 
 		return {
 			project,

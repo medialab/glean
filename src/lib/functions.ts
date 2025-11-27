@@ -28,7 +28,7 @@ export const extractYamlData = (): YamlData | undefined => {
 	}
 };
 
-export const projectMediaFilesObtainer = <T> (
+export const genericProjectFileObtainer = <T>(
 	mediaFilesModules: Record<string, T>,
 	projectTag: string
 ): Record<string, T> => {
@@ -38,4 +38,4 @@ export const projectMediaFilesObtainer = <T> (
 			obj[key] = mediaFilesModules[key];
 			return obj;
 		}, {});
-}; //generic filtering project_based
+};

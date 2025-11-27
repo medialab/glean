@@ -8,6 +8,7 @@
 	import { ditheredMediaFilesModules } from '$lib/medias';
 	import { onMount, onDestroy } from 'svelte';
 	import { inview } from 'svelte-inview';
+	import { load as yamlLoad } from 'js-yaml';
 
 	const options = {};
 
@@ -80,34 +81,49 @@
 			target.style.removeProperty('mask-image');
 		}, TRAIL_DURATION);
 	};
-	
 
-	const findDidascalia = (filename: string) => {
-		//console.log("Didascalia Keys", Object.keys(data.didascaliaEntries));
-		const didascaliaKey = Object.keys(data.didascaliaEntries).find(
-			(d) => d.includes(filename)
-		);
-		console.log("Filename", filename);
-		console.log("Didascalia Key", didascaliaKey);
+	const findDidascalia = async (filePath: string) => {
+		const filename = filePath?.split('.').shift();
+
+		if (!filename) {
+			console.log('No filename extracted:', filePath);
+			return null;
+		}
+
+		const didascaliaKey = Object.keys(data.didascaliaEntries).find((d) => d.includes(filename));
 
 		if (!didascaliaKey) {
-			console.log("No matching didascalia key found for:", filename);
+			console.log('No matching didascalia key found for:', filename);
 			return null;
 		}
 
 		const rawYamlContent = data.didascaliaEntries[didascaliaKey];
-		console.log("Raw Content", rawYamlContent.default);
 
-		return rawYamlContent;
-	}
+		if (rawYamlContent.default && rawYamlContent.default.length > 0) {
+			try {
+				const finalText = (await yamlLoad(rawYamlContent.default)) as { imgDescription: string };
+				return finalText.imgDescription;
+			} catch (error) {
+				console.log('Error parsing YAML:', error);
+				return null;
+			}
+		} else {
+			console.log('No didascalia content found for:', filename);
+			return null;
+		}
+	};
 
 	let { data }: PageProps = $props();
 
 	const project = data.project;
 
-	const OrderedProjectMediaFiles = Object.keys(data.projectMediaFiles).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+	const OrderedProjectMediaFiles = Object.keys(data.projectMediaFiles).sort((a, b) =>
+		a.localeCompare(b, 'en', { numeric: true })
+	);
 
-	const OrderedSubGalleryMediaFiles = Object.keys(data.subGalleryMediaFiles).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+	const OrderedSubGalleryMediaFiles = Object.keys(data.subGalleryMediaFiles).sort((a, b) =>
+		a.localeCompare(b, 'en', { numeric: true })
+	);
 
 	//console.log("Modules", data.mediaFilesModules);
 	//console.log("Didascalia Modules", Object.keys(data.didascaliaModules));
@@ -120,7 +136,6 @@
 
 	onMount(() => {
 		isPageLoaded = true;
-		
 	});
 
 	onDestroy(() => {
@@ -190,7 +205,9 @@
 					{@const ditherThumbKey = thumbKey
 						? thumbKey.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')
 						: null}
-					{@const ditherThumbFile = ditherThumbKey ? ditheredMediaFilesModules[ditherThumbKey] : null}
+					{@const ditherThumbFile = ditherThumbKey
+						? ditheredMediaFilesModules[ditherThumbKey]
+						: null}
 					<enhanced:img
 						src={thumbnail.src}
 						alt={project.title}
@@ -295,8 +312,8 @@
 							/>
 						</div>
 					{/if}
-				{:else if !key.toLowerCase().includes('thumb')}
-				{@const filename = key.split('/').pop()?.split('.').shift().replace}
+				{:else if !key.toLowerCase().includes('thumb') && key}
+					{@const filePath = key.split('/').pop()}
 					<div
 						class={mediaFile.width > mediaFile.height ? 'horizontal-image' : 'vertical-image'}
 						class:hidden={!isPageLoaded}
@@ -310,11 +327,15 @@
 							src={mediaFile.src}
 							alt="Project media"
 						/>
-						<div class="didascalia">
-							{#if filename}
-								{findDidascalia(filename as string)}
-							{/if}
-						</div>
+						{#if filePath}
+							{#await findDidascalia(filePath) then d}
+								{#if d}
+									<div class="didascalia">
+										<p class="notes">{d}</p>
+									</div>
+								{/if}
+							{/await}
+						{/if}
 					</div>
 				{/if}
 			{/each}
@@ -322,9 +343,8 @@
 				<div class="mosaic">
 					{#each OrderedSubGalleryMediaFiles as m}
 						{@const mediaFile = data.subGalleryMediaFiles[m]}
-						
-							<enhanced:img src={mediaFile.src} alt="Sub gallery image" />
-							
+
+						<enhanced:img src={mediaFile.src} alt="Sub gallery image" />
 					{/each}
 				</div>
 			{/if}
@@ -392,6 +412,7 @@
 		color: var(--permanent-black);
 		font-size: 12px;
 		z-index: 10;
+		padding: 0px var(--spacing-xs);
 	}
 
 	.context_container {
@@ -437,8 +458,6 @@
 		font: inherit;
 		transition: opacity 0.1s var(--curve);
 	}
-
-	
 
 	.hero_backhome:hover {
 		opacity: 0.9;
@@ -543,7 +562,8 @@
 		grid-auto-flow: dense;
 	}
 
-	:global(.mosaic > img), :global(.mosaic > picture) {
+	:global(.mosaic > img),
+	:global(.mosaic > picture) {
 		grid-column: span 1;
 		width: 100%;
 		height: 100%;
