@@ -28,13 +28,13 @@ export const extractYamlData = (): YamlData | undefined => {
 	}
 };
 
-export const projectMediaFilesObtainer = (
-	mediaFilesModules: Record<string, ImageMetadata>,
+export const projectMediaFilesObtainer = <T> (
+	mediaFilesModules: Record<string, T>,
 	projectTag: string
-): Record<string, ImageMetadata> => {
+): Record<string, T> => {
 	return Object.keys(mediaFilesModules)
 		.filter((key) => key.includes(`/${projectTag}/`))
-		.reduce((obj: Record<string, ImageMetadata>, key) => {
+		.reduce((obj: Record<string, T>, key) => {
 			obj[key] = mediaFilesModules[key];
 			return obj;
 		}, {});

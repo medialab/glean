@@ -55,6 +55,19 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 	}
 );
 
+export const didascaliaModules: Record<string, any> = import.meta.glob(
+	[
+		'$lib/media/*/*.yml',
+		'$lib/media/*/*/*.yml'
+	],
+	{
+		eager: true,
+		query: {
+			raw: '',
+		}
+	}
+);
+
 export const subGalleryModules: Record<string, ImageMetadata> = import.meta.glob(
 	[
 		'$lib/media/*/*/*.png',

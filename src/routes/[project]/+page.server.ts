@@ -1,6 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { extractYamlData, projectMediaFilesObtainer } from '$lib/functions';
-import { mediaFilesModules, subGalleryModules } from '$lib/medias';
+import { mediaFilesModules, subGalleryModules, didascaliaModules } from '$lib/medias';
 import { error, type HttpError } from '@sveltejs/kit';
 
 export function entries() {
@@ -36,11 +36,14 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 
 		const subGalleryMediaFiles = projectMediaFilesObtainer(subGalleryModules, project.tag);
 
+		const didascaliaEntries = projectMediaFilesObtainer(didascaliaModules, project.tag);
+
 		return {
 			project,
 			projectMediaFiles,
 			subGalleryMediaFiles,
 			mediaFilesModules,
+			didascaliaEntries,
 			deviceType
 		};
 	} catch (err) {

@@ -8,7 +8,6 @@
 	import { ditheredMediaFilesModules } from '$lib/medias';
 	import { onMount, onDestroy } from 'svelte';
 	import { inview } from 'svelte-inview';
-	import * as ExifReader from 'exifreader';
 
 	const options = {};
 
@@ -81,33 +80,43 @@
 			target.style.removeProperty('mask-image');
 		}, TRAIL_DURATION);
 	};
+	
+
+	const findDidascalia = (filename: string) => {
+		//console.log("Didascalia Keys", Object.keys(data.didascaliaEntries));
+		const didascaliaKey = Object.keys(data.didascaliaEntries).find(
+			(d) => d.includes(filename)
+		);
+		console.log("Filename", filename);
+		console.log("Didascalia Key", didascaliaKey);
+
+		if (!didascaliaKey) {
+			console.log("No matching didascalia key found for:", filename);
+			return null;
+		}
+
+		const rawYamlContent = data.didascaliaEntries[didascaliaKey];
+		console.log("Raw Content", rawYamlContent.default);
+
+		return rawYamlContent;
+	}
 
 	let { data }: PageProps = $props();
+
 	const project = data.project;
 
 	const OrderedProjectMediaFiles = Object.keys(data.projectMediaFiles).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
 
 	const OrderedSubGalleryMediaFiles = Object.keys(data.subGalleryMediaFiles).sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
 
-	console.log("Modules", data.mediaFilesModules);
+	//console.log("Modules", data.mediaFilesModules);
+	//console.log("Didascalia Modules", Object.keys(data.didascaliaModules));
 
 	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
 
 	let isPageLoaded: Boolean = $state(false);
 
 	let videoRefs: HTMLVideoElement[] = $state([]);
-
-
-	const getCatImage = () => {
-		return Promise.resolve(`https://cataas.com/cat?${Math.random()}`);
-	};
-
-	async function getExifDataOfSingleFile(src: string) {
-		const file = await fetch(src);
-		const tag = Object.values(ExifReader.load(await file.arrayBuffer()));
-		console.log(tag);
-		return tag;
-	}
 
 	onMount(() => {
 		isPageLoaded = true;
@@ -199,16 +208,6 @@
 							onpointermove={updateClipFromMouse}
 						/>
 					{/if}
-				{:else}
-					{#await getCatImage()}
-						<p>Loading cat image...</p>
-					{:then catImage}
-						<enhanced:img
-							src={catImage}
-							alt={project.title}
-							class:grayscaled={$colorMode === 'dark'}
-						/>
-					{/await}
 				{/if}
 			</div>
 			<div class="hero_text">
@@ -297,6 +296,7 @@
 						</div>
 					{/if}
 				{:else if !key.toLowerCase().includes('thumb')}
+				{@const filename = key.split('/').pop()?.split('.').shift().replace}
 					<div
 						class={mediaFile.width > mediaFile.height ? 'horizontal-image' : 'vertical-image'}
 						class:hidden={!isPageLoaded}
@@ -310,13 +310,10 @@
 							src={mediaFile.src}
 							alt="Project media"
 						/>
-						<div class="exif_data">
-							{#await getExifDataOfSingleFile(mediaFile.src)}
-								{:then exifData}
-									<p>{exifData}</p>
-								{:catch error}
-									<p>Error: {error}</p>
-								{/await}
+						<div class="didascalia">
+							{#if filename}
+								{findDidascalia(filename as string)}
+							{/if}
 						</div>
 					</div>
 				{/if}
@@ -385,7 +382,7 @@
 		overflow: visible;
 	}
 
-	.exif_data {
+	.didascalia {
 		position: absolute;
 		bottom: 0;
 		left: 0;
