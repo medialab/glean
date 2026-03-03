@@ -1,9 +1,30 @@
 <script lang="ts">
-	import Header from '$lib/components/header.svelte';
-	import Footer from '$lib/components/footer.svelte';
+	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/seo';
+
+	const pageTitle = `About | ${SITE_NAME}`;
+	const pageDescription =
+		'About the Collective Inquiries and Inventive Formats group and its design-led research practice.';
+	const pageUrl = buildCanonicalUrl('/about');
+	const pageImage = DEFAULT_OG_IMAGE;
 </script>
 
-<Header type="project" isAbout={false} />
+<svelte:head>
+	<title>{pageTitle}</title>
+	<meta name="description" content={pageDescription} />
+	<link rel="canonical" href={pageUrl} />
+
+	<meta property="og:title" content={pageTitle} />
+	<meta property="og:description" content={pageDescription} />
+	<meta property="og:url" content={pageUrl} />
+	<meta property="og:image" content={pageImage} />
+	<meta property="og:image:alt" content="Design Team Portfolio preview" />
+
+	<meta name="twitter:title" content={pageTitle} />
+	<meta name="twitter:description" content={pageDescription} />
+	<meta name="twitter:url" content={pageUrl} />
+	<meta name="twitter:image" content={pageImage} />
+	<meta name="twitter:image:alt" content="Design Team Portfolio preview" />
+</svelte:head>
 
 <section class="main_container">
 	<div class="text_Container">
@@ -35,7 +56,6 @@
 			/></svg
 		>
 	</a>
-	<Footer />
 </section>
 
 <style>

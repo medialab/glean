@@ -1,9 +1,13 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
+	import Header from '$lib/components/header.svelte';
+	import Footer from '$lib/components/footer.svelte';
 	import { colorMode } from '$lib/utils';
+	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children?: Snippet } = $props();
+	const headerType = $derived(page.route.id === '/' ? 'home' : 'project');
 
 	$effect(() => {
 		if ($colorMode === 'dark') {
@@ -18,7 +22,11 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
+<Header type={headerType} isAbout={false} />
+
 {@render children?.()}
+
+<Footer />
 
 <style>
 	:global(body) {

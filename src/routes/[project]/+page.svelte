@@ -1,10 +1,9 @@
 <script lang="ts">
 	import type { PageProps } from './$types';
-	import Header from '$lib/components/header.svelte';
-	import Footer from '$lib/components/footer.svelte';
 	import PdfWrapper from '$lib/components/pdf_wrapper.svelte';
 
 	import { findThumbnailImage, colorMode } from '$lib/utils';
+	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl, toAbsoluteUrl } from '$lib/seo';
 	import { ditheredMediaFilesModules } from '$lib/medias';
 	import type { TrailPoint, YamlTextModule } from '$lib/types';
 	import { onMount, onDestroy } from 'svelte';
@@ -122,6 +121,10 @@
 	);
 
 	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
+	const pageTitle = `${project.title} | ${SITE_NAME}`;
+	const pageDescription = project.description;
+	const pageUrl = buildCanonicalUrl(`/${encodeURIComponent(project.tag)}`);
+	const pageImage = thumbnail?.src ? toAbsoluteUrl(thumbnail.src) : DEFAULT_OG_IMAGE;
 
 	let isPageLoaded = $state(false);
 
@@ -141,19 +144,30 @@
 </script>
 
 <svelte:head>
-	<title>{project.title}</title>
-	<meta name="description" content={project.description} />
+	<title>{pageTitle}</title>
+	<meta name="description" content={pageDescription} />
+	<link rel="canonical" href={pageUrl} />
+
+	<meta property="og:title" content={pageTitle} />
+	<meta property="og:description" content={pageDescription} />
+	<meta property="og:url" content={pageUrl} />
+	<meta property="og:image" content={pageImage} />
+	<meta property="og:image:alt" content={`${project.title} preview`} />
+
+	<meta name="twitter:title" content={pageTitle} />
+	<meta name="twitter:description" content={pageDescription} />
+	<meta name="twitter:url" content={pageUrl} />
+	<meta name="twitter:image" content={pageImage} />
+	<meta name="twitter:image:alt" content={`${project.title} preview`} />
+
 	<meta name="keywords" content={project.description.split(' ').join(', ')} />
 	<meta name="author" content={project.author} />
 	<meta name="robots" content="index, follow" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<meta name="theme-color" content="#000000" />
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
-	<meta name="apple-mobile-web-app-title" content={project.title} />
+	<meta name="apple-mobile-web-app-title" content={pageTitle} />
 </svelte:head>
-
-<Header type="project" tag={project.tag} isAbout={false} />
 {#key project}
 	<section class="main_container">
 		<div class="hero_card">
@@ -323,7 +337,6 @@
 				</div>
 			{/if}
 		</article>
-		<Footer />
 	</section>
 {/key}
 

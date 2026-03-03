@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { resolve } from '$app/paths';
 	import type { CardProps, CardVec2, ImageShape } from '$lib/types';
 
@@ -78,10 +79,6 @@
 
 	let isPageLoaded = $state(false);
 
-	const getCatImage = async () => {
-		return Promise.resolve(`https://cataas.com/cat?${Math.random()}`);
-	};
-
 	onMount(() => {
 		setTimeout(() => {
 			isPageLoaded = true;
@@ -93,7 +90,7 @@
 	bind:this={cardEl}
 	class="card_container"
 	href={resolve('/[project]', { project: props.tag })}
-	style="transform: scale({props.isMobile
+	style="transform: translateY(var(--card-hover-y, 0px)) scale({props.isMobile
 		? 1
 		: 1 +
 			0.1 *
@@ -101,75 +98,77 @@
 		? 'var(--primary-white)'
 		: 'transparent'};"
 >
-	<div class="image_container" style="aspect-ratio: {ra};">
-		{#if props.thumbnail?.src}
-			<enhanced:img
-				src={props.thumbnail.src}
-				alt={props.title}
-				data-sveltekit-preload-data="eager"
-				loading="eager"
-				fetchpriority="high"
-				crossorigin="anonymous"
-				id="THUMBNAIL_IMAGE"
-			/>
-		{:else}
-			{#await getCatImage() then catImage}
-				<img
-					src={catImage}
+	{#await props.assetsReady}
+		<div class="image_container card_loading_image" style="aspect-ratio: {ra};"></div>
+		<div class="info_container card_loading_info">
+			<p class="notes card_loading_text">Loading...</p>
+		</div>
+	{:then}
+		<div class="image_container" style="aspect-ratio: {ra};" in:fade={{ duration: 260 }}>
+			{#if props.thumbnail?.src}
+				<enhanced:img
+					src={props.thumbnail.src}
 					alt={props.title}
+					data-sveltekit-preload-data="eager"
 					loading="eager"
 					fetchpriority="high"
-					data-sveltekit-preload-data="eager"
+					crossorigin="anonymous"
+					id="THUMBNAIL_IMAGE"
 				/>
-			{/await}
-		{/if}
-
-		{#if !props.isMobile}
-			<div class="image_stack">
-				{#if props.imageStack && Object.keys(props.imageStack).length > 0}
-					{#each Object.keys(props.imageStack) as imageKey, index}
-						<enhanced:img
-							src={props.imageStack[imageKey].src}
-							loading="lazy"
-							fetchpriority="low"
-							alt={props.title}
-							style="z-index: {index + 1}; transform: translate({(layerVectors[index]?.x ?? 0) *
-								(props.translateMultiplier ?? 14) *
-								farness *
-								((index + 1) / Object.keys(props.imageStack).length)}px, {(layerVectors[index]?.y ??
-								0) *
-								(props.translateMultiplier ?? 14) *
-								farness *
-								((index + 1) / Object.keys(props.imageStack).length)}px);"
-						/>
-					{/each}
-				{/if}
-			</div>
-		{/if}
-	</div>
-	<div class="info_container" style="max-width: {Math.floor(Math.random() * 16) + 20}ch;">
-		<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-			{props.title}
-		</h2>
-		<div
-			class="specifications_container"
-			class:hidden={!isPageLoaded}
-			class:transitioned={isPageLoaded}
-		>
-			{#if props.year_end}
-				<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
-			{:else}
-				<p class="notes">{props.year_begin}</p>
 			{/if}
-			{#if props.team_people}
-				<p class="notes" id="people">Team: {props.team_people}</p>
+
+			{#if !props.isMobile}
+				<div class="image_stack">
+					{#if props.imageStack && Object.keys(props.imageStack).length > 0}
+						{#each Object.keys(props.imageStack) as imageKey, index}
+							<enhanced:img
+								src={props.imageStack[imageKey].src}
+								loading="lazy"
+								fetchpriority="low"
+								alt={props.title}
+								style="z-index: {index + 1}; transform: translate({(layerVectors[index]?.x ?? 0) *
+									(props.translateMultiplier ?? 14) *
+									farness *
+									((index + 1) / Object.keys(props.imageStack).length)}px, {(layerVectors[index]
+									?.y ?? 0) *
+									(props.translateMultiplier ?? 14) *
+									farness *
+									((index + 1) / Object.keys(props.imageStack).length)}px);"
+							/>
+						{/each}
+					{/if}
+				</div>
 			{/if}
 		</div>
-	</div>
+		<div
+			class="info_container"
+			style="max-width: {Math.floor(Math.random() * 16) + 20}ch;"
+			in:fade={{ duration: 260 }}
+		>
+			<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
+				{props.title}
+			</h2>
+			<div
+				class="specifications_container"
+				class:hidden={!isPageLoaded}
+				class:transitioned={isPageLoaded}
+			>
+				{#if props.year_end}
+					<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
+				{:else}
+					<p class="notes">{props.year_begin}</p>
+				{/if}
+				{#if props.team_people}
+					<p class="notes" id="people">Team: {props.team_people}</p>
+				{/if}
+			</div>
+		</div>
+	{/await}
 </a>
 
 <style>
 	.card_container {
+		--card-hover-y: 0px;
 		display: flex;
 		flex-direction: row;
 		align-items: center;
@@ -181,18 +180,33 @@
 		text-decoration: none;
 		color: inherit;
 		cursor: pointer;
+		transition: transform 0.2s var(--curve);
 	}
 
 	.card_container:hover {
-		transform: translateY(-2px);
+		--card-hover-y: -2px;
 	}
 
 	.image_container {
 		height: 100%;
 		max-height: 100%;
 		position: relative;
-		place-self: center;
+		align-self: center;
 		z-index: 5;
+	}
+
+	.card_loading_image {
+		background: var(--permanent-white);
+	}
+
+	.card_loading_info {
+		padding: var(--spacing-s);
+		background-color: white;
+	}
+
+	.card_loading_text {
+		color: var(--permanent-black);
+		animation: loading-pulse 1s ease-in-out infinite;
 	}
 
 	.image_container > img {
@@ -250,11 +264,8 @@
 		justify-content: center;
 		width: fit-content;
 		padding: var(--spacing-s);
-		padding-left: 0px;
 		z-index: 10;
-
 		height: 100%;
-		padding-left: var(--spacing-s);
 	}
 
 	.info_container > h2 {
@@ -281,6 +292,21 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
+
+	@keyframes loading-pulse {
+		0% {
+			opacity: 0.35;
+		}
+
+		50% {
+			opacity: 1;
+		}
+
+		100% {
+			opacity: 0.35;
+		}
+	}
+
 	@media (max-width: 768px) {
 		.card_container {
 			flex-direction: column;
