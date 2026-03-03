@@ -3,18 +3,12 @@
 	import Footer from '$lib/components/footer.svelte';
 	import Card from '$lib/components/card.svelte';
 	import type { PageProps } from './$types';
+	import type { MousePosition } from '$lib/types';
 	import { writable } from 'svelte/store';
 	import { onMount, onDestroy } from 'svelte';
 	import { stackObtainer, findThumbnailImage } from '$lib/utils';
 
 	let { data }: PageProps = $props();
-
-	type MousePosition = {
-		x: number;
-		y: number;
-	};
-
-	$inspect('isMobile', data.deviceType.isMobile);
 
 	const mousePosition = writable<MousePosition>({ x: 0, y: 0 });
 
@@ -61,41 +55,18 @@
 	});
 </script>
 
-<svelte:head>
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-	<meta property="og:title" content="Design Team Portfolio" />
-	<meta
-		property="og:description"
-		content="A curated collection of design projects showcasing innovative work across disciplines."
-	/>
-	<meta property="og:image" content="https://design-team-portfolio.com/og-image.jpg" />
-	<meta property="og:site_name" content="Design Team Portfolio" />
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta property="og:image:alt" content="Design Team Portfolio preview" />
-
-	<!-- Twitter -->
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-	<meta name="twitter:title" content="Design Team Portfolio" />
-	<meta
-		name="twitter:description"
-		content="A curated collection of design projects showcasing innovative work across disciplines."
-	/>
-	<meta name="twitter:image" content="https://design-team-portfolio.com/og-image.jpg" />
-	<meta name="twitter:image:alt" content="Design Team Portfolio preview" />
-	<meta name="twitter:site" content="@designteam" />
-	<meta name="twitter:creator" content="@designteam" />
-</svelte:head>
-
 <Header type="home" isAbout={false} />
 
 <section class="cards_container">
 	{#each data.projects as project, index}
-		{@const stack = stackObtainer(data.ditheredMediaFilesModules, project.tag)}
-		{@const thumb = findThumbnailImage(data.ditheredMediaFilesModules, project.tag)}
+		{@const ditheredMediaModules = data.ditheredMediaFilesModules ?? {}}
+		{@const sourceMediaModules = data.mediaFilesModules ?? {}}
+		{@const ditheredStack = stackObtainer(ditheredMediaModules, project.tag)}
+		{@const sourceStack = stackObtainer(sourceMediaModules, project.tag)}
+		{@const stack = Object.keys(ditheredStack).length > 0 ? ditheredStack : sourceStack}
+		{@const thumb =
+			findThumbnailImage(ditheredMediaModules, project.tag) ??
+			findThumbnailImage(sourceMediaModules, project.tag)}
 		{#if project.tag && thumb}
 			<Card
 				isMobile={data.deviceType.isMobile}

@@ -7,6 +7,8 @@
 		"dev": "vite dev",
 		"imgYmlCreator": "tsx src/lib/imgYmlCreator.ts",
 		"dither": "tsx src/lib/buildDither.ts",
+		"dither:check": "tsx src/lib/validateDither.ts",
+		"dither:all": "npm run dither && npm run dither:check",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -14,7 +16,7 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
-		"deploy": "tsx src/lib/buildDither.ts && npm run build"
+		"deploy": "npm run dither:all && npm run build"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",

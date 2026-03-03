@@ -1,13 +1,14 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import { colorMode } from '$lib/utils';
+	import type { Snippet } from 'svelte';
 
-	let { children } = $props();
+	let { children }: { children?: Snippet } = $props();
 
 	$effect(() => {
 		if ($colorMode === 'dark') {
 			document.documentElement.setAttribute('data-theme', 'dark');
-		} else {	
+		} else {
 			document.documentElement.setAttribute('data-theme', 'light');
 		}
 	});
@@ -52,23 +53,21 @@
 		--spacing-xl: 80px;
 		--spacing-xxl: 160px;
 
-		
-		--curve: cubic-bezier(.65,.12,.62,.96);
+		--curve: cubic-bezier(0.65, 0.12, 0.62, 0.96);
 		--permanent-black: #1f1f1f;
 		--permanent-white: #ffffff;
 	}
 
-	:global([data-theme="light"]) {
-		--color-background: #F9F9F9; /*For bg*/
-		--color-surface: #FFFFFF;/* For info container and things that are currently purely white */
-	
+	:global([data-theme='light']) {
+		--color-background: #f9f9f9; /*For bg*/
+		--color-surface: #ffffff; /* For info container and things that are currently purely white */
+
 		--primary-black: #000000; /* For text and other things that are currently purely black */
-		--secondary-dark: #AFAFAF; /* For text calss notes */
+		--secondary-dark: #afafaf; /* For text calss notes */
 		--primary-white: #ffffff;
-		
 	}
 
-	:global([data-theme="dark"]) {
+	:global([data-theme='dark']) {
 		/* Light mode colors (default) */
 		--color-background: #101010; /*For bg*/
 		--color-surface: #141414; /* For info container and things that are currently purely white */
@@ -79,9 +78,9 @@
 	}
 
 	:global(::selection) {
-        background-color: var(--primary-black);
-        color: var(--primary-white);
-    }
+		background-color: var(--primary-black);
+		color: var(--primary-white);
+	}
 
 	:global(h1) {
 		font-size: 18px;
@@ -127,6 +126,10 @@
 		color: inherit;
 	}
 
+	:global(button:hover, a:hover, .navigator_container:hover) {
+		filter: invert(100%) !important;
+	}
+
 	:global(::-webkit-scrollbar) {
 		width: 20px;
 	}
@@ -153,7 +156,11 @@
 		transform: translateY(+10%);
 		opacity: 0;
 		clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0% 100%);
-		transition: transform 1s var(--curve), opacity 1s var(--curve), clip-path 1s var(--curve), filter 1s var(--curve);
+		transition:
+			transform 1s var(--curve),
+			opacity 1s var(--curve),
+			clip-path 1s var(--curve),
+			filter 1s var(--curve);
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
 		-webkit-transform: translateY(+10%);
@@ -166,7 +173,11 @@
 		transform: translateY(0%);
 		opacity: 1;
 		clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 0);
-		transition: transform 1s var(--curve), opacity 1s var(--curve), clip-path 1s var(--curve), filter 1s var(--curve);
+		transition:
+			transform 1s var(--curve),
+			opacity 1s var(--curve),
+			clip-path 1s var(--curve),
+			filter 1s var(--curve);
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
 		-webkit-transform: translateY(0%);
@@ -199,11 +210,8 @@
 		}
 
 		:global(.hover_container > svg) {
-            width: 25px;
-            height: 25px;
-        }
-
-
-		
+			width: 25px;
+			height: 25px;
+		}
 	}
 </style>

@@ -1,108 +1,94 @@
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
 import sharp from 'sharp';
+import {
+	DITHER_INPUT_EXTENSIONS,
+	DEFAULT_DITHER_PROFILE,
+	type DitherProfile
+} from './dither.config';
 
-const inputDir = path.resolve(process.cwd(), 'src/lib/media/');
-const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia/');
+const inputDir = path.resolve(process.cwd(), 'src/lib/media');
+const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia');
 
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.bmp', '.tiff', '.tif'];
+const isSupportedSourceImage = (filePath: string): boolean => {
+	return DITHER_INPUT_EXTENSIONS.includes(
+		path.extname(filePath).toLowerCase() as (typeof DITHER_INPUT_EXTENSIONS)[number]
+	);
+};
 
-async function ditherImage(inputPath: string, outputPath: string): Promise<void> {
-	try {
-		await sharp(inputPath)
-			.greyscale()
-			.resize(80, 80, {
-				fit: 'inside',
-				withoutEnlargement: false
-			})
-			.modulate({ brightness: 2 })
-			.png({
-				compressionLevel: 9,
-				quality: 1,
-				adaptiveFiltering: true,
-				palette: true,
-				dither: 1,
-				colors: 16,
-				progressive: true
-			})
-			.toFile(outputPath);
+const collectSourceImages = async (rootDir: string): Promise<string[]> => {
+	const entries = await fs.readdir(rootDir, { withFileTypes: true });
+	const files: string[] = [];
 
-		console.log(`✓ Dithered image saved to ${outputPath}`);
-	} catch (error) {
-		console.error(`✗ Failed to process ${inputPath}:`, error);
-		throw error;
-	}
-}
-
-(async () => {
-	if (!fs.existsSync(outputDir)) {
-		fs.mkdirSync(outputDir, { recursive: true });
-	}
-
-	try {
-		const folders = await fs.promises.readdir(inputDir, { withFileTypes: true });
-
-		for (const folder of folders) {
-			console.log(`Processing folder: ${folder.name}`);
-
-			if (!folder.isDirectory()) {
-				continue;
-			}
-
-			try {
-				const entries = await fs.promises.readdir(path.join(inputDir, folder.name), {
-					withFileTypes: true
-				});
-
-				for (const entry of entries) {
-					if (entry.isDirectory()) {
-						console.log(`Processing directory: ${entry.name}`);
-						const subfolderPath = path.join(inputDir, folder.name, entry.name);
-
-						try {
-							const subentries = await fs.promises.readdir(subfolderPath, {
-								withFileTypes: true
-							});
-							for (const subentry of subentries) {
-								await processFolderFiles(path.join(folder.name, entry.name), subentry);
-							}
-						} catch (err) {
-							console.error(`Error reading ${subfolderPath}:`, err);
-						}
-						continue;
-					} else if (entry.isFile()) {
-						console.log(`Processing file: ${entry.name}`);
-						await processFolderFiles(folder.name, entry);
-					}
-				}
-			} catch (err) {
-				console.error(`Error reading ${folder.name}:`, err);
-			}
+	for (const entry of entries) {
+		if (entry.name.startsWith('.')) {
+			continue;
 		}
 
-		console.log('✓ All images processed');
-	} catch (err) {
-		console.error('Fatal error:', err);
-		process.exit(1);
-	}
-})();
+		const fullPath = path.join(rootDir, entry.name);
 
-async function processFolderFiles(folderPath: string, entry: fs.Dirent) {
-	const ext = path.extname(entry.name).toLowerCase();
-
-	if (IMAGE_EXTENSIONS.includes(ext)) {
-		const inputFilePath = path.join(inputDir, folderPath, entry.name);
-		const outputFolderPath = path.join(outputDir, folderPath);
-		const outputFilePath = path.join(outputFolderPath, entry.name.replace(/\.\w+$/, '.png'));
-
-		if (!fs.existsSync(outputFolderPath)) {
-			fs.mkdirSync(outputFolderPath, { recursive: true });
+		if (entry.isDirectory()) {
+			files.push(...(await collectSourceImages(fullPath)));
+			continue;
 		}
 
-		try {
-			await ditherImage(inputFilePath, outputFilePath);
-		} catch (error) {
-			console.error(`Error dithering ${inputFilePath}:`, error);
+		if (entry.isFile() && isSupportedSourceImage(fullPath)) {
+			files.push(fullPath);
 		}
 	}
-}
+
+	return files.sort((a, b) => a.localeCompare(b, 'en'));
+};
+
+const sourceToOutputPath = (sourcePath: string): string => {
+	const relativePath = path.relative(inputDir, sourcePath);
+	return path.join(outputDir, relativePath.replace(/\.[^.]+$/, '.png'));
+};
+
+const ditherOne = async (
+	sourcePath: string,
+	outputPath: string,
+	profile: DitherProfile
+): Promise<void> => {
+	await fs.mkdir(path.dirname(outputPath), { recursive: true });
+
+	let pipeline = sharp(sourcePath).resize(profile.resize.width, profile.resize.height, {
+		fit: profile.resize.fit,
+		withoutEnlargement: profile.resize.withoutEnlargement
+	});
+
+	if (profile.grayscale) {
+		pipeline = pipeline.greyscale();
+	}
+
+	pipeline = pipeline.modulate(profile.modulate);
+
+	await pipeline.png(profile.png).toFile(outputPath);
+};
+
+const runDither = async (): Promise<void> => {
+	await fs.rm(outputDir, { recursive: true, force: true });
+	await fs.mkdir(outputDir, { recursive: true });
+
+	const sourceImages = await collectSourceImages(inputDir);
+
+	if (sourceImages.length === 0) {
+		console.warn('No source images found for dithering.');
+		return;
+	}
+
+	console.log(`Dithering ${sourceImages.length} image(s)...`);
+
+	for (const sourceImage of sourceImages) {
+		const outputPath = sourceToOutputPath(sourceImage);
+		await ditherOne(sourceImage, outputPath, DEFAULT_DITHER_PROFILE);
+		console.log(`✓ ${path.relative(process.cwd(), outputPath)}`);
+	}
+
+	console.log('✓ Dither generation completed');
+};
+
+void runDither().catch((error) => {
+	console.error('Dither generation failed:', error);
+	process.exit(1);
+});

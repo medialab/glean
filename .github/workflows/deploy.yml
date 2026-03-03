@@ -57,13 +57,13 @@ jobs:
 
       - name: Dither images
         env:
-          NODE_OPTIONS: "--max-old-space-size=6144"
-        run: npm run dither
+          NODE_OPTIONS: '--max-old-space-size=6144'
+        run: npm run dither && npm run dither:check
 
       - name: Build SvelteKit app
         env:
           NODE_ENV: production
-          NODE_OPTIONS: "--max-old-space-size=6144"
+          NODE_OPTIONS: '--max-old-space-size=6144'
         run: npm run build
 
       - name: Upload artifact
@@ -82,4 +82,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

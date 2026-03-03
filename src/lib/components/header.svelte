@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { colorMode } from '$lib/utils';
+	import type { HeaderProps } from '$lib/types';
 	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 
-	let props = $props();
+	let props: HeaderProps = $props();
 	let isPageLoaded = $state(false);
 
 	onMount(() => {
@@ -15,26 +16,6 @@
 
 {#snippet logo_container()}
 	<a class="logo_container" href={resolve('/')}>
-		<!--<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 25">
-			<path
-				d="M12.999 0C19.7316 0 25.1894 5.45783 25.1895 12.1904C25.1895 18.9231 19.7317 24.3809 12.999 24.3809C6.26642 24.3808 0.808594 18.9231 0.808594 12.1904C0.808676 5.45788 6.26647 8.19504e-05 12.999 0ZM13.0557 1.00195C6.84562 1.00195 1.81055 6.03703 1.81055 12.2471C1.81077 18.4569 6.84576 23.4912 13.0557 23.4912C19.2654 23.491 24.2996 18.4568 24.2998 12.2471C24.2998 6.03716 19.2655 1.00218 13.0557 1.00195Z"
-			/>
-			<path
-				d="M6.93168 18.5363H4.87208L4.31543 17.0333L5.87405 15.8644L5.3174 14.5284L6.4307 12.0792V10.5206L6.93168 10.0752L6.4307 9.90825L6.76468 9.46294V9.18461L6.37503 9.46294L6.4307 6.06739L6.93168 6.45704L7.04301 6.06739L7.32133 6.45704H8.3233L8.71295 6.79103L8.49029 6.84669V6.95802H9.1026L10.4386 7.51467L10.1046 7.95999H8.43463V9.68559L9.1026 11.4669L9.60359 11.8565L9.77058 9.40727H12.3312L12.8321 9.90825L13.3331 9.40727H15.838L16.0607 11.8565L16.673 11.1885L17.341 9.40727L17.007 8.34964H16.005L15.671 7.40334L17.007 7.06935L17.174 6.62403H17.8976L18.0646 5.84473L19.2893 6.17872L20.0129 6.84669H19.4562L20.0129 7.84866H19.5676L20.0129 8.34964V9.40727L19.4562 8.90629L19.8459 9.68559L18.8996 10.6876L20.4025 14.4728L19.8459 15.9757L21.4045 16.9777V17.256L20.7922 18.5363H19.1779V17.9796H19.7346L20.0129 17.3673L18.3986 16.1984V15.9757L18.7883 14.9737L17.007 12.6915L17.508 11.9122L16.2277 12.6915L16.339 14.0274H13.5558L12.9435 14.6954L12.1085 14.0274H9.49226V12.6915L8.1563 11.9122L8.76861 12.5802L6.93168 14.9737V15.1407L7.32133 16.1984L5.70705 17.3673L5.98538 17.9796L6.93168 18.2023V18.5363Z"
-			/>
-			<path
-				d="M9.38093 15.1964L8.43463 13.9161L7.48833 14.9737V15.1964L7.98931 15.7531V16.0314L7.26567 17.4787V17.757L7.71098 18.5363L9.82625 18.592L9.93757 18.2023L8.71295 17.9796L8.43463 17.7013V17.3673L9.38093 15.5304V15.1964Z"
-			/>
-			<path
-				d="M18.1203 14.9737L17.341 13.9161L16.339 15.1964V15.4747L17.341 17.59L17.2297 17.8683H16.2277V18.5363H18.009L18.4543 17.6457V17.3673L17.7863 15.9757V15.7531L18.1203 15.3077V14.9737Z"
-			/>
-			<path
-				d="M4.31543 7.51467L3.92578 9.29594L4.3711 9.35161L4.31543 12.5802H4.87208L5.20607 13.9161L5.92971 11.9678L5.87405 9.18461L4.31543 7.51467Z"
-			/>
-			<path
-				d="M22.1838 10.0752V11.5225L21.1819 10.0196H20.9592L20.1799 10.8546V11.1885L20.9592 12.8585V13.2481L20.6252 13.9161H20.5139L19.4562 10.8546V10.6876L21.4045 8.62796H21.5158L22.1838 10.0752Z"
-			/>
-		</svg>-->
 		<p class="notes">medialab Sciences Po</p>
 		<h1>Collective Inquiries and Inventive Formats group</h1>
 	</a>
@@ -47,8 +28,7 @@
 		<div class="navigator_links">
 			<button
 				onclick={() => colorMode.set('light')}
-				style="opacity:{$colorMode === 'light' ? '1' : '0.5'}; pointer-events:{$colorMode ===
-				'light'
+				style="opacity:{$colorMode === 'light' ? '1' : '1'}; pointer-events:{$colorMode === 'light'
 					? 'none'
 					: 'auto'}"
 			>
@@ -87,7 +67,7 @@
 	</div>
 {/snippet}
 
-{#snippet navigator_container(isAbout: Boolean)}
+{#snippet navigator_container(isAbout: boolean)}
 	<div class="navigator_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 		<div class="navigator_links">
 			<a
@@ -180,7 +160,7 @@
 
 <header id="desktop_header">
 	{#if props.type === 'home' || props.type === 'about'}
-		{@render navigator_container(props.isAbout)}
+		{@render navigator_container(props.isAbout ?? false)}
 		{@render logo_container()}
 		{@render colorswitch_container()}
 	{:else if props.type === 'project'}
@@ -264,12 +244,6 @@
 		color: var(--permanent-black);
 	}
 
-	.logo_container > svg {
-		width: 30px;
-		height: 30px;
-		fill: var(--permanent-black);
-	}
-
 	.hover_container {
 		display: flex;
 		flex-direction: column;
@@ -325,7 +299,7 @@
 		.mobile_color_switch,
 		.mobile_color_switch > button > svg,
 		.mobile_navigator,
-		.mobile_navigator > button > svg {
+		.mobile_navigator > a > svg {
 			display: block;
 			width: 25px;
 			height: 25px;
@@ -344,12 +318,6 @@
 			transform: translate(0%);
 			z-index: 1;
 			margin: var(--spacing-m);
-		}
-
-		.logo_container > svg {
-			width: 35px;
-			height: 35px;
-			fill: var(--primary-black);
 		}
 
 		.logo_container > p {

@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import gitLogo from '$lib/assets/github-mark.svg';
 </script>
 

@@ -1,11 +1,9 @@
 <script lang="ts">
-	//import { onMount } from 'svelte';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
-	import type { ImageShape } from '$lib/utils';
+	import type { CardProps, CardVec2, ImageShape } from '$lib/types';
 
-	let props = $props();
+	let props: CardProps = $props();
 
 	let ra: string = $state('4/3');
 
@@ -22,11 +20,8 @@
 
 	let cardEl: HTMLAnchorElement | null = null;
 
-	type Vec2 = { x: number; y: number };
-	let layerVectors = $state<Vec2[]>([]);
+	let layerVectors = $state<CardVec2[]>([]);
 	let farness = $state(0);
-
-	let imagesStack = $state<boolean[]>([]);
 
 	const limitTranslation = (v: number) => Math.max(0, Math.min(1, v));
 
@@ -39,7 +34,7 @@
 
 	const ensureLayerVectors = (count: number) => {
 		if (layerVectors.length === count) return;
-		const vectors: Vec2[] = [];
+		const vectors: CardVec2[] = [];
 		for (let i = 0; i < count; i++) {
 			const mode = Math.floor(Math.random() * 3); // 0: x, 1: y, 2: both
 			const rx = mode === 1 ? 0 : Math.random() * 2 - 1;
@@ -47,7 +42,6 @@
 			vectors.push({ x: rx, y: ry });
 		}
 		layerVectors = vectors;
-		imagesStack = new Array(count).fill(false);
 	};
 
 	const updateFarness = () => {
@@ -88,7 +82,7 @@
 		return Promise.resolve(`https://cataas.com/cat?${Math.random()}`);
 	};
 
-	onMount(async () => {
+	onMount(() => {
 		setTimeout(() => {
 			isPageLoaded = true;
 		}, 10);
@@ -154,14 +148,6 @@
 		{/if}
 	</div>
 	<div class="info_container" style="max-width: {Math.floor(Math.random() * 16) + 20}ch;">
-		<!--<p
-			class="notes"
-			id="tag_container"
-			class:hidden={!isPageLoaded}
-			class:transitioned={isPageLoaded}
-		>
-			#{props.tag}
-		</p>-->
 		<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 			{props.title}
 		</h2>
@@ -269,7 +255,6 @@
 
 		height: 100%;
 		padding-left: var(--spacing-s);
-		transition: all 0.5s var(--curve);
 	}
 
 	.info_container > h2 {

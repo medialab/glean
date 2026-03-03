@@ -1,31 +1,6 @@
 // Load image metadata (width, height, format, src) using vite-imagetools
 
-export type ImageMetadata = {
-	src: string;
-	width: number;
-	height: number;
-	format: string;
-	default: string;
-	// Optional additional metadata properties
-	space?: string; // Color space
-	channels?: number; // Number of color channels
-	hasAlpha?: boolean; // Has transparency channel
-	hasTransparency?: boolean; // Has transparency
-	isOpaque?: boolean; // Is fully opaque
-	orientation?: number; // EXIF orientation (1-8)
-	density?: number; // DPI/PPI
-	hasProfile?: boolean; // Has ICC color profile
-	palette?: object; // Color palette for indexed images
-	background?: string | { r: number; g: number; b: number; alpha?: number }; // Background color
-};
-
-export type OptimizedImage = {
-	img: string;
-	sources: {
-		avif: string;
-		webp: string;
-	};
-};
+import type { ImageMetadata, YamlTextModule } from './types';
 
 export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob(
 	[
@@ -55,15 +30,12 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 	}
 );
 
-export const didascaliaModules: Record<string, any> = import.meta.glob(
-	[
-		'$lib/media/*/*.yml',
-		'$lib/media/*/*/*.yml'
-	],
+export const didascaliaModules: Record<string, YamlTextModule> = import.meta.glob(
+	['$lib/media/*/*.yml', '$lib/media/*/*/*.yml'],
 	{
 		eager: true,
 		query: {
-			raw: '',
+			raw: ''
 		}
 	}
 );

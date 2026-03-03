@@ -1,8 +1,6 @@
 // Client-side utility functions
-import type { ImageMetadata } from '$lib/medias';
+import type { ImageMetadata, ImageShape } from '$lib/types';
 import { writable } from 'svelte/store';
-
-export type ImageShape = 'Horizontal' | 'Vertical' | 'Square';
 
 export let colorMode = writable<'light' | 'dark'>('light');
 

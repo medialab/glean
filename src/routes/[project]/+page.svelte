@@ -6,13 +6,13 @@
 
 	import { findThumbnailImage, colorMode } from '$lib/utils';
 	import { ditheredMediaFilesModules } from '$lib/medias';
+	import type { TrailPoint, YamlTextModule } from '$lib/types';
 	import { onMount, onDestroy } from 'svelte';
 	import { inview } from 'svelte-inview';
 	import { load as yamlLoad } from 'js-yaml';
 
 	const options = {};
 
-	type TrailPoint = { x: number; y: number; t: number };
 	const trailMap = new WeakMap<HTMLElement, TrailPoint[]>();
 	const TRAIL_DURATION = 1000;
 
@@ -82,33 +82,29 @@
 		}, TRAIL_DURATION);
 	};
 
-	const findDidascalia = async (filePath: string) => {
-		const filename = filePath?.split('.').shift();
+	const findDidascalia = async (filePath: string): Promise<string | null> => {
+		const filename = filePath.split('.').shift();
 
 		if (!filename) {
-			console.log('No filename extracted:', filePath);
 			return null;
 		}
 
 		const didascaliaKey = Object.keys(data.didascaliaEntries).find((d) => d.includes(filename));
 
 		if (!didascaliaKey) {
-			console.log('No matching didascalia key found for:', filename);
 			return null;
 		}
 
-		const rawYamlContent = data.didascaliaEntries[didascaliaKey];
+		const rawYamlContent = data.didascaliaEntries[didascaliaKey] as YamlTextModule;
 
-		if (rawYamlContent.default && rawYamlContent.default.length > 0) {
-			try {
-				const finalText = (await yamlLoad(rawYamlContent.default)) as { imgDescription: string };
-				return finalText.imgDescription;
-			} catch (error) {
-				console.log('Error parsing YAML:', error);
-				return null;
-			}
-		} else {
-			console.log('No didascalia content found for:', filename);
+		if (!rawYamlContent.default?.length) {
+			return null;
+		}
+
+		try {
+			const finalText = yamlLoad(rawYamlContent.default) as { imgDescription?: string };
+			return typeof finalText.imgDescription === 'string' ? finalText.imgDescription : null;
+		} catch {
 			return null;
 		}
 	};
@@ -117,20 +113,17 @@
 
 	const project = data.project;
 
-	const OrderedProjectMediaFiles = Object.keys(data.projectMediaFiles).sort((a, b) =>
+	const orderedProjectMediaFiles = Object.keys(data.projectMediaFiles).sort((a, b) =>
 		a.localeCompare(b, 'en', { numeric: true })
 	);
 
-	const OrderedSubGalleryMediaFiles = Object.keys(data.subGalleryMediaFiles).sort((a, b) =>
+	const orderedSubGalleryMediaFiles = Object.keys(data.subGalleryMediaFiles).sort((a, b) =>
 		a.localeCompare(b, 'en', { numeric: true })
 	);
-
-	//console.log("Modules", data.mediaFilesModules);
-	//console.log("Didascalia Modules", Object.keys(data.didascaliaModules));
 
 	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
 
-	let isPageLoaded: Boolean = $state(false);
+	let isPageLoaded = $state(false);
 
 	let videoRefs: HTMLVideoElement[] = $state([]);
 
@@ -158,25 +151,6 @@
 	<meta name="apple-mobile-web-app-capable" content="yes" />
 	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
 	<meta name="apple-mobile-web-app-title" content={project.title} />
-
-	<!-- Open Graph / Facebook -->
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content={typeof window !== 'undefined' ? window.location.href : ''} />
-	<meta property="og:title" content={project.title} />
-	<meta property="og:description" content={project.description} />
-	<meta property="og:image" content={thumbnail?.src || ''} />
-	<meta property="og:site_name" content="Design Team Portfolio" />
-	<meta property="og:locale" content="en_US" />
-
-	<!-- Twitter -->
-	<meta property="twitter:card" content="summary_large_image" />
-	<meta
-		property="twitter:url"
-		content={typeof window !== 'undefined' ? window.location.href : ''}
-	/>
-	<meta property="twitter:title" content={project.title} />
-	<meta property="twitter:description" content={project.description} />
-	<meta property="twitter:image" content={thumbnail?.src || ''} />
 </svelte:head>
 
 <Header type="project" tag={project.tag} isAbout={false} />
@@ -275,7 +249,7 @@
 		</div>
 
 		<article class="article_container">
-			{#each OrderedProjectMediaFiles as key, index}
+			{#each orderedProjectMediaFiles as key, index}
 				{@const mediaFile = data.projectMediaFiles[key]}
 				{#if key.toLowerCase().endsWith('.mp4') || key.toLowerCase().endsWith('.mov')}
 					{@const video = videoRefs[index]}
@@ -339,9 +313,9 @@
 					</div>
 				{/if}
 			{/each}
-			{#if OrderedSubGalleryMediaFiles.length > 0}
+			{#if orderedSubGalleryMediaFiles.length > 0}
 				<div class="mosaic">
-					{#each OrderedSubGalleryMediaFiles as m}
+					{#each orderedSubGalleryMediaFiles as m}
 						{@const mediaFile = data.subGalleryMediaFiles[m]}
 
 						<enhanced:img src={mediaFile.src} alt="Sub gallery image" />
@@ -439,29 +413,6 @@
 	p,
 	h1 {
 		color: var(--permanent-black);
-	}
-
-	.hero_backhome {
-		width: 20%;
-		position: absolute;
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		left: var(--spacing-s);
-		top: var(--spacing-s);
-		z-index: 2;
-		background: none;
-		border: none;
-		padding: 0;
-		cursor: pointer;
-		color: inherit;
-		font: inherit;
-		transition: opacity 0.1s var(--curve);
-	}
-
-	.hero_backhome:hover {
-		opacity: 0.9;
-		transition: opacity 0.1s var(--curve);
 	}
 
 	.hero_text {
@@ -585,8 +536,10 @@
 		overflow: hidden;
 	}
 
-	.horizontal-image img,
-	.vertical-image img {
+	:global(.horizontal-image > img),
+	:global(.horizontal-image > picture),
+	:global(.vertical-image > img),
+	:global(.vertical-image > picture) {
 		width: 100%;
 		height: auto;
 		object-fit: cover;
@@ -665,10 +618,6 @@
 
 		.hero_text {
 			row-gap: var(--spacing-m);
-		}
-
-		.hero_backhome {
-			display: none;
 		}
 
 		p {

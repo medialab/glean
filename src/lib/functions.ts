@@ -3,23 +3,26 @@
 import { resolve } from 'path';
 import { readFileSync } from 'fs';
 import { load as yamlLoad } from 'js-yaml';
-import type { ImageMetadata } from './medias';
+import type { YamlData } from './types';
 
-type Project = {
-	tag: string;
-	[key: string]: any;
-};
-
-export type YamlData = {
-	projects: Project[];
-	[key: string]: any;
+const isYamlData = (value: unknown): value is YamlData => {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'projects' in value &&
+		Array.isArray((value as { projects?: unknown }).projects)
+	);
 };
 
 export const extractYamlData = (): YamlData | undefined => {
 	try {
 		const yamlPath = resolve(process.cwd(), 'src/lib/dataset/main.yaml');
 		const text = readFileSync(yamlPath, 'utf8');
-		const data = yamlLoad(text) as YamlData;
+		const data = yamlLoad(text);
+
+		if (!isYamlData(data)) {
+			throw new Error('Invalid main.yaml format: expected an object with a projects array.');
+		}
 
 		return data;
 	} catch (error) {

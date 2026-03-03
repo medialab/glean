@@ -1,7 +1,8 @@
-<script>
+<script lang="ts">
 	import PdfViewer from 'svelte-pdf';
+	import type { PdfWrapperProps } from '$lib/types';
 
-	let props = $props();
+	let props: PdfWrapperProps = $props();
 
 	let pdfPage = $state(1);
 
