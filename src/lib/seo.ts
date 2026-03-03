@@ -33,4 +33,4 @@ export const toAbsoluteUrl = (urlOrPath: string): string => {
 	return `${SITE_ORIGIN}${ensureLeadingSlash(urlOrPath)}`;
 };
 
-export const DEFAULT_OG_IMAGE = buildCanonicalUrl('/og-image.jpg');
+export const DEFAULT_OG_IMAGE = buildCanonicalUrl('/og/og.png');
