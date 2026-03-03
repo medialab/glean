@@ -48,7 +48,7 @@ jobs:
 
       - name: Update package.json to use local svelte-pdf
         run: |
-          sed -i 's|"svelte-pdf": "file:../svelte-pdf"|"svelte-pdf": "file:./svelte-pdf"|g' package.json
+          node -e "const fs=require('fs');const path='package.json';const pkg=JSON.parse(fs.readFileSync(path,'utf8'));pkg.dependencies=pkg.dependencies||{};pkg.dependencies['svelte-pdf']='file:./svelte-pdf';fs.writeFileSync(path,JSON.stringify(pkg,null,'\t')+'\n');"
 
       - name: Install project dependencies
         run: bun install
