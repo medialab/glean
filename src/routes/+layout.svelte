@@ -134,6 +134,17 @@
 		color: inherit;
 	}
 
+	:global(
+		a:focus-visible,
+		button:focus-visible,
+		[role='button']:focus-visible,
+		[tabindex]:focus-visible
+	) {
+		outline: 2px solid var(--permanent-black);
+		outline-offset: 2px;
+		box-shadow: 0 0 0 2px var(--permanent-white);
+	}
+
 	:global(button:hover, a:hover, .navigator_container:hover) {
 		filter: invert(100%) !important;
 	}
@@ -171,8 +182,7 @@
 			filter 1s var(--curve);
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
-		-webkit-transform: translateY(+10%);
-		-webkit-transform: translateZ(0);
+		-webkit-transform: translateY(10%) translateZ(0);
 		will-change: transform, opacity, clip-path;
 		filter: blur(2px);
 	}
@@ -188,8 +198,7 @@
 			filter 1s var(--curve);
 		-webkit-backface-visibility: hidden;
 		backface-visibility: hidden;
-		-webkit-transform: translateY(0%);
-		-webkit-transform: translateZ(0);
+		-webkit-transform: translateY(0) translateZ(0);
 		will-change: transform, opacity, clip-path;
 		filter: blur(0px);
 	}

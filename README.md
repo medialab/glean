@@ -48,3 +48,37 @@ For **design team members**:
 
 6. **Open a pull request**  
    Submit a pull request with your changes so the portfolio can be updated and reviewed.
+
+## Browser Compatibility Policy
+
+This project targets **current stable browsers**:
+
+- Chrome (latest major)
+- Edge (latest major)
+- Firefox (latest major)
+- Safari (latest major)
+- iOS Safari (latest major)
+
+Not in scope:
+
+- Internet Explorer
+- Legacy Safari/iOS versions
+
+Compatibility is codified via `browserslist` in `package.json`.
+
+## Cross-Browser Smoke Screenshots
+
+Use the smoke script to capture desktop/mobile screenshots for:
+
+- `/glean`
+- `/glean/about`
+- `/glean/FOBS`
+
+Commands:
+
+```bash
+npx playwright install chromium firefox webkit
+bun run test:cross-browser
+```
+
+By default, screenshots are written to `$(node -p "require('node:os').tmpdir()")/glean-cross-browser`.

@@ -24,6 +24,7 @@
 
 	let layerVectors = $state<CardVec2[]>([]);
 	let farness = $state(0);
+	let isThumbnailReady = $state(false);
 	const titleLength = $derived((props.title ?? '').trim().length);
 	const cardSize = $derived.by<CardSize>(() => {
 		if (titleLength <= 12) return 's';
@@ -85,6 +86,25 @@
 		updateFarness();
 	});
 
+	$effect(() => {
+		const readyPromise = props.thumbnailReady;
+		if (!readyPromise) {
+			isThumbnailReady = true;
+			return;
+		}
+
+		isThumbnailReady = false;
+		let isActive = true;
+		void readyPromise.finally(() => {
+			if (!isActive) return;
+			isThumbnailReady = true;
+		});
+
+		return () => {
+			isActive = false;
+		};
+	});
+
 	let isPageLoaded = $state(false);
 
 	onMount(() => {
@@ -106,12 +126,11 @@
 		? 'var(--primary-white)'
 		: 'transparent'};"
 >
-	{#await props.assetsReady}
-		<div class="image_container card_loading_image" style="aspect-ratio: {ra};"></div>
-		<div class={`info_container info_container--${cardSize} card_loading_info`}>
+	{#if !isThumbnailReady}
+		<div class="image_container card_loading_image" style="aspect-ratio: {ra};">
 			<p class="notes card_loading_text">Loading...</p>
 		</div>
-	{:then}
+	{:else}
 		<div class="image_container" style="aspect-ratio: {ra};" in:fade={{ duration: 260 }}>
 			{#if props.thumbnail?.src}
 				<enhanced:img
@@ -148,26 +167,26 @@
 				</div>
 			{/if}
 		</div>
-		<div class={`info_container info_container--${cardSize}`} in:fade={{ duration: 260 }}>
-			<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
-				{props.title}
-			</h2>
-			<div
-				class="specifications_container"
-				class:hidden={!isPageLoaded}
-				class:transitioned={isPageLoaded}
-			>
-				{#if props.year_end}
-					<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
-				{:else}
-					<p class="notes">{props.year_begin}</p>
-				{/if}
-				{#if props.team_people}
-					<p class="notes" id="people">Team: {props.team_people}</p>
-				{/if}
-			</div>
+	{/if}
+	<div class={`info_container info_container--${cardSize}`} in:fade={{ duration: 260 }}>
+		<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
+			{props.title}
+		</h2>
+		<div
+			class="specifications_container"
+			class:hidden={!isPageLoaded}
+			class:transitioned={isPageLoaded}
+		>
+			{#if props.year_end}
+				<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
+			{:else}
+				<p class="notes">{props.year_begin}</p>
+			{/if}
+			{#if props.team_people}
+				<p class="notes" id="people">Team: {props.team_people}</p>
+			{/if}
 		</div>
-	{/await}
+	</div>
 </a>
 
 <style>
@@ -202,11 +221,9 @@
 
 	.card_loading_image {
 		background: var(--permanent-white);
-	}
-
-	.card_loading_info {
-		padding: var(--spacing-s);
-		background-color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.card_loading_text {

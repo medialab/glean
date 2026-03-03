@@ -14,6 +14,19 @@
 
 	const trailMap = new WeakMap<HTMLElement, TrailPoint[]>();
 	const TRAIL_DURATION = 1000;
+	const hasPointerEvents = () =>
+		typeof window !== 'undefined' && typeof window.PointerEvent !== 'undefined';
+
+	const eventPoint = (event: PointerEvent | MouseEvent | TouchEvent) => {
+		if ('touches' in event || 'changedTouches' in event) {
+			const touchEvent = event as TouchEvent;
+			const touch = touchEvent.touches?.[0] ?? touchEvent.changedTouches?.[0];
+			if (!touch) return null;
+			return { x: touch.clientX, y: touch.clientY };
+		}
+
+		return { x: event.clientX, y: event.clientY };
+	};
 
 	const applyTrailMask = (target: HTMLElement) => {
 		const now = performance.now();
@@ -53,12 +66,17 @@
 		requestAnimationFrame(() => applyTrailMask(target));
 	};
 
-	const updateClipFromMouse = (event: MouseEvent | PointerEvent) => {
-		const target = event.currentTarget as HTMLElement;
+	const updateClipFromInput = (event: PointerEvent | MouseEvent | TouchEvent) => {
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target) return;
+
+		const point = eventPoint(event);
+		if (!point) return;
+
 		const rect = target.getBoundingClientRect();
 
-		const x = ((event.clientX - rect.left) / rect.width) * 100;
-		const y = ((event.clientY - rect.top) / rect.height) * 100;
+		const x = ((point.x - rect.left) / rect.width) * 100;
+		const y = ((point.y - rect.top) / rect.height) * 100;
 
 		const now = performance.now();
 		const existing = trailMap.get(target) ?? [];
@@ -68,8 +86,9 @@
 		applyTrailMask(target);
 	};
 
-	const resetClip = (event: PointerEvent) => {
-		const target = event.currentTarget as HTMLElement;
+	const resetClip = (event: PointerEvent | MouseEvent | TouchEvent) => {
+		const target = event.currentTarget as HTMLElement | null;
+		if (!target) return;
 
 		// Let existing points fade naturally; just stop adding new ones.
 		// Optionally clear immediately if user leaves for a while.
@@ -79,6 +98,51 @@
 			target.style.removeProperty('-webkit-mask-image');
 			target.style.removeProperty('mask-image');
 		}, TRAIL_DURATION);
+	};
+
+	const handlePointerEnter = (event: PointerEvent) => {
+		if (!hasPointerEvents()) return;
+		updateClipFromInput(event);
+	};
+
+	const handlePointerMove = (event: PointerEvent) => {
+		if (!hasPointerEvents()) return;
+		updateClipFromInput(event);
+	};
+
+	const handlePointerLeave = (event: PointerEvent) => {
+		if (!hasPointerEvents()) return;
+		resetClip(event);
+	};
+
+	const handleMouseEnter = (event: MouseEvent) => {
+		if (hasPointerEvents()) return;
+		updateClipFromInput(event);
+	};
+
+	const handleMouseMove = (event: MouseEvent) => {
+		if (hasPointerEvents()) return;
+		updateClipFromInput(event);
+	};
+
+	const handleMouseLeave = (event: MouseEvent) => {
+		if (hasPointerEvents()) return;
+		resetClip(event);
+	};
+
+	const handleTouchStart = (event: TouchEvent) => {
+		if (hasPointerEvents()) return;
+		updateClipFromInput(event);
+	};
+
+	const handleTouchMove = (event: TouchEvent) => {
+		if (hasPointerEvents()) return;
+		updateClipFromInput(event);
+	};
+
+	const handleTouchEnd = (event: TouchEvent) => {
+		if (hasPointerEvents()) return;
+		resetClip(event);
 	};
 
 	const findDidascalia = async (filePath: string): Promise<string | null> => {
@@ -208,9 +272,15 @@
 							alt="Project thumbnail dither"
 							class="absolute_behind"
 							style="z-index: 1;"
-							onpointerleave={resetClip}
-							onpointerenter={updateClipFromMouse}
-							onpointermove={updateClipFromMouse}
+							onpointerleave={handlePointerLeave}
+							onpointerenter={handlePointerEnter}
+							onpointermove={handlePointerMove}
+							onmouseleave={handleMouseLeave}
+							onmouseenter={handleMouseEnter}
+							onmousemove={handleMouseMove}
+							ontouchstart={handleTouchStart}
+							ontouchmove={handleTouchMove}
+							ontouchend={handleTouchEnd}
 						/>
 					{/if}
 				{/if}

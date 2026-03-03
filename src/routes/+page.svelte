@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Card from '$lib/components/card.svelte';
 	import type { PageProps } from './$types';
-	import type { MousePosition, ImageMetadata } from '$lib/types';
+	import type { MousePosition } from '$lib/types';
 	import { SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/seo';
 	import { writable } from 'svelte/store';
 	import { onMount, onDestroy } from 'svelte';
@@ -13,7 +13,8 @@
 	const pageDescription = SITE_DESCRIPTION;
 	const pageUrl = buildCanonicalUrl('/');
 	const pageImage = DEFAULT_OG_IMAGE;
-	const cardPreloadPromises = new Map<string, Promise<void>>();
+	const THUMBNAIL_FALLBACK_TIMEOUT_MS = 1200;
+	const thumbnailReadyPromises = new Map<string, Promise<void>>();
 
 	const mousePosition = writable<MousePosition>({ x: 0, y: 0 });
 
@@ -35,22 +36,23 @@
 		});
 	};
 
-	const preloadCardAssets = (
-		projectTag: string,
-		thumbSrc: string,
-		stack: Record<string, ImageMetadata>
-	): Promise<void> => {
-		const existing = cardPreloadPromises.get(projectTag);
+	const wait = (ms: number): Promise<void> => {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+	};
+
+	const preloadThumbnail = (projectTag: string, thumbSrc: string): Promise<void> => {
+		const existing = thumbnailReadyPromises.get(projectTag);
 		if (existing) {
 			return existing;
 		}
 
-		const sources = [thumbSrc, ...Object.values(stack).map((media) => media.src)];
-		const uniqueSources = [...new Set(sources.filter(Boolean))];
-		const promise = Promise.all(uniqueSources.map((src) => preloadImage(src))).then(
-			() => undefined
-		);
-		cardPreloadPromises.set(projectTag, promise);
+		const promise = Promise.race([
+			preloadImage(thumbSrc),
+			wait(THUMBNAIL_FALLBACK_TIMEOUT_MS)
+		]).then(() => undefined);
+		thumbnailReadyPromises.set(projectTag, promise);
 
 		return promise;
 	};
@@ -127,7 +129,7 @@
 			findThumbnailImage(ditheredMediaModules, project.tag) ??
 			findThumbnailImage(sourceMediaModules, project.tag)}
 		{#if project.tag && thumb}
-			{@const readyPromise = preloadCardAssets(project.tag, thumb.src, stack)}
+			{@const readyPromise = preloadThumbnail(project.tag, thumb.src)}
 			<Card
 				isMobile={data.deviceType.isMobile}
 				thumbnail={thumb}
@@ -141,7 +143,7 @@
 				{index}
 				translateMultiplier={100}
 				scaleStrength={1}
-				assetsReady={readyPromise}
+				thumbnailReady={readyPromise}
 			/>
 		{/if}
 	{/each}

@@ -83,7 +83,7 @@ export type CardProps = {
 	index: number;
 	translateMultiplier?: number;
 	scaleStrength?: number;
-	assetsReady?: Promise<void>;
+	thumbnailReady?: Promise<void>;
 };
 
 export type HeaderType = 'home' | 'about' | 'project';
