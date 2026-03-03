@@ -32,25 +32,29 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
 
       - name: Install svelte-pdf dependencies
         working-directory: svelte-pdf
-        run: npm install --legacy-peer-deps
+        run: bun install
 
       - name: Build svelte-pdf
         working-directory: svelte-pdf
-        run: npm run package
+        run: bun run package
 
       - name: Update package.json to use local svelte-pdf
         run: |
           sed -i 's|"svelte-pdf": "file:../svelte-pdf"|"svelte-pdf": "file:./svelte-pdf"|g' package.json
 
       - name: Install project dependencies
-        run: npm install
+        run: bun install
 
       - name: Create image twins
-        run: npm run imgYmlCreator
+        run: bun run imgYmlCreator
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -58,13 +62,13 @@ jobs:
       - name: Dither images
         env:
           NODE_OPTIONS: '--max-old-space-size=6144'
-        run: npm run dither && npm run dither:check
+        run: bun run dither && bun run dither:check
 
       - name: Build SvelteKit app
         env:
           NODE_ENV: production
           NODE_OPTIONS: '--max-old-space-size=6144'
-        run: npm run build
+        run: bun run build
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3

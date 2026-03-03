@@ -5,6 +5,7 @@
 	import type { CardProps, CardVec2, ImageShape } from '$lib/types';
 
 	let props: CardProps = $props();
+	type CardSize = 's' | 'm' | 'l' | 'xl';
 
 	let ra: string = $state('4/3');
 
@@ -23,6 +24,13 @@
 
 	let layerVectors = $state<CardVec2[]>([]);
 	let farness = $state(0);
+	const titleLength = $derived((props.title ?? '').trim().length);
+	const cardSize = $derived.by<CardSize>(() => {
+		if (titleLength <= 12) return 's';
+		if (titleLength <= 24) return 'm';
+		if (titleLength <= 36) return 'l';
+		return 'xl';
+	});
 
 	const limitTranslation = (v: number) => Math.max(0, Math.min(1, v));
 
@@ -100,7 +108,7 @@
 >
 	{#await props.assetsReady}
 		<div class="image_container card_loading_image" style="aspect-ratio: {ra};"></div>
-		<div class="info_container card_loading_info">
+		<div class={`info_container info_container--${cardSize} card_loading_info`}>
 			<p class="notes card_loading_text">Loading...</p>
 		</div>
 	{:then}
@@ -140,11 +148,7 @@
 				</div>
 			{/if}
 		</div>
-		<div
-			class="info_container"
-			style="max-width: {Math.floor(Math.random() * 16) + 20}ch;"
-			in:fade={{ duration: 260 }}
-		>
+		<div class={`info_container info_container--${cardSize}`} in:fade={{ duration: 260 }}>
 			<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
 				{props.title}
 			</h2>
@@ -181,6 +185,7 @@
 		color: inherit;
 		cursor: pointer;
 		transition: transform 0.2s var(--curve);
+		transform-origin: left center;
 	}
 
 	.card_container:hover {
@@ -268,6 +273,22 @@
 		height: 100%;
 	}
 
+	.info_container--s {
+		max-width: 22ch;
+	}
+
+	.info_container--m {
+		max-width: 28ch;
+	}
+
+	.info_container--l {
+		max-width: 34ch;
+	}
+
+	.info_container--xl {
+		max-width: 40ch;
+	}
+
 	.info_container > h2 {
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
@@ -334,6 +355,7 @@
 			position: relative;
 			padding: var(--spacing-s);
 			width: 100%;
+			max-width: unset;
 		}
 
 		.info_container > h2 {
