@@ -32,6 +32,10 @@
 		if (titleLength <= 36) return 'l';
 		return 'xl';
 	});
+	const cardTransform = $derived.by(() => {
+		if (props.isMobile) return 'none';
+		return `translateY(var(--card-hover-y, 0px)) scale(${1 + 0.1 * -farness})`;
+	});
 
 	const limitTranslation = (v: number) => Math.max(0, Math.min(1, v));
 
@@ -118,13 +122,11 @@
 	bind:this={cardEl}
 	class="card_container"
 	href={resolve('/[project]', { project: props.tag })}
-	style="transform: translateY(var(--card-hover-y, 0px)) scale({props.isMobile
-		? 1
-		: 1 +
-			0.1 *
-				-farness}); will-change: transform; transform-style: preserve-3d; background-color: {isPageLoaded
-		? 'var(--primary-white)'
-		: 'transparent'};"
+	style="transform: {cardTransform}; will-change: {props.isMobile
+		? 'auto'
+		: 'transform'}; transform-style: {props.isMobile
+		? 'flat'
+		: 'preserve-3d'}; background-color: {isPageLoaded ? 'var(--primary-white)' : 'transparent'};"
 >
 	{#if !isThumbnailReady}
 		<div class="image_container card_loading_image" style="aspect-ratio: {ra};">
@@ -352,7 +354,8 @@
 			width: 100%;
 			align-items: flex-start;
 			position: relative;
-			transform: scale(1);
+			transform: none;
+			transition: none;
 			background-color: transparent;
 		}
 

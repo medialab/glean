@@ -145,8 +145,10 @@
 		box-shadow: 0 0 0 2px var(--permanent-white);
 	}
 
-	:global(button:hover, a:hover, .navigator_container:hover) {
-		filter: invert(100%) !important;
+	@media (hover: hover) and (pointer: fine) {
+		:global(button:hover, a:hover, .navigator_container:hover) {
+			filter: invert(100%) !important;
+		}
 	}
 
 	:global(::-webkit-scrollbar) {

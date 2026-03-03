@@ -297,12 +297,27 @@
 			display: none;
 		}
 		.mobile_color_switch,
-		.mobile_color_switch > button > svg,
-		.mobile_navigator,
-		.mobile_navigator > a > svg {
+		.mobile_navigator {
 			display: block;
 			width: 25px;
 			height: 25px;
+		}
+
+		.mobile_color_switch > button,
+		.mobile_navigator > a {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 100%;
+			height: 100%;
+			touch-action: manipulation;
+		}
+
+		.mobile_color_switch > button > svg,
+		.mobile_navigator > a > svg {
+			display: block;
+			width: 100%;
+			height: 100%;
 		}
 
 		.logo_container {
@@ -370,6 +385,7 @@
 			position: absolute;
 			top: var(--spacing-m);
 			left: var(--spacing-m);
+			z-index: 20;
 		}
 	}
 </style>
