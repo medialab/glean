@@ -4,6 +4,8 @@ import { writable } from 'svelte/store';
 
 export let colorMode = writable<'light' | 'dark'>('light');
 
+export const isHomeRoute = (routeId: string | null | undefined): boolean => routeId === '/';
+
 export const findThumbnailImage = (
 	mediaFilesModules: Record<string, ImageMetadata>,
 	projectTag: string

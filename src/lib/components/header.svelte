@@ -1,14 +1,7 @@
 <script lang="ts">
-	import { colorMode } from '$lib/utils';
-	import { onMount } from 'svelte';
+	import { colorMode, isHomeRoute } from '$lib/utils';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-
-	let isPageLoaded = $state(false);
-
-	onMount(() => {
-		isPageLoaded = true;
-	});
 </script>
 
 {#snippet logo_container()}
@@ -24,11 +17,12 @@
 
 {#snippet colorswitch_container()}
 	<div class="hover_container">
-		<div class="md:flex gap-1 hidden">
+		<div class="md:flex gap-1 hidden bg-surface px-1 text-primary">
 			<button
 				onclick={() => colorMode.set('light')}
-				class="bg-surface px-1 text-primary"
-				style="opacity:{$colorMode === 'light' ? '1' : '1'}; pointer-events:{$colorMode === 'light'
+				class="text-primary"
+				style="opacity:{$colorMode === 'light' ? '0.5' : '1'}; pointer-events:{$colorMode ===
+				'light'
 					? 'none'
 					: 'auto'}"
 			>
@@ -37,8 +31,8 @@
 			<p>/</p>
 			<button
 				onclick={() => colorMode.set('dark')}
-				class="bg-surface px-1 text-primary"
-				style="opacity:{$colorMode === 'dark' ? '1' : '0.5'}; pointer-events:{$colorMode === 'dark'
+				class="text-primary"
+				style="opacity:{$colorMode === 'dark' ? '0.5' : '1'}; pointer-events:{$colorMode === 'dark'
 					? 'none'
 					: 'auto'}"
 			>
@@ -69,7 +63,7 @@
 {/snippet}
 
 {#snippet navigator_container()}
-	{#if page.url.pathname === '/'}
+	{#if isHomeRoute(page.route.id)}
 		<div class="navigator_container">
 			<div class="md:flex hidden">
 				<a href={resolve('/about')} class="bg-surface px-1 text-primary">
