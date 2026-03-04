@@ -12,16 +12,14 @@
 </script>
 
 {#snippet logo_container()}
-	{#if page.url.pathname === '/'}
-		<a
-			class="w-max hidden md:flex flex-col items-center justify-center"
-			href={resolve('/')}
-			id="logo_container"
-		>
-			<p class="notes bg-white px-1">medialab Sciences Po</p>
-			<h1 class="bg-white px-1">Collective Inquiries and Inventive Formats group</h1>
-		</a>
-	{/if}
+	<a
+		class="w-max hidden md:flex flex-col items-center justify-center"
+		href={resolve('/')}
+		id="logo_container"
+	>
+		<p class="notes bg-white px-1">medialab Sciences Po</p>
+		<h1 class="bg-white px-1">Collective Inquiries and Inventive Formats group</h1>
+	</a>
 {/snippet}
 
 {#snippet colorswitch_container()}
