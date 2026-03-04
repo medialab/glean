@@ -154,8 +154,7 @@
 
 @media (hover: hover) and (pointer: fine) {
 	button:hover,
-	a:hover,
-	.navigator_container:hover {
+	a:hover {
 		filter: invert(100%) !important;
 	}
 }

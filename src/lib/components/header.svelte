@@ -17,8 +17,8 @@
 		href={resolve('/')}
 		id="logo_container"
 	>
-		<p class="notes bg-white px-1">medialab Sciences Po</p>
-		<h1 class="bg-white px-1">Collective Inquiries and Inventive Formats group</h1>
+		<p class="notes bg-surface px-1 text-primary">medialab Sciences Po</p>
+		<h1 class="bg-surface px-1 text-primary">Collective Inquiries and Inventive Formats group</h1>
 	</a>
 {/snippet}
 
@@ -27,7 +27,7 @@
 		<div class="md:flex gap-1 hidden">
 			<button
 				onclick={() => colorMode.set('light')}
-				class="bg-white px-1"
+				class="bg-surface px-1 text-primary"
 				style="opacity:{$colorMode === 'light' ? '1' : '1'}; pointer-events:{$colorMode === 'light'
 					? 'none'
 					: 'auto'}"
@@ -37,7 +37,7 @@
 			<p>/</p>
 			<button
 				onclick={() => colorMode.set('dark')}
-				class="bg-white px-1"
+				class="bg-surface px-1 text-primary"
 				style="opacity:{$colorMode === 'dark' ? '1' : '0.5'}; pointer-events:{$colorMode === 'dark'
 					? 'none'
 					: 'auto'}"
@@ -72,7 +72,7 @@
 	{#if page.url.pathname === '/'}
 		<div class="navigator_container">
 			<div class="md:flex hidden">
-				<a href={resolve('/about')} class="bg-white px-1">
+				<a href={resolve('/about')} class="bg-surface px-1 text-primary">
 					<p>Info</p>
 				</a>
 			</div>

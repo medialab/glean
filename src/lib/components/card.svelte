@@ -206,7 +206,6 @@
 		text-decoration: none;
 		color: inherit;
 		cursor: pointer;
-		transition: transform 0.2s var(--curve);
 		transform-origin: left center;
 	}
 
