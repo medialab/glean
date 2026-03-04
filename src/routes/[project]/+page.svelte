@@ -233,8 +233,12 @@
 	<meta name="apple-mobile-web-app-title" content={pageTitle} />
 </svelte:head>
 {#key project}
-	<section class="main_container">
-		<div class="hero_card">
+	<section
+		class="relative flex min-h-screen w-full flex-row gap-5 max-md:mt-5 max-md:h-full max-md:w-full max-md:flex-col max-md:gap-5 max-md:p-5"
+	>
+		<div
+			class="sticky top-40 ml-10 flex h-fit w-2/5 flex-col gap-5 overflow-visible bg-[var(--permanent-white)] p-2.5 text-[var(--permanent-black)] transition-all duration-[1300ms] [transition-timing-function:var(--curve)] max-md:static max-md:top-auto max-md:ml-0 max-md:w-full max-md:bg-transparent max-md:p-0 max-md:translate-y-0"
+		>
 			<!-- <button
 				class="hero_backhome sharing_button"
 				aria-label="Sharing button"
@@ -245,7 +249,7 @@
 				<p class="notes">Share this project</p>
 			</button> -->
 			<div
-				class="thumb_cont"
+				class="relative block h-[30%] w-full place-content-center overflow-hidden aspect-[21/9] max-md:mt-20 max-md:aspect-[31/9]"
 				style="transition-delay: 0.1s;"
 				class:revealHidden={!isPageLoaded}
 				class:revealShown={isPageLoaded}
@@ -263,15 +267,14 @@
 					<enhanced:img
 						src={thumbnail.src}
 						alt={project.title}
-						class:grayscaled={$colorMode === 'dark'}
-						class="absolute_front"
+						class="relative z-0 h-full w-full object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+						class:grayscale={$colorMode === 'dark'}
 					/>
 					{#if !data.deviceType.isMobile && ditherThumbFile}
 						<img
 							src={ditherThumbFile.src}
 							alt="Project thumbnail dither"
-							class="absolute_behind"
-							style="z-index: 1;"
+							class="absolute inset-0 z-[1] h-full w-full object-cover [-webkit-mask-image:radial-gradient(circle_at_50%_50%,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_100%)] [mask-image:radial-gradient(circle_at_50%_50%,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_100%)]"
 							onpointerleave={handlePointerLeave}
 							onpointerenter={handlePointerEnter}
 							onpointermove={handlePointerMove}
@@ -285,9 +288,15 @@
 					{/if}
 				{/if}
 			</div>
-			<div class="hero_text">
-				<h1 class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>{project.title}</h1>
-				<div class="hero_infos">
+			<div class="flex h-fit w-full flex-col gap-2.5 max-md:relative max-md:w-full max-md:gap-5">
+				<h1
+					class="w-[90%] text-[32px] leading-[1.1] text-[var(--permanent-black)] max-md:text-primary"
+					class:revealHidden={!isPageLoaded}
+					class:revealShown={isPageLoaded}
+				>
+					{project.title}
+				</h1>
+				<div class="flex h-fit w-full flex-col gap-0">
 					<p
 						class="notes"
 						class:revealHidden={!isPageLoaded}
@@ -307,12 +316,14 @@
 				</div>
 			</div>
 			<hr
-				class="divider"
+				class="h-px w-full bg-[var(--permanent-black)]"
 				class:revealHidden={!isPageLoaded}
 				class:revealShown={isPageLoaded}
 				style="transition-delay: 0.35s;"
 			/>
-			<div class="context_container">
+			<div
+				class="flex flex-col gap-[5px] overflow-hidden transition-all duration-500 [transition-delay:0.1s] [transition-timing-function:var(--curve)]"
+			>
 				<!-- <p
 					class="medium"
 					class:revealHidden={!isPageLoaded}
@@ -323,6 +334,7 @@
 				</p> -->
 				<p
 					id="description"
+					class="pr-[5px] [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:10] [line-clamp:10] max-md:pr-0 max-md:[-webkit-line-clamp:15] max-md:[line-clamp:15]"
 					class:revealHidden={!isPageLoaded}
 					class:revealShown={isPageLoaded}
 					style="transition-delay: 0.35s;"
@@ -332,12 +344,18 @@
 			</div>
 		</div>
 
-		<article class="article_container">
+		<article
+			class="relative z-0 grid h-fit min-h-[calc(100vh-110px)] w-3/5 grid-cols-2 gap-x-5 gap-y-5 bg-background pt-40 pr-10 pb-20 max-md:flex max-md:w-full max-md:flex-col max-md:gap-2.5 max-md:p-0"
+		>
 			{#each orderedProjectMediaFiles as key, index}
 				{@const mediaFile = data.projectMediaFiles[key]}
 				{#if key.toLowerCase().endsWith('.mp4') || key.toLowerCase().endsWith('.mov')}
 					{@const video = videoRefs[index]}
-					<div class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
+					<div
+						class="col-span-2 flex h-fit w-full flex-col gap-2.5"
+						class:revealHidden={!isPageLoaded}
+						class:revealShown={isPageLoaded}
+					>
 						<video
 							src={mediaFile.default}
 							use:inview={options}
@@ -356,13 +374,18 @@
 							autoplay={true}
 							playsinline={true}
 							loop={true}
-							class:grayscaled={$colorMode === 'dark'}
+							class="h-auto w-full transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+							class:grayscale={$colorMode === 'dark'}
 						>
 						</video>
 					</div>
 				{:else if key.endsWith('.pdf')}
 					{#if mediaFile.default}
-						<div class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
+						<div
+							class="col-span-2 flex h-fit w-full flex-col gap-2.5"
+							class:revealHidden={!isPageLoaded}
+							class:revealShown={isPageLoaded}
+						>
 							<PdfWrapper
 								mediafile={mediaFile}
 								scale={0.7}
@@ -373,14 +396,15 @@
 				{:else if !key.toLowerCase().includes('thumb') && key}
 					{@const filePath = key.split('/').pop()}
 					<div
-						class={mediaFile.width > mediaFile.height ? 'horizontal-image' : 'vertical-image'}
+						class={`${mediaFile.width > mediaFile.height ? 'col-span-2' : 'col-span-1'} relative overflow-hidden`}
 						class:revealHidden={!isPageLoaded}
 						class:revealShown={isPageLoaded}
 						role="img"
 						aria-label="Project media"
 					>
 						<enhanced:img
-							class:grayscaled={$colorMode === 'dark'}
+							class="h-auto w-full overflow-hidden bg-inverse object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+							class:grayscale={$colorMode === 'dark'}
 							style="transition-delay: 0.4s;"
 							src={mediaFile.src}
 							alt="Project media"
@@ -388,7 +412,9 @@
 						{#if filePath}
 							{#await findDidascalia(filePath) then d}
 								{#if d}
-									<div class="didascalia">
+									<div
+										class="absolute bottom-0 left-0 z-10 h-5 w-fit bg-[var(--permanent-white)] px-[5px] text-[12px] text-[var(--permanent-black)]"
+									>
 										<p class="notes">{d}</p>
 									</div>
 								{/if}
@@ -398,317 +424,18 @@
 				{/if}
 			{/each}
 			{#if orderedSubGalleryMediaFiles.length > 0}
-				<div class="mosaic">
+				<div class="grid grid-flow-dense grid-cols-3 gap-2.5 max-md:grid-cols-2">
 					{#each orderedSubGalleryMediaFiles as m}
 						{@const mediaFile = data.subGalleryMediaFiles[m]}
 
-						<enhanced:img src={mediaFile.src} alt="Sub gallery image" />
+						<enhanced:img
+							src={mediaFile.src}
+							alt="Sub gallery media"
+							class="col-span-1 h-full w-full overflow-hidden bg-inverse object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+						/>
 					{/each}
 				</div>
 			{/if}
 		</article>
 	</section>
 {/key}
-
-<style>
-	h1 {
-		font-size: 32px;
-		line-height: 1.1;
-	}
-
-	.absolute_behind {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		/* Default: fully hidden; JS adds visible radial masks on hover */
-		-webkit-mask-image: radial-gradient(
-			circle at 50% 50%,
-			rgba(0, 0, 0, 0) 0%,
-			rgba(0, 0, 0, 0) 100%
-		);
-		mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
-	}
-
-	.absolute_front {
-		position: relative;
-	}
-
-	.main_container {
-		display: flex;
-		flex-direction: row;
-		position: relative;
-		width: 100%;
-		min-height: 100vh;
-		column-gap: calc(var(--spacing) * 5);
-	}
-
-	.hero_card {
-		display: flex;
-		position: sticky;
-		top: calc(var(--spacing) * 40);
-		flex-direction: column;
-		row-gap: calc(var(--spacing) * 5);
-		width: 40%;
-		height: fit-content;
-		margin-left: calc(var(--spacing) * 10);
-		padding: calc(var(--spacing) * 2.5);
-		background-color: var(--permanent-white);
-		transition: all 1.3s var(--curve);
-		overflow: visible;
-	}
-
-	.didascalia {
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: fit-content;
-		height: 20px;
-		background-color: var(--permanent-white);
-		color: var(--permanent-black);
-		font-size: 12px;
-		z-index: 10;
-		padding: 0px calc(var(--spacing) * 1.25);
-	}
-
-	.context_container {
-		overflow: hidden;
-		transition: all 0.5s var(--curve);
-		transition-delay: 0.1s;
-		display: flex;
-		flex-direction: column;
-		row-gap: calc(var(--spacing) * 1.25);
-	}
-
-	#description {
-		line-clamp: 10;
-		-webkit-line-clamp: 10;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	p,
-	h1 {
-		color: var(--permanent-black);
-	}
-
-	.hero_text {
-		display: flex;
-		flex-direction: column;
-		row-gap: calc(var(--spacing) * 2.5);
-		width: 100%;
-		height: fit-content;
-	}
-
-	.hero_text > h1 {
-		width: 90%;
-	}
-
-	.hero_infos {
-		display: flex;
-		flex-direction: column;
-		row-gap: 0px;
-		width: 100%;
-		height: fit-content;
-	}
-
-	.thumb_cont {
-		display: block;
-		width: 100%;
-		height: 30%;
-		aspect-ratio: 21/9;
-		overflow: hidden;
-		place-content: center;
-		position: relative;
-	}
-
-	:global(.thumb_cont > img),
-	:global(.thumb_cont > picture) {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.thumb_cont .absolute_front {
-		position: relative;
-		z-index: 0;
-	}
-
-	.thumb_cont .absolute_behind {
-		position: absolute;
-		inset: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		-webkit-mask-image: radial-gradient(
-			circle at 50% 50%,
-			rgba(0, 0, 0, 0) 0%,
-			rgba(0, 0, 0, 0) 100%
-		);
-		mask-image: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 100%);
-	}
-
-	.divider {
-		width: 100%;
-		height: 1px;
-		background-color: var(--permanent-black);
-		grid-column: span 2;
-	}
-
-	.article_container {
-		display: grid;
-		grid-row-gap: calc(var(--spacing) * 5);
-		width: 60%;
-		min-height: calc(100vh - 110px);
-		height: fit-content;
-		grid-template-columns: repeat(2, 1fr);
-		grid-column-gap: calc(var(--spacing) * 5);
-		/* Keep the article content (including the PDF viewer) in the normal stacking order
-		   so it can receive pointer events correctly. */
-		position: relative;
-		z-index: 0;
-		background-color: var(--color-background);
-		padding-bottom: calc(var(--spacing) * 20);
-		padding-right: calc(var(--spacing) * 10);
-		padding-top: calc(var(--spacing) * 40);
-	}
-
-	.article_container > div {
-		display: flex;
-		flex-direction: column;
-		row-gap: calc(var(--spacing) * 2.5);
-		width: 100%;
-		height: fit-content;
-		grid-column: span 2;
-	}
-
-	.mosaic {
-		display: grid !important;
-		grid-template-columns: repeat(3, 1fr);
-		grid-column-gap: calc(var(--spacing) * 2.5);
-		grid-row-gap: calc(var(--spacing) * 2.5);
-		grid-auto-flow: dense;
-	}
-
-	:global(.mosaic > img),
-	:global(.mosaic > picture) {
-		grid-column: span 1;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		overflow: hidden;
-		background-color: var(--primary-white);
-		transition: filter 0.3s var(--curve);
-	}
-
-	.horizontal-image {
-		grid-column: span 2 !important;
-		position: relative;
-		overflow: hidden;
-	}
-
-	.vertical-image {
-		grid-column: span 1 !important;
-		position: relative;
-		overflow: hidden;
-	}
-
-	:global(.horizontal-image > img),
-	:global(.horizontal-image > picture),
-	:global(.vertical-image > img),
-	:global(.vertical-image > picture) {
-		width: 100%;
-		height: auto;
-		object-fit: cover;
-		overflow: hidden;
-		background-color: var(--primary-white);
-		transition: filter 0.3s var(--curve);
-	}
-
-	.grayscaled {
-		filter: grayscale(1);
-		transition: filter 0.3s var(--curve);
-	}
-
-	#description {
-		padding-right: calc(var(--spacing) * 1.25);
-	}
-
-	@media (max-width: 768px) {
-		.main_container {
-			display: flex;
-			flex-direction: column;
-			row-gap: calc(var(--spacing) * 5);
-			width: 100%;
-			height: 100%;
-			padding: calc(var(--spacing) * 5);
-			margin-top: calc(var(--spacing) * 5);
-		}
-
-		.thumb_cont {
-			display: block;
-			aspect-ratio: 31/9;
-			width: 100%;
-			margin-top: calc(var(--spacing) * 20);
-		}
-
-		.hero_text {
-			width: 100%;
-			position: relative;
-			padding: 0px;
-		}
-
-		.hero_text > h1 {
-			width: 90%;
-			overflow: visible;
-			color: var(--primary-black);
-		}
-
-		.article_container {
-			padding: 0px;
-			display: flex;
-			flex-direction: column;
-			row-gap: calc(var(--spacing) * 2.5);
-			width: 100%;
-		}
-
-		#description {
-			display: -webkit-box;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 15;
-			line-clamp: 15;
-			overflow: hidden;
-			text-overflow: ellipsis;
-			margin-right: 0px;
-			padding-right: 0px;
-		}
-
-		.hero_card {
-			position: static;
-			top: unset;
-			width: 100%;
-			margin-left: 0px;
-			padding: 0px;
-			background-color: transparent;
-			transform: translateY(0%);
-		}
-
-		.hero_text {
-			row-gap: calc(var(--spacing) * 5);
-		}
-
-		p {
-			color: var(--primary-black);
-		}
-
-		.mosaic {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-</style>

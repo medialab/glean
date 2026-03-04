@@ -32,6 +32,12 @@
 		if (titleLength <= 36) return 'l';
 		return 'xl';
 	});
+	const cardSizeWidthClass = $derived.by(() => {
+		if (cardSize === 's') return 'max-w-[22ch]';
+		if (cardSize === 'm') return 'max-w-[28ch]';
+		if (cardSize === 'l') return 'max-w-[34ch]';
+		return 'max-w-[40ch]';
+	});
 
 	const cardTransform = $derived.by(() => {
 		if (props.isMobile) return 'none';
@@ -121,7 +127,7 @@
 
 <a
 	bind:this={cardEl}
-	class="card_container"
+	class="group [--card-hover-y:0px] flex h-[14vh] w-fit flex-row items-center justify-start gap-0 [transform-origin:left_center] hover:[--card-hover-y:-2px] max-md:relative max-md:h-fit max-md:w-full max-md:flex-col max-md:items-start max-md:bg-transparent"
 	href={resolve('/[project]', { project: props.tag })}
 	style="transform: {cardTransform}; will-change: {props.isMobile
 		? 'auto'
@@ -130,11 +136,18 @@
 		: 'preserve-3d'}; background-color: {isPageLoaded ? 'var(--primary-white)' : 'transparent'};"
 >
 	{#if !isThumbnailReady}
-		<div class="image_container card_loading_image" style="aspect-ratio: {ra};">
-			<p class="notes card_loading_text">Loading...</p>
+		<div
+			class="relative z-[5] flex h-full max-h-full items-center justify-center self-center bg-[var(--permanent-white)] max-md:h-auto max-md:max-h-[25vh] max-md:w-full max-md:aspect-[16/9]"
+			style="aspect-ratio: {ra};"
+		>
+			<p class="notes animate-pulse text-[var(--permanent-black)]">Loading...</p>
 		</div>
 	{:else}
-		<div class="image_container" style="aspect-ratio: {ra};" in:fade={{ duration: 260 }}>
+		<div
+			class="relative z-[5] h-full max-h-full self-center max-md:h-auto max-md:max-h-[25vh] max-md:w-full max-md:aspect-[16/9]"
+			style="aspect-ratio: {ra};"
+			in:fade={{ duration: 260 }}
+		>
 			{#if props.thumbnail?.src}
 				<enhanced:img
 					src={props.thumbnail.src}
@@ -144,11 +157,14 @@
 					fetchpriority="high"
 					crossorigin="anonymous"
 					id="THUMBNAIL_IMAGE"
+					class="static z-[1] h-full w-full object-cover opacity-0 transition-opacity duration-200 [filter:grayscale(1)_contrast(2)_brightness(1.1)] [transition-timing-function:var(--curve)] group-hover:opacity-100 max-md:opacity-100"
 				/>
 			{/if}
 
 			{#if !props.isMobile}
-				<div class="image_stack">
+				<div
+					class="pointer-events-none absolute inset-0 z-[-1] h-full w-full opacity-100 transition-opacity duration-200 [transition-timing-function:var(--curve)] group-hover:opacity-0 max-md:invisible max-md:hidden"
+				>
 					{#if props.imageStack && Object.keys(props.imageStack).length > 0}
 						{#each Object.keys(props.imageStack) as imageKey, index}
 							<enhanced:img
@@ -164,6 +180,7 @@
 									(props.translateMultiplier ?? 14) *
 									farness *
 									((index + 1) / Object.keys(props.imageStack).length)}px);"
+								class="absolute inset-0 h-full w-full object-cover opacity-100 [filter:grayscale(1)_contrast(2)] [mix-blend-mode:darken]"
 							/>
 						{/each}
 					{/if}
@@ -171,221 +188,32 @@
 			{/if}
 		</div>
 	{/if}
-	<div class={`info_container info_container--${cardSize}`} in:fade={{ duration: 260 }}>
-		<h2 id="title_container" class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
-			{props.title}
-		</h2>
-		<div
-			class="specifications_container"
+	<div
+		class={`z-10 flex h-full w-fit flex-col items-start justify-center gap-2.5 p-2.5 ${cardSizeWidthClass} max-md:relative max-md:w-full max-md:max-w-none`}
+		in:fade={{ duration: 260 }}
+	>
+		<h2
+			id="title_container"
+			class="w-full bg-inverse [display:-webkit-box] overflow-visible text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:3] [line-clamp:3] max-md:w-[95%]"
 			class:revealHidden={!isPageLoaded}
 			class:revealShown={isPageLoaded}
 		>
+			{props.title}
+		</h2>
+		<div class="bg-inverse" class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
 			{#if props.year_end}
 				<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
 			{:else}
 				<p class="notes">{props.year_begin}</p>
 			{/if}
 			{#if props.team_people}
-				<p class="notes" id="people">Team: {props.team_people}</p>
+				<p
+					class="notes [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:2] [line-clamp:2]"
+					id="people"
+				>
+					Team: {props.team_people}
+				</p>
 			{/if}
 		</div>
 	</div>
 </a>
-
-<style>
-	.card_container {
-		--card-hover-y: 0px;
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-		justify-content: flex-start;
-		column-gap: 0px;
-		width: fit-content;
-		height: 14vh;
-		background-color: unset;
-		text-decoration: none;
-		color: inherit;
-		cursor: pointer;
-		transform-origin: left center;
-	}
-
-	.card_container:hover {
-		--card-hover-y: -2px;
-	}
-
-	.image_container {
-		height: 100%;
-		max-height: 100%;
-		position: relative;
-		align-self: center;
-		z-index: 5;
-	}
-
-	.card_loading_image {
-		background: var(--permanent-white);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.card_loading_text {
-		color: var(--permanent-black);
-		animation: loading-pulse 1s ease-in-out infinite;
-	}
-
-	.image_container > img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		position: static;
-		z-index: 1;
-		filter: grayscale(1) contrast(2) brightness(1.1);
-		opacity: 0;
-	}
-
-	.image_stack {
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: -1;
-		pointer-events: none;
-		opacity: 1;
-		transition: opacity 0.2s var(--curve);
-	}
-
-	.card_container:hover .image_stack {
-		opacity: 0;
-		transition: opacity 0.2s var(--curve);
-	}
-
-	.card_container:hover .image_container > img {
-		opacity: 1;
-	}
-
-	.image_stack > * {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		opacity: 1;
-		filter: grayscale(1) contrast(2);
-		mix-blend-mode: darken;
-	}
-
-	.info_container {
-		display: flex;
-		flex-direction: column;
-		row-gap: calc(var(--spacing) * 2.5);
-		align-items: flex-start;
-		justify-content: center;
-		width: fit-content;
-		padding: calc(var(--spacing) * 2.5);
-		z-index: 10;
-		height: 100%;
-	}
-
-	.info_container--s {
-		max-width: 22ch;
-	}
-
-	.info_container--m {
-		max-width: 28ch;
-	}
-
-	.info_container--l {
-		max-width: 34ch;
-	}
-
-	.info_container--xl {
-		max-width: 40ch;
-	}
-
-	.info_container > h2 {
-		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		line-clamp: 3;
-		-webkit-box-orient: vertical;
-		overflow: visible;
-		text-overflow: ellipsis;
-	}
-
-	.info_container > * {
-		background-color: var(--primary-white);
-	}
-
-	#people {
-		line-clamp: 2;
-		-webkit-line-clamp: 2;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		display: -webkit-box;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	@keyframes loading-pulse {
-		0% {
-			opacity: 0.35;
-		}
-
-		50% {
-			opacity: 1;
-		}
-
-		100% {
-			opacity: 0.35;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.card_container {
-			flex-direction: column;
-			height: fit-content;
-			width: 100%;
-			align-items: flex-start;
-			position: relative;
-			transform: none;
-			transition: none;
-			background-color: transparent;
-		}
-
-		.image_container {
-			width: 100%;
-			height: auto;
-			aspect-ratio: 16/9;
-			max-height: 25vh;
-		}
-
-		.card_container .image_container > img {
-			opacity: 1;
-		}
-
-		.info_container {
-			padding: 0px;
-			position: relative;
-			padding: calc(var(--spacing) * 2.5);
-			width: 100%;
-			max-width: unset;
-		}
-
-		.info_container > h2 {
-			width: 95%;
-			overflow: visible;
-		}
-
-		.image_stack {
-			display: none;
-			visibility: hidden;
-		}
-	}
-</style>

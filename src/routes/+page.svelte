@@ -122,7 +122,9 @@
 	<meta name="twitter:image:alt" content="Design Team Portfolio preview" />
 </svelte:head>
 
-<section class="home_header md:home_header hidden">
+<section
+	class="hidden max-md:z-[1] max-md:flex max-md:h-[90dvh] max-md:w-full max-md:items-center max-md:justify-start max-md:p-5"
+>
 	<div
 		class:revealHidden={!isPageLoaded}
 		class:revealShown={isPageLoaded}
@@ -140,7 +142,9 @@
 	</div>
 </section>
 
-<section class="cards_container">
+<section
+	class="mt-20 flex h-fit w-full flex-row flex-wrap justify-start gap-10 p-10 max-md:mt-0 max-md:h-max max-md:flex-col max-md:gap-y-10 max-md:p-5"
+>
 	{#each data.projects as project, index}
 		{@const ditheredMediaModules = data.ditheredMediaFilesModules ?? {}}
 		{@const sourceMediaModules = data.mediaFilesModules ?? {}}
@@ -170,43 +174,3 @@
 		{/if}
 	{/each}
 </section>
-
-<style>
-	.cards_container {
-		width: 100%;
-		height: fit-content;
-
-		padding: calc(var(--spacing) * 10);
-		margin-top: calc(var(--spacing) * 20);
-		display: flex;
-		flex-direction: row;
-		flex-wrap: wrap;
-		gap: calc(var(--spacing) * 10);
-		justify-content: flex-start;
-	}
-
-	@media (max-width: 768px) {
-		.cards_container {
-			width: 100%;
-			padding: calc(var(--spacing) * 5);
-			margin-top: 0px;
-			flex-direction: column;
-			height: max-content;
-			row-gap: calc(var(--spacing) * 10);
-		}
-
-		.home_header {
-			display: flex;
-			height: 90dvh;
-			width: 100%;
-			align-items: center;
-			justify-content: start;
-			padding: 20px;
-			z-index: 1;
-		}
-	}
-
-	.home_header {
-		display: hidden !important;
-	}
-</style>

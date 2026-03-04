@@ -32,12 +32,29 @@
 	}
 </script>
 
-<div id="pdf_viewer" class="pdf_viewer">
-	<button onclick={nextPage} class="navigator_container dx">
-		<p class="navigator_button notes">→</p>
+<div
+	id="pdf_viewer"
+	class="pdf_viewer relative z-20 flex w-full place-content-center items-center justify-center overflow-hidden bg-transparent object-cover"
+>
+	<button
+		onclick={nextPage}
+		class="pointer-events-none absolute top-0 right-0 z-[4] flex h-full w-[30%] flex-col items-end justify-center bg-transparent"
+	>
+		<p
+			class="notes pointer-events-auto z-[4] h-fit w-fit -translate-y-1/2 bg-[var(--permanent-white)] px-2.5 py-[5px] text-[32px] text-[var(--permanent-black)]"
+		>
+			→
+		</p>
 	</button>
-	<button onclick={prevPage} class="navigator_container sx">
-		<p class="navigator_button notes">←</p>
+	<button
+		onclick={prevPage}
+		class="pointer-events-none absolute top-0 left-0 z-[4] flex h-full w-[30%] flex-col items-start justify-center bg-transparent"
+	>
+		<p
+			class="notes pointer-events-auto z-[4] h-fit w-fit -translate-y-1/2 bg-[var(--permanent-white)] px-2.5 py-[5px] text-[32px] text-[var(--permanent-black)]"
+		>
+			←
+		</p>
 	</button>
 	<PdfViewer
 		url={props.mediafile.default}
@@ -50,31 +67,8 @@
 </div>
 
 <style>
-	.navigator_button {
-		width: fit-content;
-		height: fit-content;
-		background-color: var(--permanent-white);
-		padding: calc(var(--spacing) * 1.25) calc(var(--spacing) * 2.5);
-		cursor: pointer;
-		color: var(--permanent-black);
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 4;
-		font-size: 32px;
-	}
-
 	:global(.pdf_viewer > *) {
-		margin: 0px !important;
-	}
-
-	.pdf_viewer {
-		place-content: center;
-		align-items: center;
-		position: relative;
-		justify-content: center;
-		/* Keep the viewer itself interactive */
-		z-index: 20;
-		pointer-events: auto;
+		margin: 0 !important;
 	}
 
 	:global(.null) {
@@ -83,43 +77,5 @@
 
 	:global(#topBtn) {
 		display: none !important;
-	}
-
-	.pdf_viewer {
-		width: 100%;
-		height: auto;
-		object-fit: cover;
-		overflow: hidden;
-		background-color: transparent;
-	}
-
-	.navigator_container {
-		background-color: transparent;
-		z-index: 4;
-		position: absolute;
-		top: 0px;
-		height: 100%;
-		width: 30%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		/* Let clicks pass through the transparent overlay except on the actual button */
-		pointer-events: none;
-	}
-
-	/* The visible arrow should still be clickable */
-	.navigator_button {
-		pointer-events: auto;
-	}
-
-	.dx {
-		align-items: flex-end;
-		right: 0px;
-	}
-
-	.sx {
-		align-items: flex-start;
-		left: 0px;
 	}
 </style>

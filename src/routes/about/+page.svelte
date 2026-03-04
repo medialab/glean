@@ -26,11 +26,14 @@
 	<meta name="twitter:image:alt" content="Design Team Portfolio preview" />
 </svelte:head>
 
-<section class="main_container">
-	<div class="text_Container">
-		<p class="about_text">
-			<span class="bolder">This portfolio presents design not as a way to package answers</span>,
-			but as a means to ask better questions. It brings together tools and formats—maps, games,
+<section
+	class="mt-40 mb-10 flex flex-col gap-10 px-10 pb-20 max-md:mt-20 max-md:mb-5 max-md:gap-5 max-md:px-5 max-md:pb-0"
+>
+	<div class="h-max w-full pt-5">
+		<p class="text-[64px] leading-[1.15] tracking-[-0.06em] text-secondary max-md:text-[28px]">
+			<span class="font-medium text-primary"
+				>This portfolio presents design not as a way to package answers</span
+			>, but as a means to ask better questions. It brings together tools and formats—maps, games,
 			exhibitions, fanzines—created to probe issues that often elude standard research methods.
 			These objects are not results but instruments: epistemic artefacts crafted to generate data,
 			provoke responses, and reveal what usually remains unseen, unspoken, and unnoticed. Rather
@@ -48,7 +51,10 @@
 			worlds it engages with.
 		</p>
 	</div>
-	<a class="cta" href="mailto:donato.ricci@sciencespo.fr">
+	<a
+		class="flex w-fit flex-row items-center justify-center gap-2.5 bg-surface px-5 py-2.5 max-md:w-full"
+		href="mailto:donato.ricci@sciencespo.fr"
+	>
 		<h2>Write us an email</h2>
 		<svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 -960 960 960" width="25px"
 			><path
@@ -57,63 +63,3 @@
 		>
 	</a>
 </section>
-
-<style>
-	.cta {
-		width: fit-content;
-		padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 5);
-		display: flex;
-		flex-direction: row;
-		gap: calc(var(--spacing) * 2.5);
-		align-items: center;
-		justify-content: center;
-		background-color: var(--color-surface);
-	}
-
-	.main_container {
-		display: flex;
-		flex-direction: column;
-		margin: calc(var(--spacing) * 40) calc(var(--spacing) * 10) calc(var(--spacing) * 10) calc(var(--spacing) * 10);
-		row-gap: calc(var(--spacing) * 10);
-		padding-bottom: calc(var(--spacing) * 20);
-	}
-
-	.text_Container {
-		width: 100%;
-		height: max-content;
-		padding-top: calc(var(--spacing) * 5);
-	}
-
-	.about_text {
-		font-size: 64px;
-		color: var(--secondary-dark);
-		line-height: 1.15;
-		letter-spacing: -0.06em;
-	}
-
-	::selection {
-		background-color: #ff0b0b;
-		color: var(--color-surface);
-	}
-
-	.bolder {
-		font-weight: 500;
-		color: var(--primary-black);
-	}
-
-	@media (max-width: 768px) {
-		.main_container {
-			padding: 0px;
-			row-gap: calc(var(--spacing) * 5);
-			margin: calc(var(--spacing) * 20) calc(var(--spacing) * 5) calc(var(--spacing) * 5) calc(var(--spacing) * 5);
-		}
-
-		.about_text {
-			font-size: 28px;
-		}
-
-		.cta {
-			width: 100%;
-		}
-	}
-</style>
