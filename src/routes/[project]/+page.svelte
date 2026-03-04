@@ -239,16 +239,16 @@
 				class="hero_backhome sharing_button"
 				aria-label="Sharing button"
 				onclick={shareHeroCard}
-				class:hidden={!isPageLoaded}
-				class:transitioned={isPageLoaded}
+				class:revealHidden={!isPageLoaded}
+				class:revealShown={isPageLoaded}
 			>
 				<p class="notes">Share this project</p>
 			</button> -->
 			<div
 				class="thumb_cont"
 				style="transition-delay: 0.1s;"
-				class:hidden={!isPageLoaded}
-				class:transitioned={isPageLoaded}
+				class:revealHidden={!isPageLoaded}
+				class:revealShown={isPageLoaded}
 			>
 				{#if thumbnail?.src}
 					{@const thumbKey = Object.keys(data.mediaFilesModules).find(
@@ -286,20 +286,20 @@
 				{/if}
 			</div>
 			<div class="hero_text">
-				<h1 class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>{project.title}</h1>
+				<h1 class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>{project.title}</h1>
 				<div class="hero_infos">
 					<p
 						class="notes"
-						class:hidden={!isPageLoaded}
-						class:transitioned={isPageLoaded}
+						class:revealHidden={!isPageLoaded}
+						class:revealShown={isPageLoaded}
 						style="transition-delay: 0.2s;"
 					>
 						Period: {project.year_begin} - {project.year_end}
 					</p>
 					<p
 						class="notes"
-						class:hidden={!isPageLoaded}
-						class:transitioned={isPageLoaded}
+						class:revealHidden={!isPageLoaded}
+						class:revealShown={isPageLoaded}
 						style="transition-delay: 0.2s;"
 					>
 						Team: {project.team_people}
@@ -308,23 +308,23 @@
 			</div>
 			<hr
 				class="divider"
-				class:hidden={!isPageLoaded}
-				class:transitioned={isPageLoaded}
+				class:revealHidden={!isPageLoaded}
+				class:revealShown={isPageLoaded}
 				style="transition-delay: 0.35s;"
 			/>
 			<div class="context_container">
 				<!-- <p
 					class="medium"
-					class:hidden={!isPageLoaded}
-					class:transitioned={isPageLoaded}
+					class:revealHidden={!isPageLoaded}
+					class:revealShown={isPageLoaded}
 					style="transition-delay: 0.35s;"
 				>
 					Context
 				</p> -->
 				<p
 					id="description"
-					class:hidden={!isPageLoaded}
-					class:transitioned={isPageLoaded}
+					class:revealHidden={!isPageLoaded}
+					class:revealShown={isPageLoaded}
 					style="transition-delay: 0.35s;"
 				>
 					{project.description}
@@ -337,7 +337,7 @@
 				{@const mediaFile = data.projectMediaFiles[key]}
 				{#if key.toLowerCase().endsWith('.mp4') || key.toLowerCase().endsWith('.mov')}
 					{@const video = videoRefs[index]}
-					<div class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
+					<div class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
 						<video
 							src={mediaFile.default}
 							use:inview={options}
@@ -362,7 +362,7 @@
 					</div>
 				{:else if key.endsWith('.pdf')}
 					{#if mediaFile.default}
-						<div class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
+						<div class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
 							<PdfWrapper
 								mediafile={mediaFile}
 								scale={0.7}
@@ -374,8 +374,8 @@
 					{@const filePath = key.split('/').pop()}
 					<div
 						class={mediaFile.width > mediaFile.height ? 'horizontal-image' : 'vertical-image'}
-						class:hidden={!isPageLoaded}
-						class:transitioned={isPageLoaded}
+						class:revealHidden={!isPageLoaded}
+						class:revealShown={isPageLoaded}
 						role="img"
 						aria-label="Project media"
 					>
@@ -441,19 +441,19 @@
 		position: relative;
 		width: 100%;
 		min-height: 100vh;
-		column-gap: var(--spacing-m);
+		column-gap: calc(var(--spacing) * 5);
 	}
 
 	.hero_card {
 		display: flex;
 		position: sticky;
-		top: var(--spacing-xxl);
+		top: calc(var(--spacing) * 40);
 		flex-direction: column;
-		row-gap: var(--spacing-m);
+		row-gap: calc(var(--spacing) * 5);
 		width: 40%;
 		height: fit-content;
-		margin-left: var(--spacing-l);
-		padding: var(--spacing-s);
+		margin-left: calc(var(--spacing) * 10);
+		padding: calc(var(--spacing) * 2.5);
 		background-color: var(--permanent-white);
 		transition: all 1.3s var(--curve);
 		overflow: visible;
@@ -469,7 +469,7 @@
 		color: var(--permanent-black);
 		font-size: 12px;
 		z-index: 10;
-		padding: 0px var(--spacing-xs);
+		padding: 0px calc(var(--spacing) * 1.25);
 	}
 
 	.context_container {
@@ -478,7 +478,7 @@
 		transition-delay: 0.1s;
 		display: flex;
 		flex-direction: column;
-		row-gap: var(--spacing-xs);
+		row-gap: calc(var(--spacing) * 1.25);
 	}
 
 	#description {
@@ -501,7 +501,7 @@
 	.hero_text {
 		display: flex;
 		flex-direction: column;
-		row-gap: var(--spacing-s);
+		row-gap: calc(var(--spacing) * 2.5);
 		width: 100%;
 		height: fit-content;
 	}
@@ -563,26 +563,26 @@
 
 	.article_container {
 		display: grid;
-		grid-row-gap: var(--spacing-m);
+		grid-row-gap: calc(var(--spacing) * 5);
 		width: 60%;
 		min-height: calc(100vh - 110px);
 		height: fit-content;
 		grid-template-columns: repeat(2, 1fr);
-		grid-column-gap: var(--spacing-m);
+		grid-column-gap: calc(var(--spacing) * 5);
 		/* Keep the article content (including the PDF viewer) in the normal stacking order
 		   so it can receive pointer events correctly. */
 		position: relative;
 		z-index: 0;
 		background-color: var(--color-background);
-		padding-bottom: var(--spacing-xl);
-		padding-right: var(--spacing-l);
-		padding-top: var(--spacing-xxl);
+		padding-bottom: calc(var(--spacing) * 20);
+		padding-right: calc(var(--spacing) * 10);
+		padding-top: calc(var(--spacing) * 40);
 	}
 
 	.article_container > div {
 		display: flex;
 		flex-direction: column;
-		row-gap: var(--spacing-s);
+		row-gap: calc(var(--spacing) * 2.5);
 		width: 100%;
 		height: fit-content;
 		grid-column: span 2;
@@ -591,8 +591,8 @@
 	.mosaic {
 		display: grid !important;
 		grid-template-columns: repeat(3, 1fr);
-		grid-column-gap: var(--spacing-s);
-		grid-row-gap: var(--spacing-s);
+		grid-column-gap: calc(var(--spacing) * 2.5);
+		grid-row-gap: calc(var(--spacing) * 2.5);
 		grid-auto-flow: dense;
 	}
 
@@ -637,25 +637,25 @@
 	}
 
 	#description {
-		padding-right: var(--spacing-xs);
+		padding-right: calc(var(--spacing) * 1.25);
 	}
 
 	@media (max-width: 768px) {
 		.main_container {
 			display: flex;
 			flex-direction: column;
-			row-gap: var(--spacing-m);
+			row-gap: calc(var(--spacing) * 5);
 			width: 100%;
 			height: 100%;
-			padding: var(--spacing-m);
-			margin-top: var(--spacing-m);
+			padding: calc(var(--spacing) * 5);
+			margin-top: calc(var(--spacing) * 5);
 		}
 
 		.thumb_cont {
 			display: block;
 			aspect-ratio: 31/9;
 			width: 100%;
-			margin-top: var(--spacing-xl);
+			margin-top: calc(var(--spacing) * 20);
 		}
 
 		.hero_text {
@@ -674,7 +674,7 @@
 			padding: 0px;
 			display: flex;
 			flex-direction: column;
-			row-gap: var(--spacing-s);
+			row-gap: calc(var(--spacing) * 2.5);
 			width: 100%;
 		}
 
@@ -700,7 +700,7 @@
 		}
 
 		.hero_text {
-			row-gap: var(--spacing-m);
+			row-gap: calc(var(--spacing) * 5);
 		}
 
 		p {

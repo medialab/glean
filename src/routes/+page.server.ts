@@ -20,13 +20,13 @@ export const load: PageServerLoad = async ({ parent }) => {
 			ditheredMediaFilesModules: ditheredMediaFilesModules,
 			deviceType
 		};
-		} catch (error) {
-			console.error('Error loading YAML data:', error);
-			return {
-				projects: [],
-				mediaFilesModules: mediaFilesModules,
-				ditheredMediaFilesModules: ditheredMediaFilesModules,
-				deviceType: fallbackDeviceType
-			};
-		}
-	};
+	} catch (error) {
+		console.error('Error loading YAML data:', error);
+		return {
+			projects: [],
+			mediaFilesModules: mediaFilesModules,
+			ditheredMediaFilesModules: ditheredMediaFilesModules,
+			deviceType: fallbackDeviceType
+		};
+	}
+};

@@ -54,7 +54,7 @@
 		width: fit-content;
 		height: fit-content;
 		background-color: var(--permanent-white);
-		padding: var(--spacing-xs) var(--spacing-s);
+		padding: calc(var(--spacing) * 1.25) calc(var(--spacing) * 2.5);
 		cursor: pointer;
 		color: var(--permanent-black);
 		top: 50%;

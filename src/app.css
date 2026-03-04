@@ -1,0 +1,185 @@
+@config "../tailwind.config.js";
+@import 'tailwindcss';
+
+@layer base {
+	:root {
+		--curve: cubic-bezier(0.65, 0.12, 0.62, 0.96);
+		--permanent-black: #1f1f1f;
+		--permanent-white: #fff;
+	}
+
+	[data-theme='light'] {
+		--color-background: #f9f9f9;
+		--color-surface: #fff;
+		--primary-black: #000;
+		--secondary-dark: #afafaf;
+		--primary-white: #fff;
+	}
+
+	[data-theme='dark'] {
+		--color-background: #101010;
+		--color-surface: #141414;
+		--primary-black: #fff;
+		--secondary-dark: #c0c0c0;
+		--primary-white: #000;
+	}
+
+	* {
+		@apply m-0 box-border p-0 font-sans tracking-[-0.03em] antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+		-webkit-tap-highlight-color: transparent;
+		-webkit-touch-callout: none;
+	}
+
+	body {
+		@apply bg-background;
+		-webkit-overflow-scrolling: touch;
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+	}
+
+	html {
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-surface) var(--color-background);
+	}
+
+	svg {
+		@apply fill-primary;
+	}
+
+	::selection {
+		@apply bg-primary text-inverse;
+	}
+
+	h1 {
+		@apply text-lg leading-[1.1] font-normal text-primary;
+	}
+
+	h2 {
+		@apply text-xl leading-[1.1] font-normal text-primary;
+	}
+
+	p {
+		@apply text-base leading-[1.3] font-normal text-primary;
+	}
+
+	.notes {
+		@apply text-xs text-neutral-500;
+	}
+
+	.medium {
+		@apply text-lg leading-[1.3] font-medium;
+	}
+
+	button,
+	a {
+		all: unset;
+		@apply m-0 box-border cursor-pointer border-0 bg-transparent p-0 text-inherit;
+		font: inherit;
+		color: inherit;
+	}
+
+	a:focus-visible,
+	button:focus-visible,
+	[role='button']:focus-visible,
+	[tabindex]:focus-visible {
+		@apply outline-2 outline-offset-2;
+		outline-color: var(--permanent-black);
+		box-shadow: 0 0 0 2px var(--permanent-white);
+	}
+
+	::-webkit-scrollbar {
+		@apply w-5;
+	}
+
+	::-webkit-scrollbar-track {
+		@apply bg-background;
+	}
+
+	::-webkit-scrollbar-thumb {
+		@apply rounded-sm bg-surface;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		@apply bg-surface;
+	}
+}
+
+@layer components {
+	header {
+		@apply fixed top-2 z-20 grid w-full items-center justify-between p-4 md:grid-cols-3 grid-cols-2;
+	}
+
+	header > :nth-child(1) {
+		@apply col-span-1 justify-self-start;
+	}
+
+	header > :nth-child(2) {
+		@apply col-span-1 md:justify-self-center justify-self-end;
+	}
+
+	header > :nth-child(3) {
+		@apply col-span-1 justify-self-end;
+	}
+
+	.hover_container > svg {
+		@apply h-8 w-8;
+	}
+}
+
+@layer utilities {
+	.revealHidden {
+		@apply translate-y-[10%] opacity-0 blur-xs;
+		clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0% 100%);
+		@apply transition-[transform,opacity,clip-path,filter] duration-1000;
+		transition-timing-function: var(--curve);
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		-webkit-transform: translateY(10%) translateZ(0);
+		will-change: transform, opacity, clip-path;
+	}
+
+	.revealShown {
+		@apply translate-y-0 opacity-100 blur-none;
+		clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 0);
+		@apply transition-[transform,opacity,clip-path,filter] duration-1000;
+		transition-timing-function: var(--curve);
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		-webkit-transform: translateY(0) translateZ(0);
+		will-change: transform, opacity, clip-path;
+	}
+}
+
+@media (hover: hover) and (pointer: fine) {
+	button:hover,
+	a:hover,
+	.navigator_container:hover {
+		filter: invert(100%) !important;
+	}
+}
+
+@media (max-width: 768px) {
+	@layer base {
+		h1 {
+			@apply text-4xl font-medium;
+			word-spacing: -0.08em;
+		}
+
+		h2 {
+			@apply text-base font-light;
+			word-spacing: -0.08em;
+		}
+
+		body {
+			@apply flex flex-col;
+		}
+	}
+
+	@layer components {
+		.hover_container > svg {
+			@apply h-6 w-6;
+		}
+	}
+}

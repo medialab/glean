@@ -61,10 +61,10 @@
 <style>
 	.cta {
 		width: fit-content;
-		padding: var(--spacing-s) var(--spacing-m);
+		padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 5);
 		display: flex;
 		flex-direction: row;
-		gap: var(--spacing-s);
+		gap: calc(var(--spacing) * 2.5);
 		align-items: center;
 		justify-content: center;
 		background-color: var(--color-surface);
@@ -73,15 +73,15 @@
 	.main_container {
 		display: flex;
 		flex-direction: column;
-		margin: var(--spacing-xxl) var(--spacing-l) var(--spacing-l) var(--spacing-l);
-		row-gap: var(--spacing-l);
-		padding-bottom: var(--spacing-xl);
+		margin: calc(var(--spacing) * 40) calc(var(--spacing) * 10) calc(var(--spacing) * 10) calc(var(--spacing) * 10);
+		row-gap: calc(var(--spacing) * 10);
+		padding-bottom: calc(var(--spacing) * 20);
 	}
 
 	.text_Container {
 		width: 100%;
 		height: max-content;
-		padding-top: var(--spacing-m);
+		padding-top: calc(var(--spacing) * 5);
 	}
 
 	.about_text {
@@ -104,8 +104,8 @@
 	@media (max-width: 768px) {
 		.main_container {
 			padding: 0px;
-			row-gap: var(--spacing-m);
-			margin: var(--spacing-xl) var(--spacing-m) var(--spacing-m) var(--spacing-m);
+			row-gap: calc(var(--spacing) * 5);
+			margin: calc(var(--spacing) * 20) calc(var(--spacing) * 5) calc(var(--spacing) * 5) calc(var(--spacing) * 5);
 		}
 
 		.about_text {

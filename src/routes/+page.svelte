@@ -6,6 +6,7 @@
 	import { writable } from 'svelte/store';
 	import { onMount, onDestroy } from 'svelte';
 	import { stackObtainer, findThumbnailImage } from '$lib/utils';
+	import { resolve } from '$app/paths';
 
 	let { data }: PageProps = $props();
 
@@ -89,8 +90,11 @@
 
 	let cleanupMouseTracking: (() => void) | null = null;
 
+	let isPageLoaded = $state(false);
+
 	onMount(() => {
 		cleanupMouseTracking = trackMousePosition();
+		isPageLoaded = true;
 	});
 
 	onDestroy(() => {
@@ -117,6 +121,24 @@
 	<meta name="twitter:image" content={pageImage} />
 	<meta name="twitter:image:alt" content="Design Team Portfolio preview" />
 </svelte:head>
+
+<section class="home_header md:home_header hidden">
+	<div
+		class:revealHidden={!isPageLoaded}
+		class:revealShown={isPageLoaded}
+		class="w-[90%] flex flex-col gap-2"
+	>
+		<h1 class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
+			This is the portfolio of the <u
+				><a href={resolve('/about')}>Collective Inquiries and Inventive Formats group </a></u
+			> @ médialab Sciences Po
+		</h1>
+		<p class="notes" class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
+			All the projects listed are part of the collective effort of conducting participatory
+			inquiries via design-first methods.
+		</p>
+	</div>
+</section>
 
 <section class="cards_container">
 	{#each data.projects as project, index}
@@ -154,23 +176,37 @@
 		width: 100%;
 		height: fit-content;
 
-		padding: var(--spacing-l);
-		margin-top: var(--spacing-xl);
+		padding: calc(var(--spacing) * 10);
+		margin-top: calc(var(--spacing) * 20);
 		display: flex;
 		flex-direction: row;
 		flex-wrap: wrap;
-		gap: var(--spacing-l);
+		gap: calc(var(--spacing) * 10);
 		justify-content: flex-start;
 	}
 
 	@media (max-width: 768px) {
 		.cards_container {
 			width: 100%;
-			padding: var(--spacing-m);
+			padding: calc(var(--spacing) * 5);
 			margin-top: 0px;
 			flex-direction: column;
 			height: max-content;
-			row-gap: var(--spacing-l);
+			row-gap: calc(var(--spacing) * 10);
 		}
+
+		.home_header {
+			display: flex;
+			height: 90dvh;
+			width: 100%;
+			align-items: center;
+			justify-content: start;
+			padding: 20px;
+			z-index: 1;
+		}
+	}
+
+	.home_header {
+		display: hidden !important;
 	}
 </style>

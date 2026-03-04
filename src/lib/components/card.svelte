@@ -32,6 +32,7 @@
 		if (titleLength <= 36) return 'l';
 		return 'xl';
 	});
+
 	const cardTransform = $derived.by(() => {
 		if (props.isMobile) return 'none';
 		return `translateY(var(--card-hover-y, 0px)) scale(${1 + 0.1 * -farness})`;
@@ -171,13 +172,13 @@
 		</div>
 	{/if}
 	<div class={`info_container info_container--${cardSize}`} in:fade={{ duration: 260 }}>
-		<h2 id="title_container" class:hidden={!isPageLoaded} class:transitioned={isPageLoaded}>
+		<h2 id="title_container" class:revealHidden={!isPageLoaded} class:revealShown={isPageLoaded}>
 			{props.title}
 		</h2>
 		<div
 			class="specifications_container"
-			class:hidden={!isPageLoaded}
-			class:transitioned={isPageLoaded}
+			class:revealHidden={!isPageLoaded}
+			class:revealShown={isPageLoaded}
 		>
 			{#if props.year_end}
 				<p class="notes">Period: {props.year_begin} - {props.year_end}</p>
@@ -283,11 +284,11 @@
 	.info_container {
 		display: flex;
 		flex-direction: column;
-		row-gap: var(--spacing-s);
+		row-gap: calc(var(--spacing) * 2.5);
 		align-items: flex-start;
 		justify-content: center;
 		width: fit-content;
-		padding: var(--spacing-s);
+		padding: calc(var(--spacing) * 2.5);
 		z-index: 10;
 		height: 100%;
 	}
@@ -373,7 +374,7 @@
 		.info_container {
 			padding: 0px;
 			position: relative;
-			padding: var(--spacing-s);
+			padding: calc(var(--spacing) * 2.5);
 			width: 100%;
 			max-width: unset;
 		}
