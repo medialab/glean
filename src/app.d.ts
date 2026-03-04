@@ -1,19 +1,21 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
-import type { DeviceType, ImageMetadata, Project } from '$lib/types';
+import type { DeviceType, HomeCardDTO, ImageMetadata } from '$lib/types';
 
 declare global {
-		namespace App {
-			interface Locals {
-				deviceType: DeviceType;
-			}
+	namespace App {
+		interface Locals {
+			deviceType: DeviceType;
+		}
 
-			interface PageData {
-				projects?: Project[];
-				mediaFilesModules?: Record<string, ImageMetadata>;
-				ditheredMediaFilesModules?: Record<string, ImageMetadata>;
-				deviceType: DeviceType;
-			}
+		interface PageData {
+			cards?: HomeCardDTO[];
+			deviceType: DeviceType;
+			projectMediaFiles?: Record<string, ImageMetadata | { default: string }>;
+			subGalleryMediaFiles?: Record<string, ImageMetadata>;
+			thumbnailSrc?: string | null;
+			ditherThumbnailSrc?: string | null;
+		}
 
 		interface Platform {}
 

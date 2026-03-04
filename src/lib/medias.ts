@@ -2,7 +2,12 @@
 
 import type { ImageMetadata, YamlTextModule } from './types';
 
-export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob(
+type MediaFileModule = ImageMetadata | string;
+type MediaFileLoader = () => Promise<MediaFileModule>;
+type ImageMetadataLoader = () => Promise<ImageMetadata>;
+type YamlTextLoader = () => Promise<string>;
+
+export const mediaFilesModules = import.meta.glob(
 	[
 		'$lib/media/*/*.png',
 		'$lib/media/*/*.jpg',
@@ -15,7 +20,8 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 		'$lib/media/*/*.MOV'
 	],
 	{
-		eager: true,
+		eager: false,
+		import: 'default',
 		query: {
 			metadata: '',
 			w: '1200',
@@ -28,19 +34,17 @@ export const mediaFilesModules: Record<string, ImageMetadata> = import.meta.glob
 			removeMetadata: false
 		}
 	}
-);
+) as Record<string, MediaFileLoader>;
 
-export const didascaliaModules: Record<string, YamlTextModule> = import.meta.glob(
-	['$lib/media/*/*.yml', '$lib/media/*/*/*.yml'],
-	{
-		eager: true,
-		query: {
-			raw: ''
-		}
+export const didascaliaModules = import.meta.glob(['$lib/media/*/*.yml', '$lib/media/*/*/*.yml'], {
+	eager: false,
+	import: 'default',
+	query: {
+		raw: ''
 	}
-);
+}) as Record<string, YamlTextLoader>;
 
-export const subGalleryModules: Record<string, ImageMetadata> = import.meta.glob(
+export const subGalleryModules = import.meta.glob(
 	[
 		'$lib/media/*/*/*.png',
 		'$lib/media/*/*/*.jpg',
@@ -49,7 +53,8 @@ export const subGalleryModules: Record<string, ImageMetadata> = import.meta.glob
 		'$lib/media/*/*/*.gif'
 	],
 	{
-		eager: true,
+		eager: false,
+		import: 'default',
 		query: {
 			metadata: '',
 			w: '1200',
@@ -62,22 +67,49 @@ export const subGalleryModules: Record<string, ImageMetadata> = import.meta.glob
 			removeMetadata: 'false'
 		}
 	}
-);
+) as Record<string, ImageMetadataLoader>;
 
-export const ditheredMediaFilesModules: Record<string, ImageMetadata> = import.meta.glob(
+export const ditheredMediaFilesModules = import.meta.glob(['$lib/ditheredMedia/**/*.png'], {
+	eager: false,
+	import: 'default',
+	query: {
+		metadata: '',
+		as: 'metadata',
+		removeMetadata: 'false'
+	}
+}) as Record<string, ImageMetadataLoader>;
+
+export const homeMediaMetadataLoaders = import.meta.glob(
 	[
-		'$lib/ditheredMedia/**/*.png',
-		'$lib/ditheredMedia/**/*.jpg',
-		'$lib/ditheredMedia/**/*.jpeg',
-		'$lib/ditheredMedia/**/*.webp',
-		'$lib/ditheredMedia/**/*.gif'
+		'$lib/media/*/*.png',
+		'$lib/media/*/*.jpg',
+		'$lib/media/*/*.jpeg',
+		'$lib/media/*/*.webp',
+		'$lib/media/*/*.gif'
 	],
 	{
-		eager: true,
+		eager: false,
+		import: 'default',
 		query: {
 			metadata: '',
+			w: '400',
 			as: 'metadata',
-			removeMetadata: 'false'
+			enhanced: true,
+			quality: 70,
+			//format: 'webp',
+			allowUpscale: true,
+			allowDownscale: true,
+			removeMetadata: false
 		}
 	}
-);
+) as Record<string, ImageMetadataLoader>;
+
+export const homeDitheredMediaMetadataLoaders = import.meta.glob(['$lib/ditheredMedia/**/*.png'], {
+	eager: false,
+	import: 'default',
+	query: {
+		metadata: '',
+		as: 'metadata',
+		removeMetadata: 'false'
+	}
+}) as Record<string, ImageMetadataLoader>;

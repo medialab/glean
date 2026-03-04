@@ -1,7 +1,7 @@
 //This file is responsible for extracting the yaml data from the main.yaml file
 
 import { resolve } from 'path';
-import { readFileSync } from 'fs';
+import { readFileSync, statSync } from 'fs';
 import { load as yamlLoad } from 'js-yaml';
 import type { YamlData } from './types';
 
@@ -14,9 +14,18 @@ const isYamlData = (value: unknown): value is YamlData => {
 	);
 };
 
+let cachedYamlData: YamlData | undefined;
+let cachedYamlMtimeMs: number | undefined;
+
 export const extractYamlData = (): YamlData | undefined => {
 	try {
 		const yamlPath = resolve(process.cwd(), 'src/lib/dataset/main.yaml');
+		const mtimeMs = statSync(yamlPath).mtimeMs;
+
+		if (cachedYamlData && cachedYamlMtimeMs === mtimeMs) {
+			return cachedYamlData;
+		}
+
 		const text = readFileSync(yamlPath, 'utf8');
 		const data = yamlLoad(text);
 
@@ -24,8 +33,13 @@ export const extractYamlData = (): YamlData | undefined => {
 			throw new Error('Invalid main.yaml format: expected an object with a projects array.');
 		}
 
-		return data;
+		cachedYamlData = data;
+		cachedYamlMtimeMs = mtimeMs;
+
+		return cachedYamlData;
 	} catch (error) {
+		cachedYamlData = undefined;
+		cachedYamlMtimeMs = undefined;
 		console.error('Error loading YAML data:', error);
 		return undefined;
 	}

@@ -46,14 +46,6 @@ export type ImageMetadata = {
 	background?: string | { r: number; g: number; b: number; alpha?: number };
 };
 
-export type OptimizedImage = {
-	img: string;
-	sources: {
-		avif: string;
-		webp: string;
-	};
-};
-
 export type MousePosition = {
 	x: number;
 	y: number;
@@ -72,26 +64,34 @@ export type CardVec2 = {
 
 export type CardProps = {
 	isMobile: boolean;
-	thumbnail: { src: string; shape: ImageShape } | null;
+	isDimmed?: boolean;
+	thumbnail: HomeCardThumbnail;
 	tag: string;
 	title: string;
 	year_begin: string;
 	year_end: string | undefined;
 	team_people: string | undefined;
-	imageStack?: Record<string, ImageMetadata>;
+	stackPreview?: HomeCardPreviewImage[];
 	mousePosition?: MousePosition;
 	index: number;
 	translateMultiplier?: number;
 	scaleStrength?: number;
-	thumbnailReady?: Promise<void>;
+	minScale?: number;
+	maxScale?: number;
 };
 
-export type HeaderType = 'home' | 'about' | 'project';
+export type HomeCardPreviewImage = Pick<ImageMetadata, 'src' | 'width' | 'height'>;
 
-export type HeaderProps = {
-	type: HeaderType;
-	isAbout?: boolean;
-	tag?: string;
+export type HomeCardThumbnail = HomeCardPreviewImage;
+
+export type HomeCardDTO = {
+	tag: string;
+	title: string;
+	year_begin: string;
+	year_end?: string;
+	team_people?: string;
+	thumb: HomeCardThumbnail;
+	stackPreview: HomeCardPreviewImage[];
 };
 
 export type PdfWrapperProps = {

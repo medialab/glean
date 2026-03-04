@@ -1,7 +1,72 @@
 import type { PageServerLoad } from './$types';
 import { extractYamlData, genericProjectFileObtainer } from '$lib/functions';
-import { mediaFilesModules, subGalleryModules, didascaliaModules } from '$lib/medias';
+import {
+	didascaliaModules,
+	ditheredMediaFilesModules,
+	mediaFilesModules,
+	subGalleryModules
+} from '$lib/medias';
+import type { ImageMetadata, YamlTextModule } from '$lib/types';
 import { error, type HttpError } from '@sveltejs/kit';
+
+type ProjectMediaFile = ImageMetadata | { default: string };
+type MediaFileLoader = () => Promise<ImageMetadata | string>;
+type ImageMetadataLoader = () => Promise<ImageMetadata>;
+type YamlTextLoader = () => Promise<string>;
+
+const isImageMetadata = (value: unknown): value is ImageMetadata => {
+	return (
+		typeof value === 'object' &&
+		value !== null &&
+		'src' in value &&
+		'width' in value &&
+		'height' in value
+	);
+};
+
+const resolveProjectMediaFiles = async (
+	projectTag: string
+): Promise<Record<string, ProjectMediaFile>> => {
+	const projectLoaders = genericProjectFileObtainer(
+		mediaFilesModules as Record<string, MediaFileLoader>,
+		projectTag
+	);
+	const entries = await Promise.all(
+		Object.entries(projectLoaders).map(async ([key, loader]) => {
+			const loaded = await loader();
+			return typeof loaded === 'string'
+				? ([key, { default: loaded }] as const)
+				: ([key, loaded] as const);
+		})
+	);
+	return Object.fromEntries(entries);
+};
+
+const resolveProjectImageFiles = async (
+	loaderMap: Record<string, ImageMetadataLoader>,
+	projectTag: string
+): Promise<Record<string, ImageMetadata>> => {
+	const projectLoaders = genericProjectFileObtainer(loaderMap, projectTag);
+	const entries = await Promise.all(
+		Object.entries(projectLoaders).map(async ([key, loader]) => [key, await loader()] as const)
+	);
+	return Object.fromEntries(entries);
+};
+
+const resolveProjectDidascaliaEntries = async (
+	projectTag: string
+): Promise<Record<string, YamlTextModule>> => {
+	const projectLoaders = genericProjectFileObtainer(
+		didascaliaModules as Record<string, YamlTextLoader>,
+		projectTag
+	);
+	const entries = await Promise.all(
+		Object.entries(projectLoaders).map(
+			async ([key, loader]) => [key, { default: await loader() }] as const
+		)
+	);
+	return Object.fromEntries(entries);
+};
 
 export function entries() {
 	const data = extractYamlData();
@@ -32,18 +97,41 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			throw error(404, 'Project not found');
 		}
 
-		const projectMediaFiles = genericProjectFileObtainer(mediaFilesModules, project.tag);
+		const projectMediaFiles = await resolveProjectMediaFiles(project.tag);
+		const subGalleryMediaFiles = await resolveProjectImageFiles(
+			subGalleryModules as Record<string, ImageMetadataLoader>,
+			project.tag
+		);
+		const didascaliaEntries = await resolveProjectDidascaliaEntries(project.tag);
+		const ditheredProjectMediaFiles = await resolveProjectImageFiles(
+			ditheredMediaFilesModules as Record<string, ImageMetadataLoader>,
+			project.tag
+		);
 
-		const subGalleryMediaFiles = genericProjectFileObtainer(subGalleryModules, project.tag);
+		const sourceThumbEntry = Object.entries(projectMediaFiles).find(
+			([key, value]) => key.toLowerCase().includes('thumb') && isImageMetadata(value)
+		);
+		const sourceThumbKey = sourceThumbEntry?.[0];
+		const thumbnailSrc =
+			sourceThumbEntry && isImageMetadata(sourceThumbEntry[1]) ? sourceThumbEntry[1].src : null;
 
-		const didascaliaEntries = genericProjectFileObtainer(didascaliaModules, project.tag);
+		const ditherThumbKey = sourceThumbKey
+			? sourceThumbKey.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')
+			: null;
+		const ditherThumbnailSrc =
+			(ditherThumbKey ? ditheredProjectMediaFiles[ditherThumbKey]?.src : null) ??
+			Object.entries(ditheredProjectMediaFiles).find(([key]) =>
+				key.toLowerCase().includes('thumb')
+			)?.[1].src ??
+			null;
 
 		return {
 			project,
 			projectMediaFiles,
 			subGalleryMediaFiles,
-			mediaFilesModules,
 			didascaliaEntries,
+			thumbnailSrc,
+			ditherThumbnailSrc,
 			deviceType
 		};
 	} catch (err) {

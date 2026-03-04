@@ -2,15 +2,24 @@
 	import type { PageProps } from './$types';
 	import PdfWrapper from '$lib/components/pdf_wrapper.svelte';
 
-	import { findThumbnailImage, colorMode } from '$lib/utils';
+	import { colorMode } from '$lib/utils';
 	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl, toAbsoluteUrl } from '$lib/seo';
-	import { ditheredMediaFilesModules } from '$lib/medias';
-	import type { TrailPoint, YamlTextModule } from '$lib/types';
-	import { onMount, onDestroy } from 'svelte';
+	import type { ImageMetadata, TrailPoint, YamlTextModule } from '$lib/types';
+	import { onDestroy } from 'svelte';
+	import { fly } from 'svelte/transition';
 	import { inview } from 'svelte-inview';
 	import { load as yamlLoad } from 'js-yaml';
 
 	const options = {};
+	const isImageMetadata = (value: unknown): value is ImageMetadata => {
+		return (
+			typeof value === 'object' &&
+			value !== null &&
+			'src' in value &&
+			'width' in value &&
+			'height' in value
+		);
+	};
 
 	const trailMap = new WeakMap<HTMLElement, TrailPoint[]>();
 	const TRAIL_DURATION = 1000;
@@ -184,19 +193,12 @@
 		a.localeCompare(b, 'en', { numeric: true })
 	);
 
-	let thumbnail = findThumbnailImage(data.mediaFilesModules, data.project.tag);
 	const pageTitle = `${project.title} | ${SITE_NAME}`;
 	const pageDescription = project.description;
 	const pageUrl = buildCanonicalUrl(`/${encodeURIComponent(project.tag)}`);
-	const pageImage = thumbnail?.src ? toAbsoluteUrl(thumbnail.src) : DEFAULT_OG_IMAGE;
-
-	let isPageLoaded = $state(false);
+	const pageImage = data.thumbnailSrc ? toAbsoluteUrl(data.thumbnailSrc) : DEFAULT_OG_IMAGE;
 
 	let videoRefs: HTMLVideoElement[] = $state([]);
-
-	onMount(() => {
-		isPageLoaded = true;
-	});
 
 	onDestroy(() => {
 		videoRefs.forEach((video) => {
@@ -240,39 +242,27 @@
 			class="sticky top-40 ml-10 flex h-fit w-2/5 flex-col gap-5 overflow-visible bg-[var(--permanent-white)] p-2.5 text-[var(--permanent-black)] transition-all duration-[1300ms] [transition-timing-function:var(--curve)] max-md:static max-md:top-auto max-md:ml-0 max-md:w-full max-md:bg-transparent max-md:p-0 max-md:translate-y-0"
 		>
 			<!-- <button
-				class="hero_backhome sharing_button"
-				aria-label="Sharing button"
-				onclick={shareHeroCard}
-				class:revealHidden={!isPageLoaded}
-				class:revealShown={isPageLoaded}
-			>
-				<p class="notes">Share this project</p>
-			</button> -->
+					class="hero_backhome sharing_button"
+					aria-label="Sharing button"
+					onclick={shareHeroCard}
+				>
+					<p class="notes">Share this project</p>
+				</button> -->
 			<div
-				class="relative block h-[30%] w-full place-content-center overflow-hidden aspect-[21/9] max-md:mt-20 max-md:aspect-[31/9]"
+				class="relative grid h-[30%] w-full place-content-center overflow-hidden aspect-21/9 max-md:mt-20 max-md:aspect-[31/9]"
 				style="transition-delay: 0.1s;"
-				class:revealHidden={!isPageLoaded}
-				class:revealShown={isPageLoaded}
+				in:fly={{ y: 20, duration: 700, delay: 100 }}
 			>
-				{#if thumbnail?.src}
-					{@const thumbKey = Object.keys(data.mediaFilesModules).find(
-						(k) => k.includes(`/${project.tag}/`) && k.toLowerCase().includes('thumb')
-					)}
-					{@const ditherThumbKey = thumbKey
-						? thumbKey.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')
-						: null}
-					{@const ditherThumbFile = ditherThumbKey
-						? ditheredMediaFilesModules[ditherThumbKey]
-						: null}
+				{#if data.thumbnailSrc}
 					<enhanced:img
-						src={thumbnail.src}
+						src={data.thumbnailSrc}
 						alt={project.title}
 						class="relative z-0 h-full w-full object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
 						class:grayscale={$colorMode === 'dark'}
 					/>
-					{#if !data.deviceType.isMobile && ditherThumbFile}
+					{#if !data.deviceType.isMobile && data.ditherThumbnailSrc}
 						<img
-							src={ditherThumbFile.src}
+							src={data.ditherThumbnailSrc}
 							alt="Project thumbnail dither"
 							class="absolute inset-0 z-[1] h-full w-full object-cover [-webkit-mask-image:radial-gradient(circle_at_50%_50%,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_100%)] [mask-image:radial-gradient(circle_at_50%_50%,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_100%)]"
 							onpointerleave={handlePointerLeave}
@@ -291,24 +281,21 @@
 			<div class="flex h-fit w-full flex-col gap-2.5 max-md:relative max-md:w-full max-md:gap-5">
 				<h1
 					class="w-[90%] text-[32px] leading-[1.1] text-[var(--permanent-black)] max-md:text-primary"
-					class:revealHidden={!isPageLoaded}
-					class:revealShown={isPageLoaded}
+					in:fly={{ y: 20, duration: 700, delay: 130 }}
 				>
 					{project.title}
 				</h1>
 				<div class="flex h-fit w-full flex-col gap-0">
 					<p
 						class="notes"
-						class:revealHidden={!isPageLoaded}
-						class:revealShown={isPageLoaded}
+						in:fly={{ y: 20, duration: 700, delay: 200 }}
 						style="transition-delay: 0.2s;"
 					>
 						Period: {project.year_begin} - {project.year_end}
 					</p>
 					<p
 						class="notes"
-						class:revealHidden={!isPageLoaded}
-						class:revealShown={isPageLoaded}
+						in:fly={{ y: 20, duration: 700, delay: 240 }}
 						style="transition-delay: 0.2s;"
 					>
 						Team: {project.team_people}
@@ -317,26 +304,22 @@
 			</div>
 			<hr
 				class="h-px w-full bg-[var(--permanent-black)]"
-				class:revealHidden={!isPageLoaded}
-				class:revealShown={isPageLoaded}
+				in:fly={{ y: 20, duration: 700, delay: 350 }}
 				style="transition-delay: 0.35s;"
 			/>
 			<div
 				class="flex flex-col gap-[5px] overflow-hidden transition-all duration-500 [transition-delay:0.1s] [transition-timing-function:var(--curve)]"
 			>
 				<!-- <p
-					class="medium"
-					class:revealHidden={!isPageLoaded}
-					class:revealShown={isPageLoaded}
-					style="transition-delay: 0.35s;"
-				>
-					Context
+						class="medium"
+						style="transition-delay: 0.35s;"
+					>
+						Context
 				</p> -->
 				<p
 					id="description"
 					class="pr-[5px] [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:10] [line-clamp:10] max-md:pr-0 max-md:[-webkit-line-clamp:15] max-md:[line-clamp:15]"
-					class:revealHidden={!isPageLoaded}
-					class:revealShown={isPageLoaded}
+					in:fly={{ y: 20, duration: 700, delay: 380 }}
 					style="transition-delay: 0.35s;"
 				>
 					{project.description}
@@ -353,8 +336,7 @@
 					{@const video = videoRefs[index]}
 					<div
 						class="col-span-2 flex h-fit w-full flex-col gap-2.5"
-						class:revealHidden={!isPageLoaded}
-						class:revealShown={isPageLoaded}
+						in:fly={{ y: 16, duration: 550 }}
 					>
 						<video
 							src={mediaFile.default}
@@ -383,8 +365,7 @@
 					{#if mediaFile.default}
 						<div
 							class="col-span-2 flex h-fit w-full flex-col gap-2.5"
-							class:revealHidden={!isPageLoaded}
-							class:revealShown={isPageLoaded}
+							in:fly={{ y: 16, duration: 550 }}
 						>
 							<PdfWrapper
 								mediafile={mediaFile}
@@ -393,12 +374,11 @@
 							/>
 						</div>
 					{/if}
-				{:else if !key.toLowerCase().includes('thumb') && key}
+				{:else if !key.toLowerCase().includes('thumb') && key && isImageMetadata(mediaFile)}
 					{@const filePath = key.split('/').pop()}
 					<div
 						class={`${mediaFile.width > mediaFile.height ? 'col-span-2' : 'col-span-1'} relative overflow-hidden`}
-						class:revealHidden={!isPageLoaded}
-						class:revealShown={isPageLoaded}
+						in:fly={{ y: 16, duration: 550 }}
 						role="img"
 						aria-label="Project media"
 					>

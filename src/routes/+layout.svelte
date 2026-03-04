@@ -4,7 +4,6 @@
 	import Header from '$lib/components/header.svelte';
 	import Footer from '$lib/components/footer.svelte';
 	import { colorMode } from '$lib/utils';
-	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children?: Snippet } = $props();

@@ -1,9 +1,19 @@
 import fs from 'fs/promises';
 import path from 'path';
-import { DITHER_INPUT_EXTENSIONS } from './dither.config';
 
 const inputDir = path.resolve(process.cwd(), 'src/lib/media');
 const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia');
+
+const DITHER_INPUT_EXTENSIONS = [
+	'.png',
+	'.jpg',
+	'.jpeg',
+	'.gif',
+	'.webp',
+	'.bmp',
+	'.tiff',
+	'.tif'
+] as const;
 
 const OUTPUT_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'] as const;
 
@@ -11,6 +21,13 @@ const isSourceImage = (filePath: string): boolean => {
 	return DITHER_INPUT_EXTENSIONS.includes(
 		path.extname(filePath).toLowerCase() as (typeof DITHER_INPUT_EXTENSIONS)[number]
 	);
+};
+
+const isHomeCardSourceImage = (filePath: string): boolean => {
+	if (!isSourceImage(filePath)) return false;
+	const relativePath = path.relative(inputDir, filePath).replaceAll('\\', '/');
+	const depth = relativePath.split('/').length;
+	return depth === 2;
 };
 
 const isDitherOutputImage = (filePath: string): boolean => {
@@ -69,7 +86,7 @@ const printPreview = (label: string, values: string[]): void => {
 };
 
 const runValidation = async (): Promise<void> => {
-	const sourceFiles = (await walkFiles(inputDir)).filter(isSourceImage);
+	const sourceFiles = (await walkFiles(inputDir)).filter(isHomeCardSourceImage);
 	const outputFiles = (await walkFiles(outputDir)).filter(isDitherOutputImage);
 
 	const expectedOutputs = sourceFiles.map(toExpectedRelativeOutputPath);

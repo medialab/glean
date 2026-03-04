@@ -3,11 +3,11 @@
 </script>
 
 <footer
-	class="fixed right-0 bottom-5 left-0 z-[100] flex h-fit w-full flex-row items-center justify-between py-5 max-md:static max-md:px-0"
+	class="fixed right-0 bottom-5 left-0 z-[100] flex h-fit w-full flex-row items-center justify-between px-5 py-5 max-md:static"
 >
-	<p class="notes bg-white p-1.5 text-[#1f1f1f] ml-5">Privacy policy</p>
+	<p class="notes bg-white p-1.5 text-[#1f1f1f]">Privacy policy</p>
 	<a
-		class="bg-white p-1.5 text-[#1f1f1f] mr-5"
+		class="bg-white p-1.5 text-[#1f1f1f]"
 		href="https://github.com/medialab"
 		target="_blank"
 		rel="noopener noreferrer"

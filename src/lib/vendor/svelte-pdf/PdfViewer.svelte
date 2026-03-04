@@ -1,7 +1,8 @@
 <script lang="ts">
   import * as pdfjs from 'pdfjs-dist';
   import { onDestroy, tick } from 'svelte';
-  import { calcRT, getPageText, onPrint, savePDF } from './utils/Helper.svelte';
+  import { calcRT, getPageText, onPrint, savePDF } from './utils/helper';
+  // @ts-expect-error vendored Tooltip component has no bundled type declarations
   import Tooltip from './utils/Tooltip.svelte';
 
   const props = $props();
@@ -355,7 +356,10 @@
 
   const downloadPdf = ({ url: fileUrl, data }: { url?: string; data?: string }) => {
     const fileName = downloadFileName || (fileUrl && fileUrl.substring(fileUrl.lastIndexOf('/') + 1)) || 'download.pdf'; // Provide a default file name
-    savePDFFn({ fileUrl, data, name: fileName });
+    const payload: { fileUrl?: string; data?: string; name?: string } = { name: fileName };
+    if (fileUrl) payload.fileUrl = fileUrl;
+    if (data) payload.data = data;
+    savePDFFn(payload);
   };
 
   onDestroy(() => {
@@ -401,10 +405,9 @@
         <div class="line">
           {#if showButtons.includes('navigation')}
             <Tooltip>
-              <span
+              <button
+                type="button"
                 aria-label="Previous Page"
-                role="button"
-                tabindex="0"
                 slot="activator"
                 class="button-control {pageNum <= 1 ? 'disabled' : null}"
                 onclick={() => onPrevPage()}
@@ -419,14 +422,13 @@
                   18.485 9.899 17.071 3.828 11 20 11 20 9 3.828 9"
                   />
                 </svg>
-              </span>
+              </button>
               Previous
             </Tooltip>
             <Tooltip>
-              <span
+              <button
+                type="button"
                 aria-label="Next Page"
-                role="button"
-                tabindex="0"
                 slot="activator"
                 class="button-control {pageNum >= totalPage
                   ? 'disabled'
@@ -443,16 +445,16 @@
                   11.515 18.485 10.101 17.071 16.172 11 0 11 0 9"
                   />
                 </svg>
-              </span>
+              </button>
               Next
             </Tooltip>
           {/if}
           {#if showButtons.includes('zoom')}
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Zoom in"
                 class="button-control {scale >= maxScale ? 'disabled' : null}"
                 onclick={() => onZoomIn()}
               >
@@ -468,14 +470,14 @@
                   7V5h2v2h2v2H9v2H7V9H5V7h2z"
                   />
                 </svg>
-              </span>
+              </button>
               Zoom In
             </Tooltip>
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Zoom out"
                 class="button-control {scale <= minScale ? 'disabled' : null}"
                 onclick={() => onZoomOut()}
               >
@@ -491,16 +493,16 @@
                   7h6v2H5V7z"
                   />
                 </svg>
-              </span>
+              </button>
               Zoom Out
             </Tooltip>
           {/if}
           {#if showButtons.includes('print')}
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Print document"
                 class="button-control"
                 onclick={() => printPdf(url)}
               >
@@ -514,16 +516,16 @@
                   8v2h2V8H2zm4 0v2h2V8H6z"
                   />
                 </svg>
-              </span>
+              </button>
               Print
             </Tooltip>
           {/if}
           {#if showButtons.includes('rotate')}
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Rotate anti-clockwise"
                 class="button-control"
                 onclick={() => antiClockwiseRotate()}
               >
@@ -537,14 +539,14 @@
                   1.42zM12 10h8l-4 4-4-4z"
                   />
                 </svg>
-              </span>
+              </button>
               Anti-Clockwise
             </Tooltip>
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Rotate clockwise"
                 class="button-control"
                 onclick={() => clockwiseRotate()}
               >
@@ -558,16 +560,16 @@
                   1.42zM12 10h8l-4 4-4-4z"
                   />
                 </svg>
-              </span>
+              </button>
               Clockwise
             </Tooltip>
           {/if}
           {#if showButtons.includes('download')}
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Download PDF"
                 class="button-control"
                 onclick={() => downloadPdf({ url, data })}
               >
@@ -578,16 +580,16 @@
                 >
                   <path d="M13 8V2H7v6H2l8 8 8-8h-5zM0 18h20v2H0v-2z" />
                 </svg>
-              </span>
+              </button>
               Download
             </Tooltip>
           {/if}
           {#if showButtons.includes('autoflip')}
             <Tooltip>
-              <span
-                role="button"
-                tabindex="0"
+              <button
+                type="button"
                 slot="activator"
+                aria-label="Toggle auto page turn"
                 class="page-info button-control"
                 onclick={() => onPageTurn()}
               >
@@ -606,7 +608,7 @@
                     />
                   {/if}
                 </svg>
-              </span>
+              </button>
               {autoFlip === true ? seconds : 'Auto Turn Page'}
             </Tooltip>
           {/if}

@@ -1,13 +1,14 @@
 @config "../tailwind.config.js";
 @import 'tailwindcss';
 
-@layer base {
-	:root {
+@theme {
+
 		--curve: cubic-bezier(0.65, 0.12, 0.62, 0.96);
 		--permanent-black: #1f1f1f;
 		--permanent-white: #fff;
-	}
+}
 
+@layer base {
 	[data-theme='light'] {
 		--color-background: #f9f9f9;
 		--color-surface: #fff;
@@ -57,7 +58,7 @@
 	}
 
 	h2 {
-		@apply text-xl leading-[1.1] font-normal text-primary;
+		@apply text-2xl leading-[1.1] font-normal text-primary;
 	}
 
 	p {
@@ -125,30 +126,6 @@
 
 	.hover_container > svg {
 		@apply h-8 w-8;
-	}
-}
-
-@layer utilities {
-	.revealHidden {
-		@apply translate-y-[10%] opacity-0 blur-xs;
-		clip-path: polygon(0 100%, 100% 100%, 100% 100%, 0% 100%);
-		@apply transition-[transform,opacity,clip-path,filter] duration-1000;
-		transition-timing-function: var(--curve);
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		-webkit-transform: translateY(10%) translateZ(0);
-		will-change: transform, opacity, clip-path;
-	}
-
-	.revealShown {
-		@apply translate-y-0 opacity-100 blur-none;
-		clip-path: polygon(0 100%, 100% 100%, 100% 0, 0 0);
-		@apply transition-[transform,opacity,clip-path,filter] duration-1000;
-		transition-timing-function: var(--curve);
-		-webkit-backface-visibility: hidden;
-		backface-visibility: hidden;
-		-webkit-transform: translateY(0) translateZ(0);
-		will-change: transform, opacity, clip-path;
 	}
 }
 
