@@ -2,6 +2,10 @@
 	import { colorMode, isHomeRoute } from '$lib/utils';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+
+	const switchMode = () => {
+		colorMode.set($colorMode === 'dark' ? 'light' : 'dark');
+	};
 </script>
 
 {#snippet logo_container()}
@@ -18,28 +22,15 @@
 {#snippet colorswitch_container()}
 	<div class="hover_container">
 		<div class="md:flex gap-1 hidden bg-surface px-1 text-primary">
-			<button
-				onclick={() => colorMode.set('light')}
-				class="text-primary"
-				style="opacity:{$colorMode === 'light' ? '0.5' : '1'}; pointer-events:{$colorMode ===
-				'light'
-					? 'none'
-					: 'auto'}"
-			>
-				<p>Light</p>
-			</button>
-			<p>/</p>
-			<button
-				onclick={() => colorMode.set('dark')}
-				class="text-primary"
-				style="opacity:{$colorMode === 'dark' ? '0.5' : '1'}; pointer-events:{$colorMode === 'dark'
-					? 'none'
-					: 'auto'}"
-			>
-				<p>Dark</p>
+			<button onclick={() => switchMode()} class="text-primary">
+				{#if $colorMode === 'dark'}
+					<p>Light mode</p>
+				{:else}
+					<p>Dark mode</p>
+				{/if}
 			</button>
 		</div>
-
+		<!-- Mobile variant -->
 		<div class="md:hidden flex">
 			{#if $colorMode === 'light'}
 				<button onclick={() => colorMode.set('dark')} aria-label="Switch to dark mode">

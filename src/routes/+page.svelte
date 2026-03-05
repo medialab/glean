@@ -6,6 +6,7 @@
 	import { fly } from 'svelte/transition';
 	import { writable } from 'svelte/store';
 	import { resolve } from '$app/paths';
+	import { onMount } from 'svelte';
 
 	let { data }: PageProps = $props();
 
@@ -43,6 +44,12 @@
 			hoveredCardIndex = null;
 		}
 	};
+
+	let isPageLoaded = $state(false);
+
+	onMount(() => {
+		isPageLoaded = true;
+	});
 </script>
 
 <svelte:window onmousemove={updateMousePosition} />
@@ -68,20 +75,26 @@
 <section
 	class="hidden max-md:z-[1] max-md:flex max-md:h-[90dvh] max-md:w-full max-md:items-center max-md:justify-start max-md:p-5"
 >
-	<div class="w-[90%] flex flex-col gap-2" in:fly={{ y: 24, duration: 700 }}>
-		<h1 in:fly={{ y: 18, duration: 700, delay: 70 }}>
-			This is the portfolio of the <u
-				><a href={resolve('/about')}>Collective Inquiries and Inventive Formats group </a></u
-			> @ médialab Sciences Po
-		</h1>
-		<p class="notes" in:fly={{ y: 18, duration: 700, delay: 120 }}>
-			All the projects listed are part of the collective effort of conducting participatory
-			inquiries via design-first methods.
-		</p>
-	</div>
+	{#if isPageLoaded}
+		<div class="w-[90%] flex flex-col gap-2">
+			<h1 transition:fly={{ y: 50, duration: 700, delay: 100 }}>
+				<span>This is the portfolio of the </span>
+				<a href={resolve('/about')} transition:fly={{ y: 50, duration: 700, delay: 120 }}
+					><u>Collective Inquiries and Inventive Formats group</u>
+				</a>
+				<span>@ médialab Sciences Po</span>
+			</h1>
+			<p class="notes" transition:fly={{ y: 50, duration: 700, delay: 350 }}>
+				All the projects listed are part of the collective effort of conducting participatory
+				inquiries via design-first methods.
+			</p>
+		</div>
+	{/if}
 </section>
 
-<section class="md:mt-40 flex h-auto w-full flex-row flex-wrap justify-center gap-10 md:p-10 p-5 items-start overflow-visible">
+<section
+	class="md:mt-40 flex h-auto w-full flex-row flex-wrap justify-center gap-10 md:p-10 p-5 items-start overflow-visible"
+>
 	{#each data.cards as card, index}
 		<Card
 			isMobile={data.deviceType.isMobile}

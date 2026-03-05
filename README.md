@@ -65,20 +65,3 @@ Not in scope:
 - Legacy Safari/iOS versions
 
 Compatibility is codified via `browserslist` in `package.json`.
-
-## Cross-Browser Smoke Screenshots
-
-Use the smoke script to capture desktop/mobile screenshots for:
-
-- `/glean`
-- `/glean/about`
-- `/glean/FOBS`
-
-Commands:
-
-```bash
-npx playwright install chromium firefox webkit
-bun run test:cross-browser
-```
-
-By default, screenshots are written to `$(node -p "require('node:os').tmpdir()")/glean-cross-browser`.

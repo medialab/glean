@@ -1,11 +1,19 @@
 <script lang="ts">
 	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/seo';
+	import { onMount } from 'svelte';
+	import { fly } from 'svelte/transition';
 
 	const pageTitle = `About | ${SITE_NAME}`;
 	const pageDescription =
 		'About the Collective Inquiries and Inventive Formats group and its design-led research practice.';
 	const pageUrl = buildCanonicalUrl('/about');
 	const pageImage = DEFAULT_OG_IMAGE;
+
+	let isPageLoaded = $state(false);
+
+	onMount(() => {
+		isPageLoaded = true;
+	});
 </script>
 
 <svelte:head>
@@ -31,24 +39,30 @@
 >
 	<div class="h-max w-full pt-5">
 		<p class="text-[64px] leading-[1.15] tracking-[-0.06em] text-secondary max-md:text-[28px]">
-			<span class="font-medium text-primary"
-				>This portfolio presents design not as a way to package answers</span
-			>, but as a means to ask better questions. It brings together tools and formats—maps, games,
-			exhibitions, fanzines—created to probe issues that often elude standard research methods.
-			These objects are not results but instruments: epistemic artefacts crafted to generate data,
-			provoke responses, and reveal what usually remains unseen, unspoken, and unnoticed. Rather
-			than presenting a retrospective, this collection functions as a living archive—more akin to
-			gleaning than to displaying—composed of fragments from ongoing inquiries. Each piece
-			demonstrates a commitment to documenting and theorising design in both its material specifics
-			and conceptual scope, linking tangible gestures to broader ways of knowing. Developed by a
-			multidisciplinary team of designers, sociologists, artists, political scientists, and
-			semioticians, this work takes place in experimental settings where the distinction between
-			observer and participant becomes blurred. Drawing on Science and Technology Studies and
-			pragmatist philosophy, we view problems not as static or given, but as relational,
-			ever-changing, and shaped by the very methods employed to study them. To describe, in this
-			context, is already to intervene. In assembling this portfolio, we propose a model of design
-			research that resists closure, embraces complexity, and remains accountable to the social
-			worlds it engages with.
+			{#if isPageLoaded}
+				<span class="font-medium text-primary" transition:fly={{ y: 18, duration: 700, delay: 90 }}
+					>This portfolio presents design not as a way to package answers, but as a means to ask
+					better questions.
+				</span>
+				<span transition:fly={{ y: 50, duration: 700, delay: 350 }}
+					>It brings together tools and formats—maps, games, exhibitions, fanzines—created to probe
+					issues that often elude standard research methods. These objects are not results but
+					instruments: epistemic artefacts crafted to generate data, provoke responses, and reveal
+					what usually remains unseen, unspoken, and unnoticed. Rather than presenting a
+					retrospective, this collection functions as a living archive—more akin to gleaning than to
+					displaying—composed of fragments from ongoing inquiries. Each piece demonstrates a
+					commitment to documenting and theorising design in both its material specifics and
+					conceptual scope, linking tangible gestures to broader ways of knowing. Developed by a
+					multidisciplinary team of designers, sociologists, artists, political scientists, and
+					semioticians, this work takes place in experimental settings where the distinction between
+					observer and participant becomes blurred. Drawing on Science and Technology Studies and
+					pragmatist philosophy, we view problems not as static or given, but as relational,
+					ever-changing, and shaped by the very methods employed to study them. To describe, in this
+					context, is already to intervene. In assembling this portfolio, we propose a model of
+					design research that resists closure, embraces complexity, and remains accountable to the
+					social worlds it engages with.</span
+				>
+			{/if}
 		</p>
 	</div>
 	<a

@@ -9,15 +9,14 @@
 		"dither": "bun src/lib/buildDither.ts",
 		"dither:check": "bun src/lib/validateDither.ts",
 		"dither:all": "bun run dither && bun run dither:check",
-		"build": "vite build",
+		"build": "bun run dither:all && vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"format": "prettier --write .",
 		"lint": "prettier --check .",
-		"deploy": "bun run dither:all && bun run build",
-		"test:cross-browser": "node scripts/cross-browser-smoke.mjs"
+		"deploy": "bun run build"
 	},
 	"browserslist": [
 		"last 1 Chrome version",
@@ -28,7 +27,6 @@
 		"not dead"
 	],
 	"devDependencies": {
-		"@playwright/test": "^1.58.2",
 		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/enhanced-img": "^0.8.5",
 		"@sveltejs/kit": "^2.22.0",

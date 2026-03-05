@@ -70,12 +70,19 @@
 		return { x: Math.cos(angle), y: Math.sin(angle) };
 	});
 
-	const ensureSplitVectors = (count: number) => {
-		if (splitVectors.length === count) return;
-		splitVectors = Array.from({ length: count }, () => {
+	const createRandomSplitVectors = (count: number): CardVec2[] =>
+		Array.from({ length: count }, () => {
 			const randomIndex = Math.floor(Math.random() * circularSplitVectors.length);
 			return circularSplitVectors[randomIndex];
 		});
+
+	const ensureSplitVectors = (count: number) => {
+		if (splitVectors.length === count) return;
+		splitVectors = createRandomSplitVectors(count);
+	};
+
+	const reseedSplitVectors = () => {
+		splitVectors = createRandomSplitVectors(stackPreview.length);
 	};
 
 	const splitTransform = (stackIndex: number): string => {
@@ -124,6 +131,9 @@
 
 	const setCardHoverState = (hovered: boolean) => {
 		if (props.isMobile) return;
+		if (hovered && !isHovered) {
+			reseedSplitVectors();
+		}
 		isHovered = hovered;
 		dispatch('hoverchange', { index: props.index, hovered });
 	};
@@ -194,18 +204,18 @@
 		{/if}
 	</div>
 	<div
-		class="z-10 flex h-full w-fit flex-col items-start justify-center gap-2.5 p-2.5 max-md:relative max-md:w-full bg-[var(--color-surface)]"
+		class="z-10 flex h-full w-fit flex-col items-start justify-center gap-2.5 p-2.5 max-md:relative max-md:w-full bg-surface"
 		style={`max-width: ${props.isMobile ? 'none' : cardSizeMaxWidth};`}
 		in:fade={{ duration: 260 }}
 	>
 		<h2
 			id="title_container"
-			class="w-full bg-inverse [display:-webkit-box] overflow-visible text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:3] [line-clamp:3] max-md:w-[95%]"
+			class="w-full bg-surface [display:-webkit-box] overflow-visible text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:3] [line-clamp:3] max-md:w-[95%]"
 			in:fly={{ y: 16, duration: 650, delay: 60 }}
 		>
 			{props.title}
 		</h2>
-		<div class="bg-inverse" in:fly={{ y: 16, duration: 650, delay: 110 }}>
+		<div class="bg-surface" in:fly={{ y: 16, duration: 650, delay: 110 }}>
 			{#if props.year_end}
 				<p class="notes"><b>Period:</b> {props.year_begin} - {props.year_end}</p>
 			{:else}
