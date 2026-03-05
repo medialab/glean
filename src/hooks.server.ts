@@ -1,12 +1,6 @@
 import { handleDeviceDetector } from 'sveltekit-device-detector';
 import type { Handle } from '@sveltejs/kit';
-import type { DeviceType } from '$lib/types';
-
-const fallbackDeviceType: DeviceType = {
-	isMobile: false,
-	isTablet: false,
-	isDesktop: true
-};
+import { FALLBACK_DEVICE_TYPE } from '$lib/device/defaults';
 
 const deviceDetectorHandle = handleDeviceDetector({
 	fallbackUserAgent:
@@ -16,7 +10,7 @@ const deviceDetectorHandle = handleDeviceDetector({
 export const handle: Handle = async ({ event, resolve }) => {
 	// During prerender there is no real User-Agent. Skip detector to avoid repeated warnings.
 	if (!event.request.headers.get('user-agent')) {
-		event.locals.deviceType = fallbackDeviceType;
+		event.locals.deviceType = FALLBACK_DEVICE_TYPE;
 		return resolve(event);
 	}
 

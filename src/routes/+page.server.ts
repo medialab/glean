@@ -1,48 +1,12 @@
 import type { PageServerLoad } from './$types';
-import { extractYamlData } from '$lib/functions';
+import { extractYamlData } from '$lib/data/yaml';
 import { homeMediaMetadataLoaders, homeDitheredMediaMetadataLoaders } from '$lib/medias';
-import type { DeviceType, HomeCardDTO, ImageMetadata, Project, YamlData } from '$lib/types';
-
-const fallbackDeviceType: DeviceType = {
-	isMobile: false,
-	isTablet: false,
-	isDesktop: true
-};
-
-const imageFilePattern = /\.(png|jpe?g|webp|gif)$/i;
+import type { HomeCardDTO, ImageMetadata, Project, YamlData } from '$lib/types';
+import { normalizeImageMetadata } from '$lib/media/guards';
+import { getProjectImageKeys } from '$lib/media/project-files';
+import { FALLBACK_DEVICE_TYPE } from '$lib/device/defaults';
 
 type MediaMetadataLoader = () => Promise<ImageMetadata | { default: ImageMetadata }>;
-
-const isProjectImageKey = (path: string, projectTag: string): boolean =>
-	path.includes(`/${projectTag}/`) && imageFilePattern.test(path);
-
-const isImageMetadata = (value: unknown): value is ImageMetadata => {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		'src' in value &&
-		'width' in value &&
-		'height' in value
-	);
-};
-
-const normalizeImageMetadata = (value: unknown): ImageMetadata | null => {
-	if (isImageMetadata(value)) return value;
-	if (typeof value === 'object' && value !== null && 'default' in value) {
-		const defaultValue = (value as { default?: unknown }).default;
-		if (isImageMetadata(defaultValue)) return defaultValue;
-	}
-	return null;
-};
-
-const selectProjectImageKeys = (
-	loaderMap: Record<string, MediaMetadataLoader>,
-	projectTag: string
-): string[] => {
-	return Object.keys(loaderMap)
-		.filter((path) => isProjectImageKey(path, projectTag))
-		.sort((leftPath, rightPath) => leftPath.localeCompare(rightPath, 'en', { numeric: true }));
-};
 
 const metadataPromiseCache = new Map<string, Promise<ImageMetadata | null>>();
 
@@ -65,8 +29,8 @@ const loadImageMetadata = (
 };
 
 const buildHomeCard = async (project: Project): Promise<HomeCardDTO | null> => {
-	const sourceKeys = selectProjectImageKeys(homeMediaMetadataLoaders, project.tag);
-	const ditheredKeys = selectProjectImageKeys(homeDitheredMediaMetadataLoaders, project.tag);
+	const sourceKeys = getProjectImageKeys(homeMediaMetadataLoaders, project.tag);
+	const ditheredKeys = getProjectImageKeys(homeDitheredMediaMetadataLoaders, project.tag);
 
 	const ditheredThumbKey = ditheredKeys.find((path) => path.toLowerCase().includes('thumb'));
 	const sourceThumbKey = sourceKeys.find((path) => path.toLowerCase().includes('thumb'));
@@ -134,7 +98,7 @@ export const load: PageServerLoad = async ({ parent }) => {
 		console.error('Error loading YAML data:', error);
 		return {
 			cards: [],
-			deviceType: fallbackDeviceType
+			deviceType: FALLBACK_DEVICE_TYPE
 		};
 	}
 };

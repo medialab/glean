@@ -1,64 +1,8 @@
-import fs from 'fs/promises';
 import path from 'path';
+import { isHomeCardSourceImage, isOutputImage, walkFiles } from './scripts/media-walk';
 
 const inputDir = path.resolve(process.cwd(), 'src/lib/media');
 const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia');
-
-const DITHER_INPUT_EXTENSIONS = [
-	'.png',
-	'.jpg',
-	'.jpeg',
-	'.gif',
-	'.webp',
-	'.bmp',
-	'.tiff',
-	'.tif'
-] as const;
-
-const OUTPUT_IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.webp', '.gif'] as const;
-
-const isSourceImage = (filePath: string): boolean => {
-	return DITHER_INPUT_EXTENSIONS.includes(
-		path.extname(filePath).toLowerCase() as (typeof DITHER_INPUT_EXTENSIONS)[number]
-	);
-};
-
-const isHomeCardSourceImage = (filePath: string): boolean => {
-	if (!isSourceImage(filePath)) return false;
-	const relativePath = path.relative(inputDir, filePath).replaceAll('\\', '/');
-	const depth = relativePath.split('/').length;
-	return depth === 2;
-};
-
-const isDitherOutputImage = (filePath: string): boolean => {
-	return OUTPUT_IMAGE_EXTENSIONS.includes(
-		path.extname(filePath).toLowerCase() as (typeof OUTPUT_IMAGE_EXTENSIONS)[number]
-	);
-};
-
-const walkFiles = async (rootDir: string): Promise<string[]> => {
-	const entries = await fs.readdir(rootDir, { withFileTypes: true });
-	const files: string[] = [];
-
-	for (const entry of entries) {
-		if (entry.name.startsWith('.')) {
-			continue;
-		}
-
-		const fullPath = path.join(rootDir, entry.name);
-
-		if (entry.isDirectory()) {
-			files.push(...(await walkFiles(fullPath)));
-			continue;
-		}
-
-		if (entry.isFile()) {
-			files.push(fullPath);
-		}
-	}
-
-	return files.sort((a, b) => a.localeCompare(b, 'en'));
-};
 
 const toExpectedRelativeOutputPath = (sourcePath: string): string => {
 	return path
@@ -86,8 +30,10 @@ const printPreview = (label: string, values: string[]): void => {
 };
 
 const runValidation = async (): Promise<void> => {
-	const sourceFiles = (await walkFiles(inputDir)).filter(isHomeCardSourceImage);
-	const outputFiles = (await walkFiles(outputDir)).filter(isDitherOutputImage);
+	const sourceFiles = (await walkFiles(inputDir)).filter((filePath) =>
+		isHomeCardSourceImage(filePath, inputDir)
+	);
+	const outputFiles = (await walkFiles(outputDir)).filter(isOutputImage);
 
 	const expectedOutputs = sourceFiles.map(toExpectedRelativeOutputPath);
 	const actualOutputs = outputFiles.map(toActualRelativeOutputPath);

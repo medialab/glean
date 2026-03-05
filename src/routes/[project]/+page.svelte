@@ -2,183 +2,29 @@
 	import type { PageProps } from './$types';
 	import PdfWrapper from '$lib/components/pdf_wrapper.svelte';
 
-	import { colorMode } from '$lib/utils';
+	import { colorMode } from '$lib/stores/color-mode';
 	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl, toAbsoluteUrl } from '$lib/seo';
-	import type { ImageMetadata, TrailPoint, YamlTextModule } from '$lib/types';
+	import { isImageMetadata } from '$lib/media/guards';
+	import { createPointerTrailMask } from '$lib/ui/pointer-trail';
 	import { onDestroy } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { inview } from 'svelte-inview';
-	import { load as yamlLoad } from 'js-yaml';
 
 	const options = {};
-	const isImageMetadata = (value: unknown): value is ImageMetadata => {
-		return (
-			typeof value === 'object' &&
-			value !== null &&
-			'src' in value &&
-			'width' in value &&
-			'height' in value
-		);
+	const pointerTrail = createPointerTrailMask(1000);
+
+	const stemFromFilePath = (filePath: string): string | null => {
+		const baseName = filePath.split('/').pop();
+		if (!baseName) return null;
+		const stem = baseName.replace(/\.[^.]+$/, '');
+		return stem || null;
 	};
 
-	const trailMap = new WeakMap<HTMLElement, TrailPoint[]>();
-	const TRAIL_DURATION = 1000;
-	const hasPointerEvents = () =>
-		typeof window !== 'undefined' && typeof window.PointerEvent !== 'undefined';
-
-	const eventPoint = (event: PointerEvent | MouseEvent | TouchEvent) => {
-		if ('touches' in event || 'changedTouches' in event) {
-			const touchEvent = event as TouchEvent;
-			const touch = touchEvent.touches?.[0] ?? touchEvent.changedTouches?.[0];
-			if (!touch) return null;
-			return { x: touch.clientX, y: touch.clientY };
-		}
-
-		return { x: event.clientX, y: event.clientY };
-	};
-
-	const applyTrailMask = (target: HTMLElement) => {
-		const now = performance.now();
-		const existing = trailMap.get(target) ?? [];
-		const points = existing.filter((p) => now - p.t <= TRAIL_DURATION);
-
-		if (!points.length) {
-			trailMap.delete(target);
-			target.style.removeProperty('-webkit-mask-image');
-			target.style.removeProperty('mask-image');
-			return;
-		}
-
-		trailMap.set(target, points);
-
-		const gradients = points
-			.map((p) => {
-				const age = (now - p.t) / TRAIL_DURATION;
-				const opacity = Math.max(0, 1 - age);
-				const inner = 7;
-				const outer = 14;
-
-				return `radial-gradient(
-				circle at ${p.x}% ${p.y}%,
-				rgba(0,0,0,${opacity}) 0%,
-				rgba(0,0,0,${opacity}) ${inner}%,
-				rgba(0,0,0,0) ${outer}%,
-				rgba(0,0,0,0) 100%
-			)`;
-			})
-			.join(', ');
-
-		target.style.webkitMaskImage = gradients;
-		target.style.maskImage = gradients;
-
-		// Keep animating fade-out until all points have expired
-		requestAnimationFrame(() => applyTrailMask(target));
-	};
-
-	const updateClipFromInput = (event: PointerEvent | MouseEvent | TouchEvent) => {
-		const target = event.currentTarget as HTMLElement | null;
-		if (!target) return;
-
-		const point = eventPoint(event);
-		if (!point) return;
-
-		const rect = target.getBoundingClientRect();
-
-		const x = ((point.x - rect.left) / rect.width) * 100;
-		const y = ((point.y - rect.top) / rect.height) * 100;
-
-		const now = performance.now();
-		const existing = trailMap.get(target) ?? [];
-		existing.push({ x, y, t: now });
-		trailMap.set(target, existing);
-
-		applyTrailMask(target);
-	};
-
-	const resetClip = (event: PointerEvent | MouseEvent | TouchEvent) => {
-		const target = event.currentTarget as HTMLElement | null;
-		if (!target) return;
-
-		// Let existing points fade naturally; just stop adding new ones.
-		// Optionally clear immediately if user leaves for a while.
-		setTimeout(() => {
-			if (!trailMap.has(target)) return;
-			trailMap.delete(target);
-			target.style.removeProperty('-webkit-mask-image');
-			target.style.removeProperty('mask-image');
-		}, TRAIL_DURATION);
-	};
-
-	const handlePointerEnter = (event: PointerEvent) => {
-		if (!hasPointerEvents()) return;
-		updateClipFromInput(event);
-	};
-
-	const handlePointerMove = (event: PointerEvent) => {
-		if (!hasPointerEvents()) return;
-		updateClipFromInput(event);
-	};
-
-	const handlePointerLeave = (event: PointerEvent) => {
-		if (!hasPointerEvents()) return;
-		resetClip(event);
-	};
-
-	const handleMouseEnter = (event: MouseEvent) => {
-		if (hasPointerEvents()) return;
-		updateClipFromInput(event);
-	};
-
-	const handleMouseMove = (event: MouseEvent) => {
-		if (hasPointerEvents()) return;
-		updateClipFromInput(event);
-	};
-
-	const handleMouseLeave = (event: MouseEvent) => {
-		if (hasPointerEvents()) return;
-		resetClip(event);
-	};
-
-	const handleTouchStart = (event: TouchEvent) => {
-		if (hasPointerEvents()) return;
-		updateClipFromInput(event);
-	};
-
-	const handleTouchMove = (event: TouchEvent) => {
-		if (hasPointerEvents()) return;
-		updateClipFromInput(event);
-	};
-
-	const handleTouchEnd = (event: TouchEvent) => {
-		if (hasPointerEvents()) return;
-		resetClip(event);
-	};
-
-	const findDidascalia = async (filePath: string): Promise<string | null> => {
-		const filename = filePath.split('.').shift();
-
-		if (!filename) {
-			return null;
-		}
-
-		const didascaliaKey = Object.keys(data.didascaliaEntries).find((d) => d.includes(filename));
-
-		if (!didascaliaKey) {
-			return null;
-		}
-
-		const rawYamlContent = data.didascaliaEntries[didascaliaKey] as YamlTextModule;
-
-		if (!rawYamlContent.default?.length) {
-			return null;
-		}
-
-		try {
-			const finalText = yamlLoad(rawYamlContent.default) as { imgDescription?: string };
-			return typeof finalText.imgDescription === 'string' ? finalText.imgDescription : null;
-		} catch {
-			return null;
-		}
+	const didascaliaFromFilePath = (filePath: string | undefined): string | null => {
+		if (!filePath) return null;
+		const stem = stemFromFilePath(filePath);
+		if (!stem) return null;
+		return data.didascaliaByStem?.[stem] ?? null;
 	};
 
 	let { data }: PageProps = $props();
@@ -265,15 +111,15 @@
 							src={data.ditherThumbnailSrc}
 							alt="Project thumbnail dither"
 							class="absolute inset-0 z-[1] h-full w-full object-cover [-webkit-mask-image:radial-gradient(circle_at_50%_50%,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_100%)] [mask-image:radial-gradient(circle_at_50%_50%,rgba(0,0,0,0)_0%,rgba(0,0,0,0)_100%)]"
-							onpointerleave={handlePointerLeave}
-							onpointerenter={handlePointerEnter}
-							onpointermove={handlePointerMove}
-							onmouseleave={handleMouseLeave}
-							onmouseenter={handleMouseEnter}
-							onmousemove={handleMouseMove}
-							ontouchstart={handleTouchStart}
-							ontouchmove={handleTouchMove}
-							ontouchend={handleTouchEnd}
+							onpointerleave={pointerTrail.handlePointerLeave}
+							onpointerenter={pointerTrail.handlePointerEnter}
+							onpointermove={pointerTrail.handlePointerMove}
+							onmouseleave={pointerTrail.handleMouseLeave}
+							onmouseenter={pointerTrail.handleMouseEnter}
+							onmousemove={pointerTrail.handleMouseMove}
+							ontouchstart={pointerTrail.handleTouchStart}
+							ontouchmove={pointerTrail.handleTouchMove}
+							ontouchend={pointerTrail.handleTouchEnd}
 						/>
 					{/if}
 				{/if}
@@ -318,7 +164,7 @@
 				</p> -->
 				<p
 					id="description"
-					class="pr-[5px] [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:10] [line-clamp:10] max-md:pr-0 max-md:[-webkit-line-clamp:15] max-md:[line-clamp:15]"
+					class="pr-[5px] [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:10] [line-clamp:10] max-md:pr-0 max-md:[-webkit-line-clamp:15] max-md:[line-clamp:15] text-[var(--permanent-black)]"
 					in:fly={{ y: 20, duration: 700, delay: 380 }}
 					style="transition-delay: 0.35s;"
 				>
@@ -376,6 +222,7 @@
 					{/if}
 				{:else if !key.toLowerCase().includes('thumb') && key && isImageMetadata(mediaFile)}
 					{@const filePath = key.split('/').pop()}
+					{@const didascalia = didascaliaFromFilePath(filePath)}
 					<div
 						class={`${mediaFile.width > mediaFile.height ? 'col-span-2' : 'col-span-1'} relative overflow-hidden`}
 						in:fly={{ y: 16, duration: 550 }}
@@ -389,16 +236,12 @@
 							src={mediaFile.src}
 							alt="Project media"
 						/>
-						{#if filePath}
-							{#await findDidascalia(filePath) then d}
-								{#if d}
-									<div
-										class="absolute bottom-0 left-0 z-10 h-5 w-fit bg-[var(--permanent-white)] px-[5px] text-[12px] text-[var(--permanent-black)]"
-									>
-										<p class="notes">{d}</p>
-									</div>
-								{/if}
-							{/await}
+						{#if didascalia}
+							<div
+								class="absolute bottom-0 left-0 z-10 h-5 w-fit bg-[var(--permanent-white)] px-[5px] text-[12px] text-[var(--permanent-black)]"
+							>
+								<p class="notes">{didascalia}</p>
+							</div>
 						{/if}
 					</div>
 				{/if}

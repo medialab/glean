@@ -1,9 +1,7 @@
-//This file is responsible for extracting the yaml data from the main.yaml file
-
-import { resolve } from 'path';
 import { readFileSync, statSync } from 'fs';
+import { resolve } from 'path';
 import { load as yamlLoad } from 'js-yaml';
-import type { YamlData } from './types';
+import type { YamlData } from '$lib/types';
 
 const isYamlData = (value: unknown): value is YamlData => {
 	return (
@@ -43,16 +41,4 @@ export const extractYamlData = (): YamlData | undefined => {
 		console.error('Error loading YAML data:', error);
 		return undefined;
 	}
-};
-
-export const genericProjectFileObtainer = <T>(
-	mediaFilesModules: Record<string, T>,
-	projectTag: string
-): Record<string, T> => {
-	return Object.keys(mediaFilesModules)
-		.filter((key) => key.includes(`/${projectTag}/`))
-		.reduce((obj: Record<string, T>, key) => {
-			obj[key] = mediaFilesModules[key];
-			return obj;
-		}, {});
 };

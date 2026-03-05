@@ -1,6 +1,6 @@
 // Load image metadata (width, height, format, src) using vite-imagetools
 
-import type { ImageMetadata, YamlTextModule } from './types';
+import type { ImageMetadata } from './types';
 
 type MediaFileModule = ImageMetadata | string;
 type MediaFileLoader = () => Promise<MediaFileModule>;

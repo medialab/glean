@@ -26,8 +26,6 @@ export type YamlTextModule = {
 	default: string;
 };
 
-export type ImageShape = 'Horizontal' | 'Vertical' | 'Square';
-
 export type ImageMetadata = {
 	src: string;
 	width: number;
@@ -95,7 +93,7 @@ export type HomeCardDTO = {
 };
 
 export type PdfWrapperProps = {
-	mediafile: ImageMetadata;
+	mediafile: { default: string };
 	scale: number;
 	twoPage: boolean;
 };

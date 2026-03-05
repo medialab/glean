@@ -23,15 +23,6 @@
 			x: event.clientX,
 			y: event.clientY
 		});
-
-		// Normalize to [-1, 1] relative to viewport center and expose as CSS vars
-		const vw = window.innerWidth || 1;
-		const vh = window.innerHeight || 1;
-		const nx = (event.clientX / vw) * 2 - 1;
-		const ny = (event.clientY / vh) * 2 - 1;
-		const root = document.documentElement;
-		root.style.setProperty('--mx', String(nx));
-		root.style.setProperty('--my', String(ny));
 	};
 
 	const handleCardHoverChange = (event: CustomEvent<{ index: number; hovered: boolean }>) => {

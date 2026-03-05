@@ -13,6 +13,7 @@ declare global {
 			deviceType: DeviceType;
 			projectMediaFiles?: Record<string, ImageMetadata | { default: string }>;
 			subGalleryMediaFiles?: Record<string, ImageMetadata>;
+			didascaliaByStem?: Record<string, string>;
 			thumbnailSrc?: string | null;
 			ditherThumbnailSrc?: string | null;
 		}

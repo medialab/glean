@@ -1,5 +1,5 @@
 import type { PageServerLoad } from './$types';
-import { extractYamlData, genericProjectFileObtainer } from '$lib/functions';
+import { extractYamlData } from '$lib/data/yaml';
 import {
 	didascaliaModules,
 	ditheredMediaFilesModules,
@@ -8,26 +8,19 @@ import {
 } from '$lib/medias';
 import type { ImageMetadata, YamlTextModule } from '$lib/types';
 import { error, type HttpError } from '@sveltejs/kit';
+import { getProjectFilesByTag } from '$lib/media/project-files';
+import { isImageMetadata } from '$lib/media/guards';
+import { buildDidascaliaByStem } from '$lib/media/didascalia';
 
 type ProjectMediaFile = ImageMetadata | { default: string };
 type MediaFileLoader = () => Promise<ImageMetadata | string>;
 type ImageMetadataLoader = () => Promise<ImageMetadata>;
 type YamlTextLoader = () => Promise<string>;
 
-const isImageMetadata = (value: unknown): value is ImageMetadata => {
-	return (
-		typeof value === 'object' &&
-		value !== null &&
-		'src' in value &&
-		'width' in value &&
-		'height' in value
-	);
-};
-
 const resolveProjectMediaFiles = async (
 	projectTag: string
 ): Promise<Record<string, ProjectMediaFile>> => {
-	const projectLoaders = genericProjectFileObtainer(
+	const projectLoaders = getProjectFilesByTag(
 		mediaFilesModules as Record<string, MediaFileLoader>,
 		projectTag
 	);
@@ -46,7 +39,7 @@ const resolveProjectImageFiles = async (
 	loaderMap: Record<string, ImageMetadataLoader>,
 	projectTag: string
 ): Promise<Record<string, ImageMetadata>> => {
-	const projectLoaders = genericProjectFileObtainer(loaderMap, projectTag);
+	const projectLoaders = getProjectFilesByTag(loaderMap, projectTag);
 	const entries = await Promise.all(
 		Object.entries(projectLoaders).map(async ([key, loader]) => [key, await loader()] as const)
 	);
@@ -56,7 +49,7 @@ const resolveProjectImageFiles = async (
 const resolveProjectDidascaliaEntries = async (
 	projectTag: string
 ): Promise<Record<string, YamlTextModule>> => {
-	const projectLoaders = genericProjectFileObtainer(
+	const projectLoaders = getProjectFilesByTag(
 		didascaliaModules as Record<string, YamlTextLoader>,
 		projectTag
 	);
@@ -103,6 +96,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			project.tag
 		);
 		const didascaliaEntries = await resolveProjectDidascaliaEntries(project.tag);
+		const didascaliaByStem = buildDidascaliaByStem(didascaliaEntries);
 		const ditheredProjectMediaFiles = await resolveProjectImageFiles(
 			ditheredMediaFilesModules as Record<string, ImageMetadataLoader>,
 			project.tag
@@ -129,7 +123,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			project,
 			projectMediaFiles,
 			subGalleryMediaFiles,
-			didascaliaEntries,
+			didascaliaByStem,
 			thumbnailSrc,
 			ditherThumbnailSrc,
 			deviceType

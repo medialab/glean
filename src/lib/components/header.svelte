@@ -1,11 +1,7 @@
 <script lang="ts">
-	import { colorMode, isHomeRoute } from '$lib/utils';
+	import { colorMode } from '$lib/stores/color-mode';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-
-	const switchMode = () => {
-		colorMode.set($colorMode === 'dark' ? 'light' : 'dark');
-	};
 </script>
 
 {#snippet logo_container()}
@@ -22,7 +18,10 @@
 {#snippet colorswitch_container()}
 	<div class="hover_container">
 		<div class="md:flex gap-1 hidden bg-surface px-1 text-primary">
-			<button onclick={() => switchMode()} class="text-primary">
+			<button
+				onclick={() => colorMode.set($colorMode === 'dark' ? 'light' : 'dark')}
+				class="text-primary"
+			>
 				{#if $colorMode === 'dark'}
 					<p>Light mode</p>
 				{:else}
@@ -54,7 +53,7 @@
 {/snippet}
 
 {#snippet navigator_container()}
-	{#if isHomeRoute(page.route.id)}
+	{#if page.route.id === '/'}
 		<div class="navigator_container">
 			<div class="md:flex hidden">
 				<a href={resolve('/about')} class="bg-surface px-1 text-primary">

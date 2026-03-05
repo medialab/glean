@@ -3,17 +3,7 @@ import path from 'path';
 import sharp from 'sharp';
 import { intBuffer, GRAY8 } from '@thi.ng/pixel';
 import { orderedDither, type BayerSize } from '@thi.ng/pixel-dither';
-
-const DITHER_INPUT_EXTENSIONS = [
-	'.png',
-	'.jpg',
-	'.jpeg',
-	'.gif',
-	'.webp',
-	'.bmp',
-	'.tiff',
-	'.tif'
-] as const;
+import { isHomeCardSourceImage, walkFiles } from './scripts/media-walk';
 
 type DitherProfile = {
 	resize: {
@@ -57,43 +47,6 @@ const DEFAULT_DITHER_PROFILE: DitherProfile = {
 
 const inputDir = path.resolve(process.cwd(), 'src/lib/media');
 const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia');
-
-const isSupportedSourceImage = (filePath: string): boolean => {
-	return DITHER_INPUT_EXTENSIONS.includes(
-		path.extname(filePath).toLowerCase() as (typeof DITHER_INPUT_EXTENSIONS)[number]
-	);
-};
-
-const isHomeCardSourceImage = (filePath: string): boolean => {
-	if (!isSupportedSourceImage(filePath)) return false;
-	const relativePath = path.relative(inputDir, filePath).replaceAll('\\', '/');
-	const depth = relativePath.split('/').length;
-	return depth === 2;
-};
-
-const collectSourceImages = async (rootDir: string): Promise<string[]> => {
-	const entries = await fs.readdir(rootDir, { withFileTypes: true });
-	const files: string[] = [];
-
-	for (const entry of entries) {
-		if (entry.name.startsWith('.')) {
-			continue;
-		}
-
-		const fullPath = path.join(rootDir, entry.name);
-
-		if (entry.isDirectory()) {
-			files.push(...(await collectSourceImages(fullPath)));
-			continue;
-		}
-
-		if (entry.isFile() && isHomeCardSourceImage(fullPath)) {
-			files.push(fullPath);
-		}
-	}
-
-	return files.sort((a, b) => a.localeCompare(b, 'en'));
-};
 
 const sourceToOutputPath = (sourcePath: string): string => {
 	const relativePath = path.relative(inputDir, sourcePath);
@@ -139,7 +92,9 @@ const runDither = async (): Promise<void> => {
 	await fs.rm(outputDir, { recursive: true, force: true });
 	await fs.mkdir(outputDir, { recursive: true });
 
-	const sourceImages = await collectSourceImages(inputDir);
+	const sourceImages = (await walkFiles(inputDir)).filter((filePath) =>
+		isHomeCardSourceImage(filePath, inputDir)
+	);
 
 	if (sourceImages.length === 0) {
 		console.warn('No source images found for dithering.');
