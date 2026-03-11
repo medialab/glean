@@ -1,4 +1,4 @@
-import type { ImageMetadata } from '$lib/types';
+import type { ImageMetadata } from '$lib/utils/types';
 
 export const isImageMetadata = (value: unknown): value is ImageMetadata => {
 	return (

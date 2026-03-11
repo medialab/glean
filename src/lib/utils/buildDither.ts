@@ -3,7 +3,7 @@ import path from 'path';
 import sharp from 'sharp';
 import { intBuffer, GRAY8 } from '@thi.ng/pixel';
 import { orderedDither, type BayerSize } from '@thi.ng/pixel-dither';
-import { isHomeCardSourceImage, walkFiles } from './scripts/media-walk';
+import { isHomeCardSourceImage, walkFiles } from '$lib/scripts/media-walk';
 
 type DitherProfile = {
 	resize: {

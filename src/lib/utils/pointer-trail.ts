@@ -1,4 +1,4 @@
-import type { TrailPoint } from '$lib/types';
+import type { TrailPoint } from '$lib/utils/types';
 
 type TrailEvent = PointerEvent | MouseEvent | TouchEvent;
 

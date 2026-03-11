@@ -1,5 +1,5 @@
 import { load as yamlLoad } from 'js-yaml';
-import type { YamlTextModule } from '$lib/types';
+import type { YamlTextModule } from '$lib/utils/types';
 
 const fileStem = (pathOrName: string): string | null => {
 	const baseName = pathOrName.split('/').pop();

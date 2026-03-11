@@ -1,5 +1,5 @@
 import path from 'path';
-import { isHomeCardSourceImage, isOutputImage, walkFiles } from './scripts/media-walk';
+import { isHomeCardSourceImage, isOutputImage, walkFiles } from '$lib/scripts/media-walk';
 
 const inputDir = path.resolve(process.cwd(), 'src/lib/media');
 const outputDir = path.resolve(process.cwd(), 'src/lib/ditheredMedia');
@@ -30,7 +30,7 @@ const printPreview = (label: string, values: string[]): void => {
 };
 
 const runValidation = async (): Promise<void> => {
-	const sourceFiles = (await walkFiles(inputDir)).filter((filePath) =>
+	const sourceFiles = (await walkFiles(inputDir)).filter((filePath: string) =>
 		isHomeCardSourceImage(filePath, inputDir)
 	);
 	const outputFiles = (await walkFiles(outputDir)).filter(isOutputImage);
@@ -41,8 +41,8 @@ const runValidation = async (): Promise<void> => {
 	const expectedSet = new Set(expectedOutputs);
 	const actualSet = new Set(actualOutputs);
 
-	const missing = expectedOutputs.filter((item) => !actualSet.has(item));
-	const stale = actualOutputs.filter((item) => !expectedSet.has(item));
+	const missing = expectedOutputs.filter((item: string) => !actualSet.has(item));
+	const stale = actualOutputs.filter((item: string) => !expectedSet.has(item));
 
 	printPreview('Missing dither outputs', missing);
 	printPreview('Stale dither outputs', stale);

@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 	import { fade } from 'svelte/transition';
 	import { resolve } from '$app/paths';
-	import type { CardProps, CardVec2 } from '$lib/types';
+	import type { CardProps, CardVec2 } from '$lib/utils/types';
 	import { fly } from 'svelte/transition';
 
 	let props: CardProps = $props();

@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { DeviceType } from '$lib/types';
+import type { DeviceType } from '$lib/utils/types';
 
 const defaultDeviceType: DeviceType = {
 	isMobile: false,

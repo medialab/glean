@@ -1,6 +1,6 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
-import type { HomeCardDTO, ImageMetadata } from '$lib/types';
+import type { HomeCardDTO, ImageMetadata } from '$lib/utils/types';
 
 declare global {
 	namespace App {

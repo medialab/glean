@@ -4,9 +4,9 @@
 
 	import { colorMode } from '$lib/stores/color-mode';
 	import { deviceType } from '$lib/stores/device-type';
-	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl, toAbsoluteUrl } from '$lib/seo';
+	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl, toAbsoluteUrl } from '$lib/utils/seo';
 	import { isImageMetadata } from '$lib/media/guards';
-	import { createPointerTrailMask } from '$lib/ui/pointer-trail';
+	import { createPointerTrailMask } from '$lib/utils/pointer-trail';
 	import { onDestroy } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { inview } from 'svelte-inview';

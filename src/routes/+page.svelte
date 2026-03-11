@@ -1,8 +1,8 @@
 <script lang="ts">
 	import Card from '$lib/components/card.svelte';
 	import type { PageProps } from './$types';
-	import type { MousePosition } from '$lib/types';
-	import { SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/seo';
+	import type { MousePosition } from '$lib/utils/types';
+	import { SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/utils/seo';
 	import { fly } from 'svelte/transition';
 	import { writable } from 'svelte/store';
 	import { resolve } from '$app/paths';

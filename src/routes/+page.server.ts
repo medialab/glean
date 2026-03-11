@@ -1,7 +1,7 @@
 import type { PageServerLoad } from './$types';
 import { extractYamlData } from '$lib/data/yaml';
-import { homeMediaMetadataLoaders, homeDitheredMediaMetadataLoaders } from '$lib/medias';
-import type { HomeCardDTO, ImageMetadata, Project, YamlData } from '$lib/types';
+import { homeMediaMetadataLoaders, homeDitheredMediaMetadataLoaders } from '$lib/utils/medias';
+import type { HomeCardDTO, ImageMetadata, Project, YamlData } from '$lib/utils/types';
 import { normalizeImageMetadata } from '$lib/media/guards';
 import { getProjectImageKeys } from '$lib/media/project-files';
 

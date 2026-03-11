@@ -5,8 +5,8 @@ import {
 	ditheredMediaFilesModules,
 	mediaFilesModules,
 	subGalleryModules
-} from '$lib/medias';
-import type { ImageMetadata, YamlTextModule } from '$lib/types';
+} from '$lib/utils/medias';
+import type { ImageMetadata, YamlTextModule, Project } from '$lib/utils/types';
 import { error, type HttpError } from '@sveltejs/kit';
 import { getProjectFilesByTag } from '$lib/media/project-files';
 import { isImageMetadata } from '$lib/media/guards';
@@ -66,7 +66,7 @@ export function entries() {
 	if (!data) {
 		return [];
 	}
-	return data.projects.map((project) => ({
+	return data.projects.map((project: Project) => ({
 		project: project.tag
 	}));
 }
@@ -79,7 +79,7 @@ export const load: PageServerLoad = async ({ params }) => {
 			throw error(500, 'Failed to load data');
 		}
 
-		const project = data.projects.find((p) => p.tag === params.project);
+		const project = data.projects.find((p: Project) => p.tag === params.project);
 
 		if (!project) {
 			throw error(404, 'Project not found');
@@ -102,7 +102,9 @@ export const load: PageServerLoad = async ({ params }) => {
 		);
 		const sourceThumbKey = sourceThumbEntry?.[0];
 		const thumbnailSrc =
-			sourceThumbEntry && isImageMetadata(sourceThumbEntry[1]) ? sourceThumbEntry[1].src : null;
+			sourceThumbEntry && isImageMetadata(sourceThumbEntry[1])
+				? (sourceThumbEntry[1] as ImageMetadata).src
+				: null;
 
 		const ditherThumbKey = sourceThumbKey
 			? sourceThumbKey.replace('/media/', '/ditheredMedia/').replace(/\.\w+$/, '.png')

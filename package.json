@@ -5,10 +5,10 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"imgYmlCreator": "bun src/lib/imgYmlCreator.ts",
+		"imgYmlCreator": "bun src/lib/utils/imgYmlCreator.ts",
 		"sync-media": "bun scripts/sync-media-folders.js",
-		"dither": "bun src/lib/buildDither.ts",
-		"dither:check": "bun src/lib/validateDither.ts",
+		"dither": "bun src/lib/utils/buildDither.ts",
+		"dither:check": "bun src/lib/utils/validateDither.ts",
 		"dither:all": "bun run dither && bun run dither:check",
 		"build": "bun run dither:all && vite build",
 		"preview": "vite preview",

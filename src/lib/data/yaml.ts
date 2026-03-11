@@ -1,7 +1,7 @@
 import { readFileSync, statSync } from 'fs';
 import { resolve } from 'path';
 import { load as yamlLoad } from 'js-yaml';
-import type { YamlData } from '$lib/types';
+import type { YamlData } from '$lib/utils/types';
 
 const isYamlData = (value: unknown): value is YamlData => {
 	return (

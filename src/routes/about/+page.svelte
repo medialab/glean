@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/seo';
+	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl } from '$lib/utils/seo';
 	import { onMount } from 'svelte';
 	import { fly } from 'svelte/transition';
 
