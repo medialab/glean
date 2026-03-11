@@ -3,6 +3,7 @@
 	import PdfWrapper from '$lib/components/pdf_wrapper.svelte';
 
 	import { colorMode } from '$lib/stores/color-mode';
+	import { deviceType } from '$lib/stores/device-type';
 	import { SITE_NAME, DEFAULT_OG_IMAGE, buildCanonicalUrl, toAbsoluteUrl } from '$lib/seo';
 	import { isImageMetadata } from '$lib/media/guards';
 	import { createPointerTrailMask } from '$lib/ui/pointer-trail';
@@ -85,7 +86,7 @@
 		class="relative flex min-h-screen w-full flex-row gap-5 max-md:mt-5 max-md:h-full max-md:w-full max-md:flex-col max-md:gap-5 max-md:p-5"
 	>
 		<div
-			class="sticky top-40 ml-10 flex h-fit w-2/5 flex-col gap-5 overflow-visible bg-[var(--permanent-white)] p-2.5 text-[var(--permanent-black)] transition-all duration-[1300ms] [transition-timing-function:var(--curve)] max-md:static max-md:top-auto max-md:ml-0 max-md:w-full max-md:bg-transparent max-md:p-0 max-md:translate-y-0"
+			class="sticky top-40 ml-10 flex h-fit w-2/5 flex-col gap-5 overflow-visible bg-(--permanent-white) p-2.5 text-(--permanent-black) transition-all duration-1300 [transition-timing-function:--curve] max-md:static max-md:top-auto max-md:ml-0 max-md:w-full max-md:bg-transparent max-md:p-0 max-md:translate-y-0"
 		>
 			<!-- <button
 					class="hero_backhome sharing_button"
@@ -95,7 +96,7 @@
 					<p class="notes">Share this project</p>
 				</button> -->
 			<div
-				class="relative grid h-[30%] w-full place-content-center overflow-hidden aspect-21/9 max-md:mt-20 max-md:aspect-[31/9]"
+				class="relative grid h-[30%] w-full place-content-center overflow-hidden aspect-21/9 max-md:mt-20 max-md:aspect-31/9"
 				style="transition-delay: 0.1s;"
 				in:fly={{ y: 20, duration: 700, delay: 100 }}
 			>
@@ -103,10 +104,10 @@
 					<enhanced:img
 						src={data.thumbnailSrc}
 						alt={project.title}
-						class="relative z-0 h-full w-full object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+						class="relative z-0 h-full w-full object-cover transition-[filter] duration-300 [transition-timing-function:--curve]"
 						class:grayscale={$colorMode === 'dark'}
 					/>
-					{#if !data.deviceType.isMobile && data.ditherThumbnailSrc}
+					{#if !$deviceType.isMobile && data.ditherThumbnailSrc}
 						<img
 							src={data.ditherThumbnailSrc}
 							alt="Project thumbnail dither"
@@ -126,7 +127,7 @@
 			</div>
 			<div class="flex h-fit w-full flex-col gap-2.5 max-md:relative max-md:w-full max-md:gap-5">
 				<h1
-					class="w-[90%] text-[32px] leading-[1.1] text-[var(--permanent-black)] max-md:text-primary"
+					class="w-[90%] text-[32px] leading-[1.1] text-(--permanent-black) max-md:text-primary"
 					in:fly={{ y: 20, duration: 700, delay: 130 }}
 				>
 					{project.title}
@@ -149,12 +150,12 @@
 				</div>
 			</div>
 			<hr
-				class="h-px w-full bg-[var(--permanent-black)]"
+				class="h-px w-full bg-(--permanent-black)"
 				in:fly={{ y: 20, duration: 700, delay: 350 }}
 				style="transition-delay: 0.35s;"
 			/>
 			<div
-				class="flex flex-col gap-[5px] overflow-hidden transition-all duration-500 [transition-delay:0.1s] [transition-timing-function:var(--curve)]"
+				class="flex flex-col gap-1.25 overflow-hidden transition-all duration-500 delay-100 [transition-timing-function:--curve]"
 			>
 				<!-- <p
 						class="medium"
@@ -164,7 +165,7 @@
 				</p> -->
 				<p
 					id="description"
-					class="pr-[5px] [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:10] [line-clamp:10] max-md:pr-0 max-md:[-webkit-line-clamp:15] max-md:[line-clamp:15] text-[var(--permanent-black)]"
+					class="pr-1.25 [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] -webkit-line-clamp-10 line-clamp-10 max-md:pr-0 max-md:-webkit-line-clamp-15 max-md:line-clamp-15 text-(--permanent-black)"
 					in:fly={{ y: 20, duration: 700, delay: 380 }}
 					style="transition-delay: 0.35s;"
 				>
@@ -202,7 +203,7 @@
 							autoplay={true}
 							playsinline={true}
 							loop={true}
-							class="h-auto w-full transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+							class="h-auto w-full transition-[filter] duration-300 [transition-timing-function:--curve]"
 							class:grayscale={$colorMode === 'dark'}
 						>
 						</video>
@@ -216,7 +217,7 @@
 							<PdfWrapper
 								mediafile={mediaFile}
 								scale={0.7}
-								twoPage={data.deviceType.isMobile ? false : true}
+								twoPage={$deviceType.isMobile ? false : true}
 							/>
 						</div>
 					{/if}
@@ -230,7 +231,7 @@
 						aria-label="Project media"
 					>
 						<enhanced:img
-							class="h-auto w-full overflow-hidden bg-inverse object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+							class="h-auto w-full overflow-hidden bg-inverse object-cover transition-[filter] duration-300 [transition-timing-function:--curve]"
 							class:grayscale={$colorMode === 'dark'}
 							style="transition-delay: 0.4s;"
 							src={mediaFile.src}
@@ -238,7 +239,7 @@
 						/>
 						{#if didascalia}
 							<div
-								class="absolute bottom-0 left-0 z-10 h-5 w-fit bg-[var(--permanent-white)] px-[5px] text-[12px] text-[var(--permanent-black)]"
+								class="absolute bottom-0 left-0 z-10 h-5 w-fit bg-(--permanent-white) px-1.25 text-[12px] text-(--permanent-black)"
 							>
 								<p class="notes">{didascalia}</p>
 							</div>
@@ -254,7 +255,7 @@
 						<enhanced:img
 							src={mediaFile.src}
 							alt="Sub gallery media"
-							class="col-span-1 h-full w-full overflow-hidden bg-inverse object-cover transition-[filter] duration-300 [transition-timing-function:var(--curve)]"
+							class="col-span-1 h-full w-full overflow-hidden bg-inverse object-cover transition-[filter] duration-300 [transition-timing-function:--curve]"
 						/>
 					{/each}
 				</div>

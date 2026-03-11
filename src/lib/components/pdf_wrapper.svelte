@@ -41,7 +41,7 @@
 		class="pointer-events-none absolute top-0 right-0 z-[4] flex h-full w-[30%] flex-col items-end justify-center bg-transparent"
 	>
 		<p
-			class="notes pointer-events-auto z-[4] h-fit w-fit -translate-y-1/2 bg-[var(--permanent-white)] px-2.5 py-[5px] text-[32px] text-[var(--permanent-black)]"
+			class="notes pointer-events-auto z-[4] h-fit w-fit -translate-y-1/2 bg-(--permanent-white) px-2.5 py-1.25 text-[32px] text-(--permanent-black)"
 		>
 			→
 		</p>
@@ -51,7 +51,7 @@
 		class="pointer-events-none absolute top-0 left-0 z-[4] flex h-full w-[30%] flex-col items-start justify-center bg-transparent"
 	>
 		<p
-			class="notes pointer-events-auto z-[4] h-fit w-fit -translate-y-1/2 bg-[var(--permanent-white)] px-2.5 py-[5px] text-[32px] text-[var(--permanent-black)]"
+			class="notes pointer-events-auto z-[4] h-fit w-fit -translate-y-1/2 bg-(--permanent-white) px-2.5 py-1.25 text-[32px] text-(--permanent-black)"
 		>
 			←
 		</p>

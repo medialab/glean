@@ -26,12 +26,12 @@ export const mediaFilesModules = import.meta.glob(
 			metadata: '',
 			w: '1200',
 			as: 'metadata',
-			enhanced: true,
+			enhanced: false,
 			quality: 80,
 			//format: 'webp',
-			allowUpscale: true,
+			allowUpscale: false,
 			allowDownscale: true,
-			removeMetadata: false
+			removeMetadata: true
 		}
 	}
 ) as Record<string, MediaFileLoader>;

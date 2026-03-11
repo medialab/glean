@@ -7,6 +7,7 @@
 	import { writable } from 'svelte/store';
 	import { resolve } from '$app/paths';
 	import { onMount } from 'svelte';
+	import { deviceType } from '$lib/stores/device-type';
 
 	let { data }: PageProps = $props();
 
@@ -88,7 +89,7 @@
 >
 	{#each data.cards as card, index}
 		<Card
-			isMobile={data.deviceType.isMobile}
+			isMobile={$deviceType.isMobile}
 			isDimmed={hoveredCardIndex !== null && hoveredCardIndex !== index}
 			thumbnail={card.thumb}
 			tag={card.tag}

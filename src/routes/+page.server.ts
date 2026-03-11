@@ -4,7 +4,6 @@ import { homeMediaMetadataLoaders, homeDitheredMediaMetadataLoaders } from '$lib
 import type { HomeCardDTO, ImageMetadata, Project, YamlData } from '$lib/types';
 import { normalizeImageMetadata } from '$lib/media/guards';
 import { getProjectImageKeys } from '$lib/media/project-files';
-import { FALLBACK_DEVICE_TYPE } from '$lib/device/defaults';
 
 type MediaMetadataLoader = () => Promise<ImageMetadata | { default: ImageMetadata }>;
 
@@ -82,23 +81,20 @@ const buildHomeCard = async (project: Project): Promise<HomeCardDTO | null> => {
 	return card;
 };
 
-export const load: PageServerLoad = async ({ parent }) => {
+export const load: PageServerLoad = async () => {
 	try {
 		const data: YamlData = extractYamlData() ?? { projects: [] };
-		const { deviceType } = await parent();
 		const cards = (
 			await Promise.all(data.projects.map((project) => buildHomeCard(project)))
 		).filter((card): card is HomeCardDTO => card !== null);
 
 		return {
-			cards,
-			deviceType
+			cards
 		};
 	} catch (error) {
 		console.error('Error loading YAML data:', error);
 		return {
-			cards: [],
-			deviceType: FALLBACK_DEVICE_TYPE
+			cards: []
 		};
 	}
 };

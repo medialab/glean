@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"imgYmlCreator": "bun src/lib/imgYmlCreator.ts",
+		"sync-media": "bun scripts/sync-media-folders.js",
 		"dither": "bun src/lib/buildDither.ts",
 		"dither:check": "bun src/lib/validateDither.ts",
 		"dither:all": "bun run dither && bun run dither:check",

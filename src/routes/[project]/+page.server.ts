@@ -71,17 +71,12 @@ export function entries() {
 	}));
 }
 
-export const load: PageServerLoad = async ({ params, parent }) => {
+export const load: PageServerLoad = async ({ params }) => {
 	try {
 		const data = extractYamlData();
-		const { deviceType } = await parent();
 
 		if (!data) {
 			throw error(500, 'Failed to load data');
-		}
-
-		if (!deviceType) {
-			throw error(500, 'Failed to load device type');
 		}
 
 		const project = data.projects.find((p) => p.tag === params.project);
@@ -125,8 +120,7 @@ export const load: PageServerLoad = async ({ params, parent }) => {
 			subGalleryMediaFiles,
 			didascaliaByStem,
 			thumbnailSrc,
-			ditherThumbnailSrc,
-			deviceType
+			ditherThumbnailSrc
 		};
 	} catch (err) {
 		// Check if this is already an HttpError from SvelteKit

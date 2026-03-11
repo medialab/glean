@@ -1,0 +1,30 @@
+name: Sync Media Folders
+
+on:
+  push:
+    branches: ['main']
+    paths:
+      - 'src/lib/dataset/main.yaml'
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Sync media folders
+        run: bun run scripts/sync-media-folders.js
+
+      - name: Commit and push if needed
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: sync media folders from main.yaml'
+          file_pattern: 'src/lib/media/*'

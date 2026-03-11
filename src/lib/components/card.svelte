@@ -144,7 +144,7 @@
 
 <a
 	bind:this={cardEl}
-	class="group [--card-hover-y:0px] flex h-[14vh] w-fit flex-row items-center justify-start gap-0 bg-[var(--primary-white)] [transform-origin:left_center] transition-opacity duration-250 [transition-timing-function:var(--curve)] hover:[--card-hover-y:-2px] max-md:relative max-md:h-fit max-md:w-full max-md:flex-col max-md:items-start max-md:bg-transparent"
+	class="group [--card-hover-y:0px] flex h-[14vh] w-fit flex-row items-center justify-start gap-0 bg-(--primary-white) origin-[left_center] transition-opacity duration-250 ease-(--curve) hover:[--card-hover-y:-2px] max-md:relative max-md:h-fit max-md:w-full max-md:flex-col max-md:items-start max-md:bg-transparent"
 	href={resolve('/[project]', { project: props.tag })}
 	onpointerenter={() => setCardHoverState(true)}
 	onpointerleave={() => setCardHoverState(false)}
@@ -157,7 +157,7 @@
 		: 'preserve-3d'}; opacity: {cardOpacity};"
 >
 	<div
-		class="relative z-[5] h-full max-h-full self-center max-md:h-auto max-md:max-h-[25vh] max-md:w-full max-md:aspect-[16/9]"
+		class="relative z-[5] h-full max-h-full self-center max-md:h-auto max-md:max-h-[25vh] max-md:w-full max-md:aspect-16/9"
 		style="aspect-ratio: {ra};"
 		in:fade={{ duration: 260 }}
 	>
@@ -171,22 +171,22 @@
 				crossorigin="anonymous"
 				onload={setThumbnailLoaded}
 				onerror={setThumbnailLoaded}
-				class="static z-[1] h-full w-full object-cover opacity-100 transition-opacity duration-200 [filter:grayscale(1)_contrast(2)_brightness(1.1)] [transition-timing-function:var(--curve)]"
+				class="static z-[1] h-full w-full object-cover opacity-100 transition-opacity duration-200 [filter:grayscale(1)_contrast(2)_brightness(1.1)] [transition-timing-function:--curve]"
 			/>
 		{/if}
 
 		{#if !isThumbnailLoaded}
 			<div
-				class="absolute inset-0 z-[10] flex h-full max-h-full items-center justify-center bg-[var(--permanent-white)]"
+				class="absolute inset-0 z-[10] flex h-full max-h-full items-center justify-center bg-(--permanent-white)"
 			>
-				<p class="notes animate-pulse text-[var(--permanent-black)]">Loading...</p>
+				<p class="notes animate-pulse text-(--permanent-black)">Loading...</p>
 			</div>
 		{/if}
 
 		<!-- This is the stack of images that shows on hover -->
 		{#if !props.isMobile}
 			<div
-				class="pointer-events-none absolute inset-0 z-[-1] h-full w-full opacity-0 transition-opacity duration-250 [transition-timing-function:var(--curve)] group-hover:opacity-100 max-md:invisible max-md:hidden"
+				class="absolute inset-0 z-[-1] h-full w-full opacity-0 transition-opacity duration-250 [transition-timing-function:--curve] group-hover:opacity-100 max-md:invisible max-md:hidden"
 			>
 				{#if stackPreview.length > 0}
 					{#each stackPreview as image, stackIndex}
@@ -196,7 +196,7 @@
 							fetchpriority="low"
 							alt={props.title}
 							style={`z-index: ${stackIndex + 1}; transform: ${splitTransform(stackIndex)}; transition-delay: ${stackIndex * 100}ms;`}
-							class="absolute inset-0 h-full w-full object-cover opacity-100 transition-transform duration-300 [transition-timing-function:var(--curve)]"
+							class="absolute inset-0 h-full w-full object-cover opacity-100 transition-transform duration-300 [transition-timing-function:--curve]"
 						/>
 					{/each}
 				{/if}
@@ -210,7 +210,7 @@
 	>
 		<h2
 			id="title_container"
-			class="w-full bg-surface [display:-webkit-box] overflow-visible text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:3] [line-clamp:3] max-md:w-[95%]"
+			class="w-full bg-surface [display:-webkit-box] overflow-visible text-ellipsis [-webkit-box-orient:vertical] -webkit-line-clamp-3 line-clamp-3 max-md:w-[95%]"
 			in:fly={{ y: 16, duration: 650, delay: 60 }}
 		>
 			{props.title}
@@ -223,7 +223,7 @@
 			{/if}
 			{#if props.team_people}
 				<p
-					class="notes [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] [-webkit-line-clamp:2] [line-clamp:2]"
+					class="notes [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] -webkit-line-clamp-2 line-clamp-2"
 					id="people"
 				>
 					<b>Team:</b>
