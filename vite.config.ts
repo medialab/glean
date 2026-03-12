@@ -10,9 +10,14 @@ const sveltePdfSourceEntry = fileURLToPath(
 );
 
 export default defineConfig({
-	plugins: [imagetools({
-		removeMetadata: false
-	}), enhancedImages(), tailwindcss(), sveltekit()],
+	plugins: [
+		imagetools({
+			removeMetadata: false
+		}),
+		enhancedImages(),
+		tailwindcss(),
+		sveltekit()
+	],
 	resolve: {
 		alias: {
 			'svelte-pdf': sveltePdfSourceEntry
