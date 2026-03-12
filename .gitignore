@@ -22,10 +22,8 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Lockfiles (project currently does not track lockfiles)
+# Lockfiles - bun.lock is tracked for reproducible installs
 package-lock.json
-bun.lock
-bun.lockb
 
 # Generated dither output
 /src/lib/ditheredMedia/
@@ -36,3 +34,12 @@ bun.lockb
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# Agent / AI tool artifacts
+.codex-skills-backup-*
+.opencode/
+.agent/
+
+# IDEs
+.vscode/
+.idea/
