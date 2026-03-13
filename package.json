@@ -10,7 +10,7 @@
 		"dither": "bun src/lib/utils/buildDither.ts",
 		"dither:check": "bun src/lib/utils/validateDither.ts",
 		"dither:all": "bun run dither && bun run dither:check",
-		"build": "bun run dither:all && vite build",
+		"build": "PATH=\"$HOME/.bun/bin:$PATH\" bun run dither:all && vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
