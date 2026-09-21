@@ -1,90 +1,215 @@
-# Design Team Portfolio — Sciences Po médialab
+# Glean
 
-A shared visual space for projects by the médialab design team. Automatically deployed to GitHub Pages.
+[![Deploy to GitHub Pages](https://github.com/medialab/glean/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/medialab/glean/actions/workflows/deploy.yml)
 
-## Adding a new project
+A shared visual space for projects by the médialab design team.
 
-### 1. Scaffold the project
+## How to Add a Project
 
-```bash
-bun scripts/create-project.ts TAG "Project Title"
+All projects live inside [`src/lib/projects/`](https://github.com/medialab/glean/tree/d8302bd51b8f01696009953a84e33e25b212859d/src/lib/projects).
+
+Each project gets its own folder, named after it:
+
+```text
+src/lib/projects/PROJECT_NAME/
 ```
 
-Example:
+---
 
-```bash
-bun scripts/create-project.ts MYPROJ "My Project"
+### Step 1: Prepare your project's folder
+
+Collect all media you want to display in your project.
+Glean currently supports:
+
+```text
+Images: PNG, JPG, JPEG, WEBP, GIF, AVIF, SVG
+Videos: MP4, MOV
+Documents: PDF
 ```
 
-This creates `src/lib/projects/MYPROJ/project.yaml` with basic fields.
+At least one image should be named `thumb` to display a thumbnail in the project's card.
 
-### 2. Add media files
+The folder should follow a likely structure:
 
-Drop images (`.png`, `.jpg`, `.webp`, `.avif`, `.gif`), videos (`.mp4`, `.mov`), and PDFs into `src/lib/projects/MYPROJ/`.
-
-Include at least one image with `thumb` in the filename — it becomes the homepage card thumbnail.
-
-### 3. Edit project.yaml
-
-```yaml
-title: 'My Project'
-description: 'A short description of the project'
-link: 'https://example.com'
-tag: MYPROJ
-year_begin: '2024'
+```text
+PROJECT_NAME/
+├── thumb.jpg
+├── image_1.jpg
+├── image_2.jpg
+├── demo_video.mp4
+├── report.pdf
+└── ...pdf
 ```
 
-Optional: `year_end`, `project_type`, `team_people`, `author`.
+---
 
-### 4. Preview locally (optional)
+### Step 2: Upload the project
+
+You have two ways to do this. 
+
+#### Option A: Use GitHub's interface
+
+1. Go to [`src/lib/projects/`](https://github.com/medialab/glean/tree/d8302bd51b8f01696009953a84e33e25b212859d/src/lib/projects).
+2. Click **Add file** and then **Upload files**
+3. Upload your **folder**
+4. Add a short commit message describing the project you added
+5. Commit the changes to `main`
+
+> [!NOTE]
+> You do not need to create/upload `project.yaml` or other files but your folder.
+
+> [!TIP]
+> When Glean detects a new project folder, the automation creates it for you using [`scripts/bootstrap-project.ts`](https://github.com/medialab/glean/blob/d8302bd51b8f01696009953a84e33e25b212859d/scripts/bootstrap-project.ts).
+
+#### Option B: Use your computer
+
+### Option B: Use your computer
+
+1. Clone the repository:
 
 ```bash
-bun install    # first time only
-bun run dev    # http://localhost:5173
+git clone https://github.com/medialab/glean.git
+cd glean
 ```
 
-### 5. Push to GitHub — auto-deployed
+2. Install Bun if you haven't got it:
 
 ```bash
-git add src/lib/projects/MYPROJ/
-git commit -m "feat: add MYPROJ project"
+curl -fsSL https://bun.sh/install | bash
+```
+
+3. Install the project deps and create a new project:
+
+```bash
+bun i && bun scripts/create-project.ts MYPROJECT "My Project"
+```
+
+5. Add your media files **inside the new project folder**.
+
+6. Preview the website locally:
+
+```bash
+bun run dev
+```
+
+7. Commit and push your changes:
+
+```bash
+git add .
+git commit -m "add MYPROJECT project"
 git push origin main
 ```
 
-The GitHub Action handles the rest: bootstrap, dithering, build → GitHub Pages.
+---
 
-## Useful commands
+### Step 3: Wait for automation
 
-| Command | What it does |
-|---------|--------------|
-| `bun run dev` | Start dev server |
-| `bun run validate` | Validate all project folders |
-| `bun run imgYmlCreator` | Create missing `.yml` description files for media |
-| `bun run dither` | Generate dithered thumbnails |
-| `bun run build` | Full build (dither + dither check + vite) |
+> [!NOTE]
+> Every push to `main` triggers Glean's automatic workflows.
 
-## Project structure
+For a new project, the system:
 
+1. Detects the new project folder.
+2. Creates `project.yaml` if it does not exist.
+3. Moves videos into `_videos/`.
+4. Moves PDFs into `_documents/`.
+5. Detects all project media.
+6. Adds the media to `media_captions` inside `project.yaml`.
+7. Generates the dithered thumbnail used by the interface.
+8. Builds the website.
+9. Publishes the updated portfolio to GitHub Pages.
+
+Project bootstrapping and media synchronisation are handled by [`sync-media.yml`](https://github.com/medialab/glean/blob/d8302bd51b8f01696009953a84e33e25b212859d/.github/workflows/sync-media.yml).
+
+The website build and deployment are handled by [`deploy.yml`](https://github.com/medialab/glean/blob/d8302bd51b8f01696009953a84e33e25b212859d/.github/workflows/deploy.yml).
+
+You can follow running and completed workflows from the [GitHub Actions page](https://github.com/medialab/glean/actions).
+
+---
+
+### Step 4: Edit the project information
+
+After the first automation has completed, open the generated `project.yaml` inside your project folder.
+The `project.yaml` is the source of all the visible textual data of your project.
+
+For example: [`EL2MP/project.yaml`](https://github.com/medialab/glean/blob/d8302bd51b8f01696009953a84e33e25b212859d/src/lib/projects/EL2MP/project.yaml).
+
+You can edit it by rewriting values, don't change parameters names or you'll encounter build errors:
+
+```yaml
+title: 'My Project'
+description: 'A short description of the project.'
+link: 'https://example.com'
+tag: MYPROJECT
+year_begin: '2026'
+year_end: '2027'
+project_type: Research
+team_people: Person One, Person Two
 ```
-src/lib/projects/MYPROJ/
-├── project.yaml
-├── THUMB.png              # Homepage card thumbnail
-├── image1.jpg
-├── image2.png
-├── video1.mp4
-├── _videos/               # Videos (auto-sorted on push)
-├── _documents/            # PDFs (auto-sorted on push)
-└── _gallery/              # Sub-gallery (optional)
-```
 
-## Captions
+> [!NOTE]
+> Not all parameters are mandatory.
+> The `tag` parameter must be **identical** to the project folder name.
 
-Add captions for each media file directly in `project.yaml`:
+---
+
+### Step 5: Edit captions
+
+Glean stores media captions directly inside each project's `project.yaml`. Everything's automatically created based on the uploaded media files.
+
+You can then fill them in, or leave them blank:
 
 ```yaml
 media_captions:
-  image1.jpg: 'A descriptive caption'
-  video1.mp4: 'Description of the video'
+  thumb.jpg: 'Project overview'
+  interface.jpg: 'First prototype of the interface'
+  workshop.jpg: 'Participatory workshop at the médialab'
+  _videos/demo.mp4: 'Demonstration of the final prototype'
+  _documents/report.pdf: 'Final research report'
 ```
 
-Or run `bun run imgYmlCreator` to generate separate `.yml` files.
+> [!NOTE]
+> When a media file is added or removed, the automation synchronizes this list.
+
+---
+
+## Editing an Existing Project
+
+To update an existing project, open it inside [`src/lib/projects/`](https://github.com/medialab/glean/tree/d8302bd51b8f01696009953a84e33e25b212859d/src/lib/projects).
+
+You can:
+
+1. Edit `project.yaml`.
+2. Upload new images.
+3. Upload videos.
+4. Upload PDFs.
+5. Replace the thumbnail.
+6. Edit media captions.
+7. Remove obsolete files.
+
+Commit the changes to `main`.
+
+> [!NOTE]
+> Glean will rebuild and redeploy automatically.
+
+## Local Development
+
+Glean is built with SvelteKit, Svelte 5, TypeScript, Tailwind CSS and Bun.
+
+The available commands are defined in [`package.json`](https://github.com/medialab/glean/blob/d8302bd51b8f01696009953a84e33e25b212859d/package.json).
+
+## Useful Commands
+
+| Command | What it does |
+| --- | --- |
+| `bun run dev` | Start the local development server |
+| `bun run validate` | Validate every project and its metadata |
+| `bun run bootstrap` | Create missing `project.yaml` files and organise project media |
+| `bun run imgYmlCreator` | Synchronise `media_captions` with project media |
+| `bun run dither` | Generate dithered thumbnails |
+| `bun run dither:check` | Validate generated dithered thumbnails |
+| `bun run dither:all` | Generate and validate all dithered thumbnails |
+| `bun run build` | Run the complete production build |
+| `bun run check` | Run Svelte type checking |
+
+Project validation is implemented in [`scripts/validate-projects.ts`](https://github.com/medialab/glean/blob/d8302bd51b8f01696009953a84e33e25b212859d/scripts/validate-projects.ts).
