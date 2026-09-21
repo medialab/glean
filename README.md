@@ -4,6 +4,8 @@
 
 A shared visual space for projects by the médialab design team.
 
+<img width="5088" height="3344" alt="image" src="https://github.com/user-attachments/assets/c4876040-f646-4685-8e11-833c5681c9a6" />
+
 ## How to Add a Project
 
 All projects live inside [`src/lib/projects/`](https://github.com/medialab/glean/tree/d8302bd51b8f01696009953a84e33e25b212859d/src/lib/projects).
