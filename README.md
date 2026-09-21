@@ -40,8 +40,13 @@ PROJECT_NAME/
 ├── image_2.jpg
 ├── demo_video.mp4
 ├── report.pdf
+├── SUBFOLDER
 └── ...pdf
 ```
+
+> [!NOTE]
+> If in the folder there's a subfolder with images, it will create in the project page a mosaic.
+> If there's a PDF in the folder, it will be displayed automatically with a PDF reader in the project page to navigate it.
 
 ---
 
