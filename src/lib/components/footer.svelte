@@ -5,8 +5,8 @@
 <footer
 	class="fixed right-0 bottom-2 left-0 z-[100] flex h-fit w-full flex-row items-center justify-between px-5 py-2 max-md:static"
 >
-	<p class="notes bg-white p-1.5 text-[#1f1f1f]">Privacy policy</p>
-	<a
+	<!-- <p class="notes bg-white p-1.5 text-[#1f1f1f]">Privacy policy</p> -->
+	<!-- <a
 		class="bg-white p-1.5 text-[#1f1f1f]"
 		href="https://github.com/medialab"
 		target="_blank"
@@ -14,5 +14,5 @@
 		data-sveltekit-preload-data
 	>
 		<img src={gitLogo} alt="GitHub" class="h-5 w-5" />
-	</a>
+	</a> -->
 </footer>

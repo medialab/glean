@@ -213,17 +213,21 @@
 			{props.title}
 		</h2>
 		<div class="bg-surface group-hover:bg-(--permanent-black)" in:fly={{ y: 16, duration: 650, delay: 110 }}>
-			{#if props.year_end}
-				<p class="notes group-hover:text-(--permanent-white)">{props.year_begin} &ndash; {props.year_end}</p>
-			{:else}
+			{#if props.year_begin === props.year_end}
 				<p class="notes group-hover:text-(--permanent-white)">{props.year_begin}</p>
-			{/if}
+      {:else}
+        {#if props.year_end}
+          <p class="notes group-hover:text-(--permanent-white)">{props.year_begin} &ndash; {props.year_end}</p>
+        {:else}
+          <p class="notes group-hover:text-(--permanent-white)">{props.year_begin}</p>
+        {/if}
+      {/if}
 			{#if props.team_people}
 				<p
 					class="notes [display:-webkit-box] overflow-hidden text-ellipsis [-webkit-box-orient:vertical] -webkit-line-clamp-2 line-clamp-2 group-hover:text-(--permanent-white)"
 					id="people"
 				>
-					{props.team_people}
+					médialab members involved: {props.team_people}
 				</p>
 			{/if}
 		</div>
